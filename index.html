@@ -25,7 +25,6 @@
         h1 { font-size: 40px; margin-bottom: 10px; }
         p { font-size: 20px; }
 
-        /* 遊戲按鈕 (紅底黃字) */
         button {
             padding: 15px 35px;
             font-size: 22px;
@@ -36,18 +35,17 @@
             border: none;
             border-radius: 50px;
             box-shadow: 0 5px 0 #c0392b;
-            transition: all 0.1s;
         }
         button:active { box-shadow: 0 2px 0 #c0392b; transform: translateY(3px); }
 
-        /* --- 2. 醒目的漢堡按鈕 (蟹堡黃) --- */
+        /* --- 2. 菜單按鈕 (靜態設計) --- */
         .menu-button {
             position: fixed;
             top: 20px;
             right: 20px;
             width: 45px;
             height: 40px;
-            background: rgba(255, 255, 255, 0.1); /* 微透明底，讓按鈕輪廓更明顯 */
+            background-color: #5d6d7e; /* 穩定的藍灰色底 */
             border-radius: 8px;
             border: none;
             cursor: pointer;
@@ -56,14 +54,12 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            transition: transform 0.2s;
         }
-        .menu-button:hover { transform: scale(1.1); } /* 滑鼠移上去稍微變大 */
         
         .menu-button .line { 
             width: 70%; 
             height: 4px; 
-            background-color: #f1c40f; /* 亮黃色線條 */
+            background-color: white; /* 圖示維持白色 */
             margin: 3px 0; 
             border-radius: 2px;
         }
@@ -85,20 +81,20 @@
         }
         .menu-drawer.active { transform: translateX(0); }
 
-        /* 醒目的 X 按鈕 (亮黃色) */
+        /* X 按鈕 (白色且無動畫) */
         .close-button {
             position: absolute;
             top: 20px;
             right: 20px;
-            background: none;
+            background-color: #5d6d7e; /* 同樣的底色 */
+            width: 45px;
+            height: 45px;
+            border-radius: 8px;
             border: none;
-            font-size: 45px;
-            font-weight: bold;
-            color: #f1c40f; /* 亮黃色 X */
+            font-size: 30px;
+            color: white; /* 白色 X */
             cursor: pointer;
-            transition: transform 0.2s;
         }
-        .close-button:hover { transform: rotate(90deg); } /* 懸停時旋轉一下 */
 
         /* --- 4. 分頁樣式 --- */
         .tab-nav { margin-top: 80px; display: flex; justify-content: center; gap: 20px; }
@@ -111,7 +107,6 @@
             font-size: 18px;
             cursor: pointer; 
         }
-        .tab-btn:hover { background-color: #f1c40f; color: #333; } /* 懸停時變黃色 */
         .tab-content { margin-top: 40px; color: #ecf0f1; }
         .hidden { display: none; }
     </style>
