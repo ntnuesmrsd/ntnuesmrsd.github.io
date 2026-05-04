@@ -1,1 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>早餐吃到飽挑戰賽</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        /* --- 1. 背景與整體設定 --- */
+        body {
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* 換個更好看的字體 */
+            
+            /* 在這裡設定背景顏色！你可以換成喜歡的十六進位代碼 */
+            background-color: #2c3e50; /* 深藍灰色 */
+            
+            /* 你甚至可以用漸層背景（把上一行註解掉，把這行打開試試看） */
+            /* background: linear-gradient(135deg, #2c3e50, #4ca1af); */
+        }
 
+        /* --- 2. 畫面內容區塊 --- */
+        .page {
+            text-align: center;
+            padding: 40px;
+            background-color: white; /* 讓內容區塊有白底，與深色背景區隔 */
+            border-radius: 20px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3); /* 加點陰影增加立體感 */
+        }
+
+        /* --- 3. 標題圖片設定 --- */
+        .title-image {
+            max-width: 300px; /* 限制圖片最大寬度，避免在手機上過大 */
+            height: auto;      /* 保持圖片比例 */
+            margin-bottom: 20px; /* 與下方的字拉開距離 */
+        }
+
+        /* 按鈕與文字大小設定 (保持原本的) */
+        h1 { font-size: 36px; color: #333; margin-bottom: 10px; }
+        p { font-size: 18px; color: #666; }
+        button {
+            padding: 15px 35px;
+            font-size: 22px;
+            cursor: pointer;
+            margin-top: 30px;
+            background-color: #e74c3c; /* 鮮豔的紅色按鈕 */
+            color: white;
+            border: none;
+            border-radius: 50px; /* 圓角按鈕 */
+            box-shadow: 0 5px 0 #c0392b; /* 按鈕立體感陰影 */
+            transition: all 0.1s; /* 加點點擊動畫 */
+        }
+        
+        button:active {
+            box-shadow: 0 2px 0 #c0392b; /* 點擊時陰影縮小 */
+            transform: translateY(3px); /* 點擊時稍微下移 */
+        }
+
+        .hidden { display: none; }
+        /* 當螢幕寬度小於 600px 時 (手機模式) */
+        @media screen and (max-width: 600px) {
+            h1 {
+                font-size: 28px; /* 手機上字體大一點 */
+            }
+            
+            p {
+                font-size: 18px;
+            }
+            
+            button {
+                width: 80%;      /* 讓按鈕變寬，填滿手機螢幕大部分寬度 */
+                padding: 20px;   /* 增加點擊區域，避免手指太粗按不到 */
+                font-size: 20px;
+            }
+        
+            .page {
+                width: 90%;      /* 讓卡片不要太窄 */
+                padding: 20px;
+            }
+            img {
+                max-width: 100%;
+                height: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="home-page" class="page">
+        <img src="title.jpg" alt="遊戲標題" class="title-image">
+        
+        <h1></h1> <p>各位孩子們 準備好了嗎？</p>
+        <button onclick="showPage('game-page')">是的船長！</button>
+    </div>
+
+    <div id="game-page" class="page hidden">
+        <h1>在蟹堡王當社畜中</h1>
+        <p>讓章魚哥吹豎笛 與 派大星找到你了 功能</p>
+        <button onclick="showPage('home-page')">下船</button>
+    </div>
+
+    <script>
+        function showPage(pageId) {
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.add('hidden');
+            });
+            document.getElementById(pageId).classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>
