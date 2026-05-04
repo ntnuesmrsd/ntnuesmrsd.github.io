@@ -14,21 +14,18 @@
             justify-content: center;
             align-items: center;
             font-family: 'Segoe UI', sans-serif;
-            background-color: #2c3e50; /* 背景顏色 */
-            color: white; /* 文字變白色，因為沒有白底了 */
+            background-color: #2c3e50;
+            color: white;
             overflow: hidden;
         }
 
-        /* --- 2. 移除所有卡片樣式，內容直接置中 --- */
-        .page {
-            text-align: center;
-            width: 100%;
-        }
+        .page { text-align: center; width: 100%; }
 
         .title-image { max-width: 300px; height: auto; margin-bottom: 20px; }
         h1 { font-size: 40px; margin-bottom: 10px; }
         p { font-size: 20px; }
 
+        /* 遊戲按鈕 (紅底黃字) */
         button {
             padding: 15px 35px;
             font-size: 22px;
@@ -43,30 +40,44 @@
         }
         button:active { box-shadow: 0 2px 0 #c0392b; transform: translateY(3px); }
 
-        /* --- 3. 選單按鈕 (固定在右上角) --- */
+        /* --- 2. 醒目的漢堡按鈕 (蟹堡黃) --- */
         .menu-button {
-            position: fixed; /* 固定在螢幕，不隨內容移動 */
+            position: fixed;
             top: 20px;
             right: 20px;
-            width: 40px;
-            height: 35px;
-            background: none;
+            width: 45px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.1); /* 微透明底，讓按鈕輪廓更明顯 */
+            border-radius: 8px;
             border: none;
             cursor: pointer;
             z-index: 100;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: transform 0.2s;
         }
-        .menu-button .line { width: 100%; height: 4px; background-color: white; margin: 6px 0; border-radius: 2px; }
+        .menu-button:hover { transform: scale(1.1); } /* 滑鼠移上去稍微變大 */
+        
+        .menu-button .line { 
+            width: 70%; 
+            height: 4px; 
+            background-color: #f1c40f; /* 亮黃色線條 */
+            margin: 3px 0; 
+            border-radius: 2px;
+        }
 
-        /* --- 4. 側邊選單 (隱藏於畫面外) --- */
+        /* --- 3. 側邊選單 --- */
         .menu-drawer {
-            position: fixed; /* 覆蓋整個畫面 */
+            position: fixed;
             top: 0;
             right: 0;
             width: 100%;
             height: 100%;
-            background-color: #34495e; /* 選單底色 */
+            background-color: #34495e;
             z-index: 200;
-            transform: translateX(100%); /* 完全滑出畫面外 */
+            transform: translateX(100%);
             transition: transform 0.5s ease;
             padding: 20px;
             box-sizing: border-box;
@@ -74,20 +85,33 @@
         }
         .menu-drawer.active { transform: translateX(0); }
 
+        /* 醒目的 X 按鈕 (亮黃色) */
         .close-button {
             position: absolute;
             top: 20px;
             right: 20px;
             background: none;
             border: none;
-            font-size: 40px;
-            color: white;
+            font-size: 45px;
+            font-weight: bold;
+            color: #f1c40f; /* 亮黃色 X */
             cursor: pointer;
+            transition: transform 0.2s;
         }
+        .close-button:hover { transform: rotate(90deg); } /* 懸停時旋轉一下 */
 
-        /* --- 分頁樣式 --- */
+        /* --- 4. 分頁樣式 --- */
         .tab-nav { margin-top: 80px; display: flex; justify-content: center; gap: 20px; }
-        .tab-btn { background-color: #95a5a6; padding: 10px 20px; border-radius: 10px; color: white; border: none; cursor: pointer; }
+        .tab-btn { 
+            background-color: #5d6d7e; 
+            padding: 12px 25px; 
+            border-radius: 10px; 
+            color: white; 
+            border: none; 
+            font-size: 18px;
+            cursor: pointer; 
+        }
+        .tab-btn:hover { background-color: #f1c40f; color: #333; } /* 懸停時變黃色 */
         .tab-content { margin-top: 40px; color: #ecf0f1; }
         .hidden { display: none; }
     </style>
@@ -109,7 +133,7 @@
         </button>
 
         <nav id="menu-drawer" class="menu-drawer">
-            <button class="close-button" onclick="toggleMenu()">✖</button>
+            <button class="close-button" onclick="toggleMenu()">×</button>
             
             <div class="tab-nav">
                 <button class="tab-btn" onclick="switchTab('inventory')">圖鑑列表</button>
