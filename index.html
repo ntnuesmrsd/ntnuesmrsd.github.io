@@ -21,11 +21,7 @@
 
         .page { text-align: center; width: 100%; }
 
-        .title-image { max-width: 300px; height: auto; margin-bottom: 20px; }
-        h1 { font-size: 40px; margin-bottom: 10px; }
-        p { font-size: 20px; }
-
-        /* --- 修正：將 button 樣式侷限在 .page 內，避免全域影響 --- */
+        /* --- 2. 遊戲按鈕 (隔離樣式，只影響頁面內的按鈕) --- */
         .page button {
             padding: 15px 35px;
             font-size: 22px;
@@ -39,14 +35,14 @@
         }
         .page button:active { box-shadow: 0 2px 0 #c0392b; transform: translateY(3px); }
 
-        /* --- 2. 菜單按鈕 --- */
+        /* --- 3. 選單與 X 按鈕 (維持 #5d6d7e 底色與白色圖示) --- */
         .menu-button {
             position: fixed;
             top: 20px;
             right: 20px;
             width: 45px;
             height: 40px;
-            background-color: #5d6d7e;
+            background-color: #5d6d7e; 
             border-radius: 8px;
             border: none;
             cursor: pointer;
@@ -58,29 +54,9 @@
             padding: 0;
         }
         .menu-button .line { 
-            width: 70%; 
-            height: 4px; 
-            background-color: white; 
-            margin: 3px 0; 
-            border-radius: 2px;
+            width: 70%; height: 4px; background-color: white; 
+            margin: 3px 0; border-radius: 2px;
         }
-
-        /* --- 3. 側邊選單 --- */
-        .menu-drawer {
-            position: fixed;
-            top: 0;
-            right: 0;
-            width: 100%;
-            height: 100%;
-            background-color: #34495e;
-            z-index: 200;
-            transform: translateX(100%);
-            transition: transform 0.5s ease;
-            padding: 20px;
-            box-sizing: border-box;
-            text-align: center;
-        }
-        .menu-drawer.active { transform: translateX(0); }
 
         .close-button {
             position: absolute;
@@ -101,7 +77,23 @@
             line-height: 1;
         }
 
-        /* --- 4. 分頁樣式 --- */
+        /* --- 4. 側邊選單與分頁 --- */
+        .menu-drawer {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #34495e;
+            z-index: 200;
+            transform: translateX(100%);
+            transition: transform 0.5s ease;
+            padding: 20px;
+            box-sizing: border-box;
+            text-align: center;
+        }
+        .menu-drawer.active { transform: translateX(0); }
+
         .tab-nav { margin-top: 80px; display: flex; justify-content: center; gap: 20px; }
         .tab-btn { 
             background-color: #5d6d7e; 
@@ -114,14 +106,13 @@
         }
         .tab-content { margin-top: 40px; color: #ecf0f1; }
         
-        /* --- 修正：強制隱藏 --- */
+        /* 強制隱藏的關鍵 */
         .hidden { display: none !important; }
     </style>
 </head>
 <body>
 
     <div id="home-page" class="page">
-        <img src="title.jpg" alt="遊戲標題" class="title-image">
         <h1>挑戰賽</h1> 
         <p>各位孩子們 準備好了嗎？</p>
         <button onclick="showPage('game-page')">是的船長！</button>
@@ -144,17 +135,14 @@
 
             <div id="inventory" class="tab-content">
                 <h2>圖鑑列表</h2>
-                <p>這裡顯示你抓到的蟹堡王角色...</p>
             </div>
 
             <div id="achievement" class="tab-content hidden">
                 <h2>成就清單</h2>
-                <p>達成目標：成為蟹堡王員工之星</p>
             </div>
         </nav>
 
         <h1>在蟹堡王當社畜中</h1>
-        <p>遊戲核心功能運作中...</p>
         <button onclick="showPage('home-page')">下船</button>
     </div>
 
