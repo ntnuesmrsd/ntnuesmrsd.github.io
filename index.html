@@ -21,8 +21,11 @@
 
         .page { text-align: center; width: 100%; }
 
-        /* --- 2. 遊戲按鈕 (隔離樣式，只影響頁面內的按鈕) --- */
-        .page button {
+        .title-image { max-width: 300px; height: auto; margin-bottom: 20px; }
+        h1 { font-size: 40px; margin-bottom: 10px; }
+        p { font-size: 20px; }
+
+        button {
             padding: 15px 35px;
             font-size: 22px;
             cursor: pointer;
@@ -33,51 +36,38 @@
             border-radius: 50px;
             box-shadow: 0 5px 0 #c0392b;
         }
-        .page button:active { box-shadow: 0 2px 0 #c0392b; transform: translateY(3px); }
+        button:active { box-shadow: 0 2px 0 #c0392b; transform: translateY(3px); }
 
-        /* --- 3. 選單與 X 按鈕 (維持 #5d6d7e 底色與白色圖示) --- */
+        /* --- 2. 菜單按鈕 (精確定位與置中) --- */
         .menu-button {
             position: fixed;
             top: 20px;
             right: 20px;
             width: 45px;
             height: 40px;
-            background-color: #5d6d7e; 
+            background-color: #5d6d7e; /* 穩定的藍灰色底 */
             border-radius: 8px;
             border: none;
             cursor: pointer;
             z-index: 100;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            padding: 0;
+            
+            /* === 精確置中關鍵：Flexbox === */
+            display: flex;          /* 啟用 Flexbox */
+            flex-direction: column; /* 讓線條垂直排列 */
+            justify-content: center; /* 水平方向置中 (在 column 下代表線條之間置中) */
+            align-items: center;     /* 垂直方向置中 (在 column 下代表線條本身置中) */
+            padding: 0;             /* 移除預設 padding，確保精確度 */
         }
+        
         .menu-button .line { 
-            width: 70%; height: 4px; background-color: white; 
-            margin: 3px 0; border-radius: 2px;
+            width: 70%;              /* 線條寬度佔方塊的 70% */
+            height: 4px;             /* 線條高度 */
+            background-color: white; /* 圖示維持白色 */
+            margin: 3px 0;           /* 線條間距 */
+            border-radius: 2px;
         }
 
-        .close-button {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            width: 45px;
-            height: 45px;
-            background-color: #5d6d7e;
-            border-radius: 8px;
-            border: none;
-            color: white;
-            cursor: pointer;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 30px;
-            line-height: 1;
-        }
-
-        /* --- 4. 側邊選單與分頁 --- */
+        /* --- 3. 側邊選單 --- */
         .menu-drawer {
             position: fixed;
             top: 0;
@@ -94,6 +84,30 @@
         }
         .menu-drawer.active { transform: translateX(0); }
 
+        /* X 按鈕 (同色系置中) */
+        .close-button {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 45px;
+            height: 45px;
+            background-color: #5d6d7e; /* 同樣的底色 */
+            border-radius: 8px;
+            border: none;
+            color: white; /* 白色 X */
+            cursor: pointer;
+            padding: 0;     /* 移除預設 padding */
+
+            /* === 精確置中關鍵：Flexbox === */
+            display: flex;          /* 啟用 Flexbox */
+            justify-content: center; /* 水平方向置中 (X文字) */
+            align-items: center;     /* 垂直方向置中 (X文字) */
+            
+            font-size: 30px; /* 調整 X 的字體大小以貼合方塊 */
+            line-height: 1; /* 移除額外的行高影響定位 */
+        }
+
+        /* --- 4. 分頁樣式 --- */
         .tab-nav { margin-top: 80px; display: flex; justify-content: center; gap: 20px; }
         .tab-btn { 
             background-color: #5d6d7e; 
@@ -105,14 +119,13 @@
             cursor: pointer; 
         }
         .tab-content { margin-top: 40px; color: #ecf0f1; }
-        
-        /* 強制隱藏的關鍵 */
-        .hidden { display: none !important; }
+        .hidden { display: none; }
     </style>
 </head>
 <body>
 
     <div id="home-page" class="page">
+        <img src="title.jpg" alt="遊戲標題" class="title-image">
         <h1>挑戰賽</h1> 
         <p>各位孩子們 準備好了嗎？</p>
         <button onclick="showPage('game-page')">是的船長！</button>
@@ -135,14 +148,17 @@
 
             <div id="inventory" class="tab-content">
                 <h2>圖鑑列表</h2>
+                <p>這裡顯示你抓到的蟹堡王角色...</p>
             </div>
 
             <div id="achievement" class="tab-content hidden">
                 <h2>成就清單</h2>
+                <p>達成目標：成為蟹堡王員工之星</p>
             </div>
         </nav>
 
         <h1>在蟹堡王當社畜中</h1>
+        <p>遊戲核心功能運作中...</p>
         <button onclick="showPage('home-page')">下船</button>
     </div>
 
