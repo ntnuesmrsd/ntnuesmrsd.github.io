@@ -14,17 +14,18 @@
             align-items: center;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #2c3e50;
+            overflow: hidden; /* 確保選單滑動時不會出現滾動條 */
         }
 
         /* --- 2. 畫面內容區塊 --- */
         .page {
-            position: relative; /* 關鍵：讓絕對定位的選單能固定在這個框框內 */
+            position: relative;
             text-align: center;
             padding: 40px;
             background-color: white;
             border-radius: 20px;
             box-shadow: 0 10px 20px rgba(0,0,0,0.3);
-            width: 80%; /* 限制寬度 */
+            width: 80%;
             max-width: 500px;
         }
 
@@ -47,7 +48,7 @@
         }
         button:active { box-shadow: 0 2px 0 #c0392b; transform: translateY(3px); }
 
-        /* --- 4. 漢堡選單樣式 --- */
+        /* --- 4. 漢堡選單樣式 (三橫圖案) --- */
         .menu-button {
             position: absolute;
             top: 20px;
@@ -58,46 +59,86 @@
             border: none;
             cursor: pointer;
             padding: 0;
-            z-index: 10;
+            z-index: 10; /* 在內容上方 */
         }
         .menu-button .line {
             width: 100%;
             height: 4px;
-            background-color: #333;
+            background-color: #333; /* 可以換成你原本圖片的顏色 */
             margin: 6px 0;
             border-radius: 2px;
         }
 
-        /* --- 5. 選單遮罩動畫 (從右滑入) --- */
-        .menu-overlay {
+        /* --- 5. 從右滑入的灰色選單畫面 --- */
+        .menu-drawer {
             position: absolute;
             top: 0;
             right: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(255, 255, 255, 0.98);
+            background-color: #ecf0f1; /* 選單灰底顏色 */
             border-radius: 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            transform: translateX(100%); /* 預設在右邊外面 */
-            transition: transform 0.5s ease; /* 滑動動畫 */
-            z-index: 20;
-        }
-        .menu-overlay.active {
-            transform: translateX(0); /* 滑動進來 */
+            z-index: 20; /* 覆蓋在漢堡按鈕和內容上方 */
+            box-sizing: border-radius; /* 確保 padding 不會影響圓角 */
+            overflow: hidden; /* 內容超出時隱藏 */
+
+            /* === 動畫關鍵：預設完全藏在右側 outside === */
+            transform: translateX(100%);
+            transition: transform 0.5s ease; /* 流暢滑動 */
         }
 
-        .menu-content {
-            display: flex;
-            flex-direction: column; /* 讓內容垂直排列 */
-            gap: 20px;
+        /* 當選單被激活時，滑入 0% 的位置 */
+        .menu-drawer.active {
+            transform: translateX(0);
+        }
+
+        /* 選單右上角的關閉 X 圖案 */
+        .close-button {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: none;
+            border: none;
+            font-size: 40px;
+            color: #333;
+            cursor: pointer;
+            padding: 0;
+            line-height: 35px;
+            margin: 0;
+            z-index: 30; /* 確保在灰色畫面的最上方 */
+        }
+
+        /* --- 6. 選單內容排版：平行對齊 --- */
+        .menu-grid {
+            margin-top: 100px; /* 與關閉按鈕拉開距離 */
+            display: flex;     /* 關鍵：平行對齊 */
+            justify-content: space-around; /* 內容均勻分佈在平行列上 */
+            width: 100%;
+            padding: 20px;
+            box-sizing: border-radius;
+        }
+
+        /* 每個選項卡片 (用來包住選項文字和下方的內容預留區) */
+        .menu-column {
+            text-align: center;
+            width: 45%; /* 大致寬度，兩個選項加上一個按鈕 */
+        }
+
+        /* 平行對齊的選項標題 (圖鑑、成就) */
+        .menu-title-label {
             font-size: 24px;
             font-weight: bold;
-        }
-        .menu-content a {
-            text-decoration: none;
             color: #333;
+            margin-bottom: 20px;
+        }
+
+        /* === 內容預留區 === */
+        .content-placeholder {
+            min-height: 150px; /* 給個高度方便你看預留的位置 */
+            background-color: white; /* 讓预留區區隔出來 */
+            border-radius: 10px;
+            padding: 10px;
+            border: 2px dashed #bdc3c7; /* 虛線外框表示預留位置 */
         }
 
         .hidden { display: none; }
@@ -106,6 +147,8 @@
         @media screen and (max-width: 600px) {
             h1 { font-size: 28px; }
             button { width: 80%; padding: 15px; font-size: 18px; }
+            .menu-grid { margin-top: 80px; gap: 10px;}
+            .menu-title-label { font-size: 18px; }
         }
     </style>
 </head>
@@ -124,10 +167,25 @@
             <div class="line"></div>
         </button>
 
-        <nav id="menu-overlay" class="menu-overlay">
-            <div class="menu-content">
-                <button class="menu-button" onclick="toggleMenu()">✖</button> <a href="#">圖鑑列表</a>
-                <a href="#">成就清單</a>
+        <nav id="menu-drawer" class="menu-drawer">
+            <button class="close-button" onclick="toggleMenu()">✖</button>
+
+            <div class="menu-grid">
+                
+                <div class="menu-column">
+                    <div class="menu-title-label">圖鑑列表</div>
+                    <div class="content-placeholder">
+                        <p style="font-size: 14px; color: #999;">在此放入圖鑑內容</p>
+                    </div>
+                </div>
+
+                <div class="menu-column">
+                    <div class="menu-title-label">成就清單</div>
+                    <div class="content-placeholder">
+                        <p style="font-size: 14px; color: #999;">在此放入成就清單</p>
+                    </div>
+                </div>
+
             </div>
         </nav>
 
@@ -145,10 +203,11 @@
             document.getElementById(pageId).classList.remove('hidden');
         }
 
-        // 選單開關
+        // 選單抽屜式開關
         function toggleMenu() {
-            const menu = document.getElementById('menu-overlay');
-            menu.classList.toggle('active');
+            const drawer = document.getElementById('menu-drawer');
+            // toggle 'active' class 來觸發 CSS 滑動動畫
+            drawer.classList.toggle('active');
         }
     </script>
 </body>
