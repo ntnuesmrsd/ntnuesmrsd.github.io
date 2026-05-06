@@ -130,6 +130,33 @@
             margin: 0 auto;
             display: block;
         }
+        /* --- 彈出視窗樣式 --- */
+        .modal {
+            display: none; /* 預設隱藏 */
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background-color: rgba(0, 0, 0, 0.9); /* 半透明深色背景 */
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+        .modal.active { display: flex; } /* 顯示時使用 */
+        
+        .modal-content {
+            background: #34495e;
+            padding: 30px;
+            border-radius: 20px;
+            text-align: center;
+            max-width: 80%;
+        }
+        .modal-img {
+            width: 200px; height: 200px;
+            filter: brightness(0) invert(1); /* 放大後變成白色方便觀察 */
+            object-fit: contain;
+        }
+        .hint-text { margin-top: 20px; font-size: 20px; color: #f1c40f; }
     </style>
 </head>
 <body>
@@ -152,10 +179,18 @@
         <div class="location-group">
             <div class="location-title">河口濕地</div>
             <div class="grid-container">
-                <div class="creature-item"><img src="bird1.jpg" class="silhouette"><p>中杓鷸</p></div>
-                <div class="creature-item"><img src="bird_dunlin.jpg" class="silhouette"><p>黑腹濱鷸</p></div>
-                <div class="creature-item"><img src="crab.jpg" class="silhouette"><p>招潮蟹</p></div>
-                <div class="creature-item"><img src="mudskipper.jpg" class="silhouette"><p>大彈塗魚</p></div>
+                <div class="creature-item" onclick="openModal(this.querySelector('img').src, '這裡是內容 1')">
+                    <img src="bird1.jpg" class="silhouette"><p>中杓鷸</p>
+                </div>
+                <div class="creature-item" onclick="openModal(this.querySelector('img').src, '這裡是內容 2')">
+                    <img src="bird_dunlin.jpg" class="silhouette"><p>黑腹濱鷸</p>
+                </div>
+                <div class="creature-item" onclick="openModal(this.querySelector('img').src, '這裡是內容 1')">
+                    <img src="crab.jpg" class="silhouette"><p>招潮蟹</p>
+                </div>
+                <div class="creature-item" onclick="openModal(this.querySelector('img').src, '這裡是內容 1')">
+                    <img src="mudskipper.jpg" class="silhouette"><p>大彈塗魚</p>
+                </div>
             </div>
         </div>
     
@@ -163,24 +198,39 @@
             <div class="location-title">感潮濕地</div>
             <div class="grid-container">
                 <div class="creature-item"><img src="bird2.jpg" class="silhouette"><p>蒼鷺</p></div>
-                <div class="creature-item"><img src="bird_chinese_egret.jpg" class="silhouette"><p>唐白鷺</p></div>
-                <div class="creature-item"><img src="bird3.jpg" class="silhouette"><p>太平洋金斑鴴</p></div>
+                <div class="creature-item" onclick="openModal(this.querySelector('img').src, '這裡是內容 1')">
+                    <img src="bird2.jpg" class="silhouette"><p>蒼鷺</p>
+                </div>
+                <div class="creature-item" onclick="openModal(this.querySelector('img').src, '這裡是內容 1')">
+                    <img src="bird_chinese_egret.jpg" class="silhouette"><p>唐白鷺</p>
+                </div>
+                <div class="creature-item" onclick="openModal(this.querySelector('img').src, '這裡是內容 1')">
+                    <img src="bird3.jpg" class="silhouette"><p>太平洋金斑鴴</p>
+                </div>
             </div>
         </div>
     
         <div class="location-group">
             <div class="location-title">深水埤塘區</div>
             <div class="grid-container">
-                <div class="creature-item"><img src="bird4.jpg" class="silhouette"><p>鴻雁</p></div>
-                <div class="creature-item"><img src="bird5.jpg" class="silhouette"><p>紅冠水雞</p></div>
+                <div class="creature-item" onclick="openModal(this.querySelector('img').src, '這裡是內容 1')">
+                    <img src="bird4.jpg" class="silhouette"><p>鴻雁</p>
+                </div>
+                <div class="creature-item" onclick="openModal(this.querySelector('img').src, '這裡是內容 1')">
+                    <img src="bird5.jpg" class="silhouette"><p>紅冠水雞</p>
+                </div>
             </div>
         </div>
     
         <div class="location-group">
             <div class="location-title">小燕鷗復育區</div>
             <div class="grid-container">
-                <div class="creature-item"><img src="bird6.jpg" class="silhouette"><p>小燕鷗</p></div>
-                <div class="creature-item"><img src="bird7.jpg" class="silhouette"><p>東方環頸鴴</p></div>
+                <div class="creature-item" onclick="openModal(this.querySelector('img').src, '這裡是內容 1')">
+                    <img src="bird6.jpg" class="silhouette"><p>小燕鷗</p>
+                </div>
+                <div class="creature-item" onclick="openModal(this.querySelector('img').src, '這裡是內容 1')">
+                    <img src="bird7.jpg" class="silhouette"><p>東方環頸鴴</p>
+                </div>
             </div>
         </div>
     </div>
@@ -228,6 +278,24 @@
             document.querySelectorAll('.tab-content').forEach(content => content.classList.add('hidden'));
             document.getElementById(tabId).classList.remove('hidden');
         }
+        function openModal(imgSrc, hintText) {
+            document.getElementById('modal-img').src = imgSrc;
+            document.getElementById('modal-text').innerText = hintText;
+            document.getElementById('creature-modal').classList.add('active');
+        }
+        
+        function closeModal() {
+            document.getElementById('creature-modal').classList.remove('active');
+        }
     </script>
+    <div id="creature-modal" class="modal" onclick="closeModal()">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <img id="modal-img" class="modal-img" src="" alt="Creature">
+            <div class="hint-text">
+                <p><strong>提示：</strong></p>
+                <p id="modal-text"></p>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
