@@ -125,11 +125,11 @@
         .silhouette {
             width: 60px;
             height: 60px;
-            /* filter: brightness(0); /* 變為全黑 */
-            filter: none;
+            filter: brightness(0) invert(1);
             object-fit: contain;
             margin: 0 auto;
             display: block;
+            cursor: pointer;
         }
         /* --- 彈出視窗樣式 --- */
         .modal {
@@ -247,21 +247,23 @@
             document.querySelectorAll('.page').forEach(page => page.classList.add('hidden'));
             document.getElementById(pageId).classList.remove('hidden');
         }
-
+    
         function toggleMenu() {
             document.getElementById('menu-drawer').classList.toggle('active');
         }
-
+    
         function switchTab(tabId) {
             document.querySelectorAll('.tab-content').forEach(content => content.classList.add('hidden'));
             document.getElementById(tabId).classList.remove('hidden');
         }
+    
         function openModal(imgSrc, hintText) {
+            console.log("點擊成功！嘗試開啟圖片:", imgSrc); // 除錯用，如果點擊時沒看到這行，代表按鈕沒觸發
             document.getElementById('modal-img').src = imgSrc;
             document.getElementById('modal-text').innerText = hintText;
             document.getElementById('creature-modal').classList.add('active');
         }
-        
+    
         function closeModal() {
             document.getElementById('creature-modal').classList.remove('active');
         }
