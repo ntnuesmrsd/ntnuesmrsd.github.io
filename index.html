@@ -110,6 +110,26 @@
         .tab-nav { margin-top: 80px; display: flex; justify-content: center; gap: 20px; }
         .tab-btn { background-color: #5d6d7e; padding: 12px 25px; border-radius: 10px; color: white; border: none; font-size: 18px; cursor: pointer; }
         .tab-content { margin-top: 40px; color: #ecf0f1; }
+        /* 圖鑑列表樣式 */
+        #inventory {
+            text-align: left;
+            max-height: 60vh;
+            overflow-y: auto; /* 超出高度時可滑動 */
+            padding: 0 10px;
+        }
+        .location-group { margin-bottom: 25px; border-bottom: 1px solid #5d6d7e; padding-bottom: 10px; }
+        .location-title { color: #f1c40f; font-size: 20px; margin-bottom: 10px; }
+        .grid-container { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
+        .creature-item { text-align: center; }
+        /* 核心剪影效果 */
+        .silhouette {
+            width: 60px;
+            height: 60px;
+            filter: brightness(0); /* 變為全黑 */
+            object-fit: contain;
+            margin: 0 auto;
+            display: block;
+        }
     </style>
 </head>
 <body>
@@ -126,7 +146,42 @@
             <button class="tab-btn" onclick="switchTab('inventory')">圖鑑列表</button>
             <button class="tab-btn" onclick="switchTab('achievement')">成就清單</button>
         </div>
-        <div id="inventory" class="tab-content"><h2>圖鑑列表</h2><p>比奇堡市民</p></div>
+        <div id="inventory" class="tab-content">
+        <h2>圖鑑列表</h2>
+        
+        <div class="location-group">
+            <div class="location-title">河口濕地</div>
+            <div class="grid-container">
+                <div class="creature-item"><img src="bird1.jpg" class="silhouette"><p>中杓鷸</p></div>
+                <div class="creature-item"><img src="crab.jpg" class="silhouette"><p>招潮蟹</p></div>
+                <div class="creature-item"><img src="mudskipper.jpg" class="silhouette"><p>大彈塗魚</p></div>
+            </div>
+        </div>
+    
+        <div class="location-group">
+            <div class="location-title">感潮濕地</div>
+            <div class="grid-container">
+                <div class="creature-item"><img src="bird2.jpg" class="silhouette"><p>蒼鷺</p></div>
+                <div class="creature-item"><img src="bird3.jpg" class="silhouette"><p>太平洋金斑鴴</p></div>
+            </div>
+        </div>
+    
+        <div class="location-group">
+            <div class="location-title">深水埤塘區</div>
+            <div class="grid-container">
+                <div class="creature-item"><img src="bird4.jpg" class="silhouette"><p>鴻雁</p></div>
+                <div class="creature-item"><img src="bird5.jpg" class="silhouette"><p>紅冠水雞</p></div>
+            </div>
+        </div>
+    
+        <div class="location-group">
+            <div class="location-title">小燕鷗復育區</div>
+            <div class="grid-container">
+                <div class="creature-item"><img src="bird6.jpg" class="silhouette"><p>小燕鷗</p></div>
+                <div class="creature-item"><img src="bird7.jpg" class="silhouette"><p>東方環頸鴴</p></div>
+            </div>
+        </div>
+    </div>
         <div id="achievement" class="tab-content hidden"><h2>成就清單</h2><p>每月蟹堡王最佳員工</p></div>
     </nav>
 
