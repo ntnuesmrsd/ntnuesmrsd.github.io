@@ -352,19 +352,28 @@
                     name: file.name
                 };
         
+                // 在你的 handleFileUpload 函數內，找到 alert(result.message) 的地方：
+
                 try {
-                    const response = await fetch(scriptUrl, {
-                        method: "POST",
-                        body: JSON.stringify(payload)
-                    });
+                    const response = await fetch(scriptUrl, { method: "POST", body: JSON.stringify(payload) });
                     const result = await response.json();
-                    alert(result.message);
+                
+                    if (result.isMatch) {
+                        alert(result.message);
+                        // --- 解鎖圖鑑邏輯 ---
+                        // 假設你的 HTML img 的 src 包含了生物關鍵字
+                        const allCreatures = document.querySelectorAll('.silhouette');
+                        allCreatures.forEach(img => {
+                            if (img.src.toLowerCase().includes(result.target)) {
+                                img.classList.remove('silhouette'); // 移除濾鏡，變回彩色
+                                img.style.filter = "none"; // 確保萬無一失
+                            }
+                        });
+                    } else {
+                        alert(result.message); // 顯示 "這個生物可能不在圖鑑中"
+                    }
                 } catch (error) {
-                    console.error("上傳失敗:", error);
-                    alert("上傳失敗，請檢查網路或 GAS 設定");
-                } finally {
-                    btn.innerText = originalText;
-                    btn.disabled = false;
+                    alert("系統連線錯誤");
                 }
             };
         }
