@@ -355,25 +355,26 @@
                 // 在你的 handleFileUpload 函數內，找到 alert(result.message) 的地方：
 
                 try {
-                    const response = await fetch(scriptUrl, { method: "POST", body: JSON.stringify(payload) });
+                    const response = await fetch(scriptUrl, {
+                        method: "POST",
+                        body: JSON.stringify(payload)
+                    });
                     const result = await response.json();
-                
+                    alert(result.message);
+        
+                    // 如果 AI 判斷成功，這裡執行解鎖邏輯...
                     if (result.isMatch) {
-                        alert(result.message);
-                        // --- 解鎖圖鑑邏輯 ---
-                        // 假設你的 HTML img 的 src 包含了生物關鍵字
-                        const allCreatures = document.querySelectorAll('.silhouette');
-                        allCreatures.forEach(img => {
-                            if (img.src.toLowerCase().includes(result.target)) {
-                                img.classList.remove('silhouette'); // 移除濾鏡，變回彩色
-                                img.style.filter = "none"; // 確保萬無一失
-                            }
-                        });
-                    } else {
-                        alert(result.message); // 顯示 "這個生物可能不在圖鑑中"
+                        unlockCreature(result.target); // 呼叫解鎖函數
                     }
+        
                 } catch (error) {
-                    alert("系統連線錯誤");
+                    console.error("上傳失敗:", error);
+                    alert("上傳失敗，請檢查網路或 GAS 設定");
+                } finally {
+                    // --- 關鍵修正：確保按鈕恢復 ---
+                    btn.innerText = originalText; // 變回 "📷 上傳照片"
+                    btn.disabled = false;         // 恢復點擊功能
+                    document.getElementById('photo-upload').value = ""; // 清空 input，讓同一張圖可以重複選取測試
                 }
             };
         }
