@@ -181,7 +181,16 @@
             <button class="tab-btn" onclick="switchTab('achievement')">成就清單</button>
         </div>
             <div id="inventory" class="tab-content">
-        <h2>圖鑑列表</h2>
+                <div style="display: flex; justify-content: center; align-items: center; gap: 15px; margin-bottom: 20px;">
+                    <h2 style="margin: 0;">圖鑑列表</h2>
+                    
+                    <input type="file" id="photo-upload" accept="image/*" style="display: none;" onchange="handleFileUpload(event)">
+                    
+                    <button onclick="document.getElementById('photo-upload').click()" 
+                            style="padding: 8px 15px; font-size: 14px; background-color: #27ae60; box-shadow: 0 3px 0 #219150; margin-top: 0;">
+                        📷 上傳照片
+                    </button>
+                </div>
         
         <div class="location-group">
             <div class="location-title">河口濕地</div>
@@ -294,6 +303,15 @@
     
         function closeModal() {
             document.getElementById('creature-modal').classList.remove('active');
+        }
+        function handleFileUpload(event) {
+            const file = event.target.files[0];
+            if (file) {
+                console.log("已選取照片：", file.name);
+                alert("已選取照片：" + file.name + "\n\n【開發提示】下一步需要設定 Google Apps Script 才能將此照片存入雲端硬碟。");
+                
+                // 這裡未來可以放入呼叫 Google API 的程式碼
+            }
         }
     </script>
     <div id="creature-modal" class="modal" onclick="closeModal()">
