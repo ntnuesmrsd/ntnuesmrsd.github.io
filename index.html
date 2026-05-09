@@ -164,6 +164,33 @@
             object-fit: contain;
         }
         .hint-text { margin-top: 20px; font-size: 20px; color: #f1c40f; }
+        /* 自定義上傳按鈕樣式 */
+        .upload-btn {
+            padding: 8px 18px;
+            font-size: 14px;
+            background-color: #27ae60;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            box-shadow: 0 4px 0 #1e8449; /* 底部厚度感 */
+            cursor: pointer; /* 關鍵：鼠標移上去變手指 */
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin-top: 0 !important; /* 強制覆蓋原本 button 的 margin-top */
+        }
+        
+        .upload-btn:hover {
+            background-color: #2ecc71;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 0 #1e8449;
+        }
+        
+        .upload-btn:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 0 #1e8449;
+        }
     </style>
 </head>
 <body>
@@ -183,11 +210,8 @@
             <div id="inventory" class="tab-content">
                 <div style="display: flex; justify-content: center; align-items: center; gap: 15px; margin-bottom: 20px;">
                     <h2 style="margin: 0;">圖鑑列表</h2>
-                    
                     <input type="file" id="photo-upload" accept="image/*" style="display: none;" onchange="handleFileUpload(event)">
-                    
-                    <button onclick="document.getElementById('photo-upload').click()" 
-                            style="padding: 8px 15px; font-size: 14px; background-color: #27ae60; box-shadow: 0 3px 0 #219150; margin-top: 0;">
+                    <button class="upload-btn" onclick="document.getElementById('photo-upload').click()">
                         📷 上傳照片
                     </button>
                 </div>
