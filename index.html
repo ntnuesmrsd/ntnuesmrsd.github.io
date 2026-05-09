@@ -304,14 +304,45 @@
         function closeModal() {
             document.getElementById('creature-modal').classList.remove('active');
         }
-        function handleFileUpload(event) {
+        async function handleFileUpload(event) {
             const file = event.target.files[0];
-            if (file) {
-                console.log("已選取照片：", file.name);
-                alert("已選取照片：" + file.name + "\n\n【開發提示】下一步需要設定 Google Apps Script 才能將此照片存入雲端硬碟。");
-                
-                // 這裡未來可以放入呼叫 Google API 的程式碼
-            }
+            if (!file) return;
+        
+            const scriptUrl = "https://script.google.com/macros/s/AKfycbxtmxfP0xlAP-fK3UVEy_QzPbvAuQh-vJ_Vcs5iplYtC6xUOIO1b8YGzv-aKjfRH3aUWA/exec"; // <--- 記得改這行
+        
+            // 顯示上傳中狀態
+            console.log("正在準備上傳...");
+            const btn = event.target.nextElementSibling;
+            const originalText = btn.innerText;
+            btn.innerText = "上傳中...";
+            btn.disabled = true;
+        
+            // 將圖片轉為 Base64 字串
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = async function () {
+                const base64Data = reader.result.split(",")[1];
+                const payload = {
+                    base64: base64Data,
+                    type: file.type,
+                    name: file.name
+                };
+        
+                try {
+                    const response = await fetch(scriptUrl, {
+                        method: "POST",
+                        body: JSON.stringify(payload)
+                    });
+                    const result = await response.json();
+                    alert(result.message);
+                } catch (error) {
+                    console.error("上傳失敗:", error);
+                    alert("上傳失敗，請檢查網路或 GAS 設定");
+                } finally {
+                    btn.innerText = originalText;
+                    btn.disabled = false;
+                }
+            };
         }
     </script>
     <div id="creature-modal" class="modal" onclick="closeModal()">
