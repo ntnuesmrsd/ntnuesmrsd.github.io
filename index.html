@@ -128,14 +128,21 @@
         }
         .creature-item { text-align: center; }
         /* 核心剪影效果 */
-        .silhouette {
+        /* 修改這段 CSS */
+        /* 1. 設定所有圖鑑圖片的固定尺寸 */
+        .creature-img {
             width: 60px;
             height: 60px;
-            filter: brightness(0) invert(1);
             object-fit: contain;
             margin: 0 auto;
             display: block;
             cursor: pointer;
+            transition: filter 0.5s ease; /* 增加平滑解鎖效果 */
+        }
+        
+        /* 2. 這是控制「未解鎖」狀態的濾鏡 */
+        .is-locked {
+            filter: brightness(0) invert(1);
         }
         /* --- 彈出視窗樣式 --- */
         .modal {
@@ -219,35 +226,35 @@
         <div class="location-group">
             <div class="location-title">河口濕地</div>
             <div class="grid-container">
-                <div class="creature-item" onclick="openModal('bird1.jpg', '這裡是內容 1')"><img src="bird1.jpg" class="silhouette"><p>中杓鷸</p></div>
-                <div class="creature-item" onclick="openModal('bird_dunlin.jpg', '這裡是內容 2')"><img src="bird_dunlin.jpg" class="silhouette"><p>黑腹濱鷸</p></div>
-                <div class="creature-item" onclick="openModal('crab.jpg', '這裡是內容 1')"><img src="crab.jpg" class="silhouette"><p>招潮蟹</p></div>
-                <div class="creature-item" onclick="openModal('mudskipper.jpg', '這裡是內容 1')"><img src="mudskipper.jpg" class="silhouette"><p>大彈塗魚</p></div>
+                <div class="creature-item" onclick="openModal('bird1.jpg', '這裡是內容 1')"><img src="bird1.jpg" class="creature-img is-locked"><p>中杓鷸</p></div>
+                <div class="creature-item" onclick="openModal('bird_dunlin.jpg', '這裡是內容 2')"><img src="bird_dunlin.jpg" class="creature-img is-locked"><p>黑腹濱鷸</p></div>
+                <div class="creature-item" onclick="openModal('crab.jpg', '這裡是內容 1')"><img src="crab.jpg" class="creature-img is-locked"><p>招潮蟹</p></div>
+                <div class="creature-item" onclick="openModal('mudskipper.jpg', '這裡是內容 1')"><img src="mudskipper.jpg" class="creature-img is-locked"><p>大彈塗魚</p></div>
             </div>
         </div>
     
         <div class="location-group">
             <div class="location-title">感潮濕地</div>
             <div class="grid-container">
-                <div class="creature-item" onclick="openModal('bird2.jpg', '這裡是內容 1')"><img src="bird2.jpg" class="silhouette"><p>蒼鷺</p></div>
-                <div class="creature-item" onclick="openModal('bird_chinese_egret.jpg', '這裡是內容 1')"><img src="bird_chinese_egret.jpg" class="silhouette"><p>唐白鷺</p></div>
-                <div class="creature-item" onclick="openModal('bird3.jpg', '這裡是內容 1')"><img src="bird3.jpg" class="silhouette"><p>太平洋金斑鴴</p></div>
+                <div class="creature-item" onclick="openModal('bird2.jpg', '這裡是內容 1')"><img src="bird2.jpg" class="creature-img is-locked"><p>蒼鷺</p></div>
+                <div class="creature-item" onclick="openModal('bird_chinese_egret.jpg', '這裡是內容 1')"><img src="bird_chinese_egret.jpg" class="creature-img is-locked"><p>唐白鷺</p></div>
+                <div class="creature-item" onclick="openModal('bird3.jpg', '這裡是內容 1')"><img src="bird3.jpg" class="creature-img is-locked"><p>太平洋金斑鴴</p></div>
             </div>
         </div>
     
         <div class="location-group">
             <div class="location-title">深水埤塘區</div>
             <div class="grid-container">
-                <div class="creature-item" onclick="openModal('bird4.jpg', '這裡是內容 1')"><img src="bird4.jpg" class="silhouette"><p>鴻雁</p></div>
-                <div class="creature-item" onclick="openModal('bird5.jpg', '這裡是內容 1')"><img src="bird5.jpg" class="silhouette"><p>紅冠水雞</p></div>
+                <div class="creature-item" onclick="openModal('bird4.jpg', '這裡是內容 1')"><img src="bird4.jpg" class="creature-img is-locked"><p>鴻雁</p></div>
+                <div class="creature-item" onclick="openModal('bird5.jpg', '這裡是內容 1')"><img src="bird5.jpg" class="creature-img is-locked"><p>紅冠水雞</p></div>
             </div>
         </div>
     
         <div class="location-group">
             <div class="location-title">小燕鷗復育區</div>
             <div class="grid-container">
-                <div class="creature-item" onclick="openModal('bird6.jpg', '這裡是內容 1')"><img src="bird6.jpg" class="silhouette"><p>小燕鷗</p></div>
-                <div class="creature-item" onclick="openModal('bird7.jpg', '這裡是內容 1')"><img src="bird7.jpg" class="silhouette"><p>東方環頸鴴</p></div>
+                <div class="creature-item" onclick="openModal('bird6.jpg', '這裡是內容 1')"><img src="bird6.jpg" class="creature-img is-locked"><p>小燕鷗</p></div>
+                <div class="creature-item" onclick="openModal('bird7.jpg', '這裡是內容 1')"><img src="bird7.jpg" class="creature-img is-locked"><p>東方環頸鴴</p></div>
             </div>
         </div>
     </div>
@@ -332,16 +339,14 @@
             const file = event.target.files[0];
             if (!file) return;
         
-            const scriptUrl = "https://script.google.com/macros/s/AKfycbxtmxfP0xlAP-fK3UVEy_QzPbvAuQh-vJ_Vcs5iplYtC6xUOIO1b8YGzv-aKjfRH3aUWA/exec"; // <--- 記得改這行
+            const scriptUrl = "https://script.google.com/macros/s/AKfycbxtmxfP0xlAP-fK3UVEy_QzPbvAuQh-vJ_Vcs5iplYtC6xUOIO1b8YGzv-aKjfRH3aUWA/exec";
         
-            // 顯示上傳中狀態
             console.log("正在準備上傳...");
             const btn = event.target.nextElementSibling;
             const originalText = btn.innerText;
-            btn.innerText = "上傳中...";
+            btn.innerText = "上傳中..."; // 變更文字
             btn.disabled = true;
         
-            // 將圖片轉為 Base64 字串
             const reader = new FileReader();
             reader.readAsDataURL(file);
             reader.onload = async function () {
@@ -362,21 +367,30 @@
                     const result = await response.json();
                     alert(result.message);
         
-                    // 如果 AI 判斷成功，這裡執行解鎖邏輯...
+                    // 如果 AI 判斷成功，解鎖圖鑑
                     if (result.isMatch) {
-                        unlockCreature(result.target); // 呼叫解鎖函數
+                        unlockCreature(result.target);
                     }
         
                 } catch (error) {
                     console.error("上傳失敗:", error);
                     alert("上傳失敗，請檢查網路或 GAS 設定");
                 } finally {
-                    // --- 關鍵修正：確保按鈕恢復 ---
-                    btn.innerText = originalText; // 變回 "📷 上傳照片"
-                    btn.disabled = false;         // 恢復點擊功能
-                    document.getElementById('photo-upload').value = ""; // 清空 input，讓同一張圖可以重複選取測試
+                    // --- 確保文字變回來 ---
+                    btn.innerText = originalText; 
+                    btn.disabled = false;
+                    event.target.value = ""; // 清空檔案選擇器
                 }
             };
+        }
+        function unlockCreature(targetName) {
+            const allImages = document.querySelectorAll('.creature-img');
+            allImages.forEach(img => {
+                // 檢查 src（圖片路徑）是否包含 AI 識別出的生物名稱
+                if (img.src.toLowerCase().includes(targetName.toLowerCase())) {
+                    img.classList.remove('is-locked'); // 只移除濾鏡，尺寸仍受 .creature-img 控制
+                }
+            });
         }
     </script>
     <div id="creature-modal" class="modal" onclick="closeModal()">
