@@ -404,25 +404,30 @@
     </div>
 
     <script>
+        // --- 1. 設定區：請將下方的網址換成你最新部署的、合併了「登入」與「照片」功能的 GAS 網址 ---
         const GLOBAL_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxtmxfP0xlAP-fK3UVEy_QzPbvAuQh-vJ_Vcs5iplYtC6xUOIO1b8YGzv-aKjfRH3aUWA/exec";
+    
         const fullText = "歡迎來到陳冠宇與他的十二個惡魔，在這裡你需要扮演一位小小史學家，因為一個故事而來到許厝港，利用一些跟濕地有關的知識，一步一步解開任務，體會有關這個地方的歷史故事。";
         let charIndex = 0;
         let isTyping = false;
         let typeTimeout;
-        
+        let currentUser = null;
+    
+        // --- 2. 打字機邏輯 ---
         function startTypewriter() {
             const container = document.getElementById('typewriter-text');
             const btn = document.getElementById('start-btn');
+            if(!container) return;
             container.innerHTML = "";
             charIndex = 0;
             isTyping = true;
-            btn.classList.add('hidden'); // 開始打字時先隱藏按鈕
+            btn.classList.add('hidden');
             
             function type() {
                 if (charIndex < fullText.length) {
                     container.innerHTML += fullText.charAt(charIndex);
                     charIndex++;
-                    typeTimeout = setTimeout(type, 100); // 調整 100 為打字速度（毫秒）
+                    typeTimeout = setTimeout(type, 100);
                 } else {
                     completeTyping();
                 }
@@ -432,7 +437,6 @@
         
         function skipTypewriter() {
             if (!isTyping) return;
-            
             clearTimeout(typeTimeout);
             document.getElementById('typewriter-text').innerHTML = fullText;
             completeTyping();
@@ -440,19 +444,16 @@
         
         function completeTyping() {
             isTyping = false;
-            document.getElementById('start-btn').classList.remove('hidden'); // 字跑完顯示按鈕
+            document.getElementById('start-btn').classList.remove('hidden');
         }
-        
-        // 頁面載入後自動開始打字
+    
         window.onload = startTypewriter;
+    
+        // --- 3. 頁面導換 ---
         function showPage(pageId) {
             document.querySelectorAll('.page').forEach(page => page.classList.add('hidden'));
             document.getElementById(pageId).classList.remove('hidden');
-            
-            // 如果回到首頁，重新觸發打字機
-            if (pageId === 'home-page') {
-                startTypewriter();
-            }
+            if (pageId === 'home-page') startTypewriter();
         }
     
         function toggleMenu() {
@@ -464,8 +465,116 @@
             document.getElementById(tabId).classList.remove('hidden');
         }
     
+        // --- 4. 帳號與登入邏輯 ---
+        function validateRegister() {
+            const user = document.getElementById('reg-username').value;
+            const pass = document.getElementById('reg-password').value;
+            const passErr = document.getElementById('reg-pass-err');
+            const btn = document.getElementById('reg-btn');
+            const isPassValid = /^\d{6}$/.test(pass);
+            passErr.innerText = (pass.length > 0 && !isPassValid) ? "*非為6位數字" : "";
+            btn.disabled = !(user.length > 0 && isPassValid);
+            btn.style.opacity = btn.disabled ? "0.5" : "1";
+        }
+    
+        function validateLogin() {
+            const user = document.getElementById('login-username').value;
+            const pass = document.getElementById('login-password').value;
+            const passErr = document.getElementById('login-pass-err');
+            const btn = document.getElementById('login-btn');
+            const isPassValid = /^\d{6}$/.test(pass);
+            passErr.innerText = (pass.length > 0 && !isPassValid) ? "*非為6位數字" : "";
+            btn.disabled = !(user.length > 0 && isPassValid);
+            btn.style.opacity = btn.disabled ? "0.5" : "1";
+        }
+    
+        async function handleAuth(action) {
+            const isReg = action === 'register';
+            const user = document.getElementById(isReg ? 'reg-username' : 'login-username').value;
+            const pass = document.getElementById(isReg ? 'reg-password' : 'login-password').value;
+            const btn = document.getElementById(isReg ? 'reg-btn' : 'login-btn');
+            
+            document.querySelectorAll('.error-msg').forEach(el => el.innerText = "");
+            btn.innerText = "驗證中...";
+            btn.disabled = true;
+    
+            try {
+                const response = await fetch(GLOBAL_SCRIPT_URL, {
+                    method: "POST",
+                    mode: 'no-cors', // 嘗試繞過某些瀏覽器的 CORS 限制
+                    body: JSON.stringify({ action, username: user, password: pass })
+                });
+                
+                // 注意：因為 GAS 的特性，這裡如果用了 no-cors 會拿不到回傳 JSON
+                // 如果你剛才還是不行，我們改回正常的 fetch
+                const normalResp = await fetch(GLOBAL_SCRIPT_URL, {
+                    method: "POST",
+                    body: JSON.stringify({ action, username: user, password: pass })
+                });
+                const result = await normalResp.json();
+    
+                if (result.result === 'success') {
+                    currentUser = user;
+                    showPage('game-page');
+                } else {
+                    const errId = isReg ? 'reg-user-err' : 'login-pass-err';
+                    document.getElementById(errId).innerText = "*" + result.message;
+                    btn.disabled = false;
+                }
+            } catch (e) {
+                console.error(e);
+                alert("連線發生錯誤！請確認 GAS 是否已設為「所有人(Anyone)」存取，並檢查試算表 ID 是否正確。");
+                btn.disabled = false;
+            } finally {
+                btn.innerText = "開始遊戲";
+            }
+        }
+    
+        // --- 5. 照片上傳與辨識 ---
+        async function handleFileUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+    
+            const btn = event.target.nextElementSibling;
+            const originalText = btn.innerText;
+            btn.innerText = "上傳中...";
+            btn.disabled = true;
+    
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = async function () {
+                const base64Data = reader.result.split(",")[1];
+                try {
+                    const response = await fetch(GLOBAL_SCRIPT_URL, {
+                        method: "POST",
+                        body: JSON.stringify({
+                            base64: base64Data,
+                            type: file.type,
+                            name: file.name
+                        })
+                    });
+                    const result = await response.json();
+                    alert(result.message);
+                    if (result.isMatch) unlockCreature(result.target);
+                } catch (error) {
+                    alert("辨識失敗");
+                } finally {
+                    btn.innerText = originalText;
+                    btn.disabled = false;
+                    event.target.value = "";
+                }
+            };
+        }
+    
+        function unlockCreature(targetName) {
+            document.querySelectorAll('.creature-img').forEach(img => {
+                if (img.src.toLowerCase().includes(targetName.toLowerCase())) {
+                    img.classList.remove('is-locked');
+                }
+            });
+        }
+    
         function openModal(imgSrc, hintText) {
-            console.log("點擊成功！嘗試開啟圖片:", imgSrc); // 除錯用，如果點擊時沒看到這行，代表按鈕沒觸發
             document.getElementById('modal-img').src = imgSrc;
             document.getElementById('modal-text').innerText = hintText;
             document.getElementById('creature-modal').classList.add('active');
@@ -473,146 +582,6 @@
     
         function closeModal() {
             document.getElementById('creature-modal').classList.remove('active');
-        }
-        async function handleFileUpload(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-        
-            console.log("正在準備上傳...");
-            const btn = event.target.nextElementSibling;
-            const originalText = btn.innerText;
-            btn.innerText = "上傳中..."; // 變更文字
-            btn.disabled = true;
-        
-            const reader = new FileReader();
-            reader.readAsDataURL(file);
-            reader.onload = async function () {
-                const base64Data = reader.result.split(",")[1];
-                const payload = {
-                    base64: base64Data,
-                    type: file.type,
-                    name: file.name
-                };
-        
-                // 在你的 handleFileUpload 函數內，找到 alert(result.message) 的地方：
-
-                try {
-                    const response = await fetch(GLOBAL_SCRIPT_URL, {
-                        method: "POST",
-                        body: JSON.stringify(payload)
-                    });
-                    const result = await response.json();
-                    alert(result.message);
-        
-                    // 如果 AI 判斷成功，解鎖圖鑑
-                    if (result.isMatch) {
-                        unlockCreature(result.target);
-                    }
-        
-                } catch (error) {
-                    console.error("上傳失敗:", error);
-                    alert("上傳失敗，請檢查網路或 GAS 設定");
-                } finally {
-                    // --- 確保文字變回來 ---
-                    btn.innerText = originalText; 
-                    btn.disabled = false;
-                    event.target.value = ""; // 清空檔案選擇器
-                }
-            };
-        }
-        function unlockCreature(targetName) {
-            const allImages = document.querySelectorAll('.creature-img');
-            allImages.forEach(img => {
-                // 檢查 src（圖片路徑）是否包含 AI 識別出的生物名稱
-                if (img.src.toLowerCase().includes(targetName.toLowerCase())) {
-                    img.classList.remove('is-locked'); // 只移除濾鏡，尺寸仍受 .creature-img 控制
-                }
-            });
-        }
-        let currentUser = null;
-        
-        // 驗證建立帳號
-        async function validateRegister() {
-            const user = document.getElementById('reg-username').value;
-            const pass = document.getElementById('reg-password').value;
-            const userErr = document.getElementById('reg-user-err');
-            const passErr = document.getElementById('reg-pass-err');
-            const btn = document.getElementById('reg-btn');
-        
-            // 密碼檢查
-            const isPassValid = /^\d{6}$/.test(pass);
-            passErr.innerText = (pass.length > 0 && !isPassValid) ? "*非為6位數字" : "";
-        
-            // 帳號重覆檢查 (簡單偵測)
-            if (user.length > 0) {
-                // 這裡可以加入 fetch 去問 GAS 帳號是否存在，但為了流暢度，建議點擊按鈕時再檢查
-            }
-        
-            if (user.length > 0 && isPassValid) {
-                btn.disabled = false;
-                btn.style.opacity = "1";
-            } else {
-                btn.disabled = true;
-                btn.style.opacity = "0.5";
-            }
-        }
-        
-        // 驗證登入
-        function validateLogin() {
-            const user = document.getElementById('login-username').value;
-            const pass = document.getElementById('login-password').value;
-            const passErr = document.getElementById('login-pass-err');
-            const btn = document.getElementById('login-btn');
-        
-            // 檢查是否為 6 位數字
-            const isPassValid = /^\d{6}$/.test(pass);
-            passErr.innerText = (pass.length > 0 && !isPassValid) ? "*非為6位數字" : "";
-        
-            if (user.length > 0 && isPassValid) {
-                btn.disabled = false;
-                btn.style.opacity = "1";
-            } else {
-                btn.disabled = true;
-                btn.style.opacity = "0.5";
-            }
-        }
-        
-        // 統一處理註冊與登入
-        async function handleAuth(action) {
-            const isReg = action === 'register';
-            const user = document.getElementById(isReg ? 'reg-username' : 'login-username').value;
-            const pass = document.getElementById(isReg ? 'reg-password' : 'login-password').value;
-            const btn = document.getElementById(isReg ? 'reg-btn' : 'login-btn');
-            
-            // 清除所有舊的紅字訊息
-            document.querySelectorAll('.error-msg').forEach(el => el.innerText = "");
-        
-            btn.innerText = "驗證中...";
-            btn.disabled = true;
-        
-            try {
-                const response = await fetch(GLOBAL_SCRIPT_URL, {
-                    method: "POST",
-                    body: JSON.stringify({ action, username: user, password: pass })
-                });
-                const result = await response.json();
-        
-                if (result.result === 'success') {
-                    currentUser = user;
-                    showPage('game-page');
-                } else {
-                    if (isReg) {
-                        document.getElementById('reg-user-err').innerText = "*" + result.message;
-                    } else {
-                        document.getElementById('login-pass-err').innerText = "*" + result.message;
-                    }
-                }
-            } catch (e) {
-                alert("連線失敗，請檢查 GAS 部署是否為「所有人」可以存取");
-                btn.disabled = false;
-            } finally {
-                btn.innerText = "開始遊戲";
-            }
         }
     </script>
     <div id="creature-modal" class="modal" onclick="closeModal()">
