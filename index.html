@@ -219,6 +219,34 @@
             background: #5d6d7e;
             border-radius: 10px;
         }
+        .auth-input-group {
+            margin: 15px auto;
+            width: 80%;
+            max-width: 300px;
+            text-align: left;
+        }
+        .auth-input-group input {
+            width: 100%;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+            font-size: 16px;
+        }
+        .error-msg {
+            color: #ff4757;
+            font-size: 12px;
+            margin-top: 5px;
+            height: 15px; /* 固定高度防止跳動 */
+        }
+        .auth-link {
+            text-decoration: underline;
+            cursor: pointer;
+            font-size: 14px;
+            color: #bdc3c7;
+            margin-top: 10px;
+            display: inline-block;
+        }
     </style>
 </head>
 <body>
@@ -322,7 +350,36 @@
         </div>
         <button onclick="showPage('game-page')">閱讀完畢</button>
     </div>
+    <div id="register-page" class="page hidden">
+        <h1>建立帳號</h1>
+        <p style="font-size: 14px; color: #bdc3c7;">避免遊戲進度遺失，需要您建立一個遊戲帳號</p>
+        
+        <div class="auth-input-group">
+            <input type="text" id="reg-username" placeholder="請輸入帳號名稱" oninput="validateRegister()">
+            <div id="reg-user-err" class="error-msg"></div>
+        </div>
+        
+        <div class="auth-input-group">
+            <input type="password" id="reg-password" placeholder="請輸入6位數字並記好密碼(可以截圖)" maxlength="6" oninput="validateRegister()">
+            <div id="reg-pass-err" class="error-msg"></div>
+        </div>
+        
+        <span class="auth-link" onclick="showPage('login-page')">已有帳號 進行登入</span><br>
+        <button id="reg-btn" onclick="handleAuth('register')" disabled style="opacity: 0.5;">開始遊戲</button>
+    </div>
     
+    <div id="login-page" class="page hidden">
+        <h1>帳號登入</h1>
+        <div class="auth-input-group">
+            <input type="text" id="login-username" placeholder="請輸入帳號名稱" oninput="validateLogin()">
+        </div>
+        <div class="auth-input-group">
+            <input type="password" id="login-password" placeholder="請輸入6位數字密碼" maxlength="6" oninput="validateLogin()">
+            <div id="login-err" class="error-msg"></div>
+        </div>
+        <span class="auth-link" onclick="showPage('register-page')">返回建立帳號</span><br>
+        <button id="login-btn" onclick="handleAuth('login')" disabled style="opacity: 0.5;">開始遊戲</button>
+    </div>
     <div id="game-page" class="page hidden">
         <h1>請選擇難度</h1>
         <div class="difficulty-container">
@@ -470,6 +527,80 @@
                     img.classList.remove('is-locked'); // 只移除濾鏡，尺寸仍受 .creature-img 控制
                 }
             });
+        }
+        let currentUser = null;
+        
+        // 驗證建立帳號
+        async function validateRegister() {
+            const user = document.getElementById('reg-username').value;
+            const pass = document.getElementById('reg-password').value;
+            const userErr = document.getElementById('reg-user-err');
+            const passErr = document.getElementById('reg-pass-err');
+            const btn = document.getElementById('reg-btn');
+        
+            // 密碼檢查
+            const isPassValid = /^\d{6}$/.test(pass);
+            passErr.innerText = (pass.length > 0 && !isPassValid) ? "*非為6位數字" : "";
+        
+            // 帳號重覆檢查 (簡單偵測)
+            if (user.length > 0) {
+                // 這裡可以加入 fetch 去問 GAS 帳號是否存在，但為了流暢度，建議點擊按鈕時再檢查
+            }
+        
+            if (user.length > 0 && isPassValid) {
+                btn.disabled = false;
+                btn.style.opacity = "1";
+            } else {
+                btn.disabled = true;
+                btn.style.opacity = "0.5";
+            }
+        }
+        
+        // 驗證登入
+        function validateLogin() {
+            const user = document.getElementById('login-username').value;
+            const pass = document.getElementById('login-password').value;
+            const btn = document.getElementById('login-btn');
+            if (user.length > 0 && pass.length === 6) {
+                btn.disabled = false;
+                btn.style.opacity = "1";
+            } else {
+                btn.disabled = true;
+                btn.style.opacity = "0.5";
+            }
+        }
+        
+        // 統一處理註冊與登入
+        async function handleAuth(action) {
+            const scriptUrl = "你的GAS網址";
+            const user = document.getElementById(action === 'register' ? 'reg-username' : 'login-username').value;
+            const pass = document.getElementById(action === 'register' ? 'reg-password' : 'login-password').value;
+            const btn = document.getElementById(action === 'register' ? 'reg-btn' : 'login-btn');
+            
+            btn.innerText = "驗證中...";
+            
+            try {
+                const response = await fetch(scriptUrl, {
+                    method: "POST",
+                    body: JSON.stringify({ action, username: user, password: pass })
+                });
+                const result = await response.json();
+                
+                if (result.result === 'success') {
+                    currentUser = user;
+                    showPage('game-page');
+                } else {
+                    if (action === 'register') {
+                        document.getElementById('reg-user-err').innerText = "*" + result.message;
+                    } else {
+                        document.getElementById('login-err').innerText = "*" + result.message;
+                    }
+                }
+            } catch (e) {
+                alert("網路連線失敗");
+            } finally {
+                btn.innerText = "開始遊戲";
+            }
         }
     </script>
     <div id="creature-modal" class="modal" onclick="closeModal()">
