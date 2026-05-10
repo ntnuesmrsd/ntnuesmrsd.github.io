@@ -283,10 +283,11 @@
         </div>
     </nav>
 
-    <div id="home-page" class="page">
+    <div id="home-page" class="page" onclick="skipTypewriter()">
         <img src="title.jpg" alt="遊戲標題" class="title-image">
-        <h1>各位孩子們 準備好了嗎？</h1>
-        <button onclick="showPage('game-page')">是的船長！</button>
+        <div id="typewriter-text" style="min-height: 120px; padding: 0 20px; font-size: 24px; line-height: 1.6; margin-bottom: 20px;"></div>
+        
+        <button id="start-btn" onclick="showPage('game-page')" class="hidden">是的船長！</button>
     </div>
 
     <div id="game-page" class="page hidden">
@@ -311,9 +312,54 @@
     </div>
 
     <script>
+        const fullText = "歡迎來到陳冠宇與他的十二個惡魔，在這裡你需要扮演一位小小史學家，因為一個故事而來到許厝港，利用一些跟濕地有關的知識，一步一步解開任務，體會有關這個地方的歷史故事。";
+        let charIndex = 0;
+        let isTyping = false;
+        let typeTimeout;
+        
+        function startTypewriter() {
+            const container = document.getElementById('typewriter-text');
+            const btn = document.getElementById('start-btn');
+            container.innerHTML = "";
+            charIndex = 0;
+            isTyping = true;
+            btn.classList.add('hidden'); // 開始打字時先隱藏按鈕
+            
+            function type() {
+                if (charIndex < fullText.length) {
+                    container.innerHTML += fullText.charAt(charIndex);
+                    charIndex++;
+                    typeTimeout = setTimeout(type, 100); // 調整 100 為打字速度（毫秒）
+                } else {
+                    completeTyping();
+                }
+            }
+            type();
+        }
+        
+        function skipTypewriter() {
+            if (!isTyping) return;
+            
+            clearTimeout(typeTimeout);
+            document.getElementById('typewriter-text').innerHTML = fullText;
+            completeTyping();
+        }
+        
+        function completeTyping() {
+            isTyping = false;
+            document.getElementById('start-btn').classList.remove('hidden'); // 字跑完顯示按鈕
+        }
+        
+        // 頁面載入後自動開始打字
+        window.onload = startTypewriter;
         function showPage(pageId) {
             document.querySelectorAll('.page').forEach(page => page.classList.add('hidden'));
             document.getElementById(pageId).classList.remove('hidden');
+            
+            // 如果回到首頁，重新觸發打字機
+            if (pageId === 'home-page') {
+                startTypewriter();
+            }
         }
     
         function toggleMenu() {
