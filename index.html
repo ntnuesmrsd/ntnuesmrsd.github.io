@@ -567,9 +567,17 @@
         }
     
         function unlockCreature(targetName) {
-            document.querySelectorAll('.creature-img').forEach(img => {
-                if (img.src.toLowerCase().includes(targetName.toLowerCase())) {
+            console.log("正在嘗試解鎖目標:", targetName); // 除錯用
+            const allImages = document.querySelectorAll('.creature-img');
+            allImages.forEach(img => {
+                // 取得圖片檔名（不含網址路徑）
+                const fileName = img.src.split('/').pop().toLowerCase();
+                
+                if (fileName.includes(targetName.toLowerCase())) {
+                    console.log("成功匹配並解鎖:", fileName);
                     img.classList.remove('is-locked');
+                    // 強制重整圖片路徑，確保它重新讀取
+                    img.src = img.src.split('?')[0] + '?' + new Date().getTime();
                 }
             });
         }
