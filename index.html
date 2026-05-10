@@ -404,6 +404,7 @@
     </div>
 
     <script>
+        const GLOBAL_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxtmxfP0xlAP-fK3UVEy_QzPbvAuQh-vJ_Vcs5iplYtC6xUOIO1b8YGzv-aKjfRH3aUWA/exec";
         const fullText = "歡迎來到陳冠宇與他的十二個惡魔，在這裡你需要扮演一位小小史學家，因為一個故事而來到許厝港，利用一些跟濕地有關的知識，一步一步解開任務，體會有關這個地方的歷史故事。";
         let charIndex = 0;
         let isTyping = false;
@@ -477,8 +478,6 @@
             const file = event.target.files[0];
             if (!file) return;
         
-            const scriptUrl = "https://script.google.com/macros/s/AKfycbxtmxfP0xlAP-fK3UVEy_QzPbvAuQh-vJ_Vcs5iplYtC6xUOIO1b8YGzv-aKjfRH3aUWA/exec";
-        
             console.log("正在準備上傳...");
             const btn = event.target.nextElementSibling;
             const originalText = btn.innerText;
@@ -498,7 +497,7 @@
                 // 在你的 handleFileUpload 函數內，找到 alert(result.message) 的地方：
 
                 try {
-                    const response = await fetch(scriptUrl, {
+                    const response = await fetch(GLOBAL_SCRIPT_URL, {
                         method: "POST",
                         body: JSON.stringify(payload)
                     });
@@ -580,7 +579,6 @@
         
         // 統一處理註冊與登入
         async function handleAuth(action) {
-            const scriptUrl = "https://script.google.com/macros/s/AKfycbxtmxfP0xlAP-fK3UVEy_QzPbvAuQh-vJ_Vcs5iplYtC6xUOIO1b8YGzv-aKjfRH3aUWA/exec";
             const isReg = action === 'register';
             const user = document.getElementById(isReg ? 'reg-username' : 'login-username').value;
             const pass = document.getElementById(isReg ? 'reg-password' : 'login-password').value;
@@ -593,7 +591,7 @@
             btn.disabled = true;
         
             try {
-                const response = await fetch(scriptUrl, {
+                const response = await fetch(GLOBAL_SCRIPT_URL, {
                     method: "POST",
                     body: JSON.stringify({ action, username: user, password: pass })
                 });
@@ -603,14 +601,11 @@
                     currentUser = user;
                     showPage('game-page');
                 } else {
-                    // 根據後端回傳的 message 決定顯示在哪個欄位
                     if (isReg) {
                         document.getElementById('reg-user-err').innerText = "*" + result.message;
                     } else {
-                        // 登入失敗時，統一顯示在密碼下方
                         document.getElementById('login-pass-err').innerText = "*" + result.message;
                     }
-                    btn.disabled = false;
                 }
             } catch (e) {
                 alert("連線失敗，請檢查 GAS 部署是否為「所有人」可以存取");
