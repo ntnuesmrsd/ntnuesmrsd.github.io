@@ -198,6 +198,27 @@
             transform: translateY(2px);
             box-shadow: 0 2px 0 #1e8449;
         }
+        /* 內容頁面的通用文字區塊，支援滑動 */
+        .scroll-content {
+            max-height: 60vh; /* 限制最高為螢幕高度的 60% */
+            overflow-y: auto; /* 超出時顯示捲軸 */
+            padding: 20px;
+            margin: 20px auto;
+            background: rgba(0, 0, 0, 0.2); /* 輕微背景深色，增加閱讀性 */
+            border-radius: 15px;
+            width: 80%;
+            text-align: left; /* 安全須知通常靠左對齊較好閱讀 */
+            line-height: 1.6;
+        }
+        
+        /* 隱藏捲軸但仍可滑動 (選用，若想讓介面更乾淨) */
+        .scroll-content::-webkit-scrollbar {
+            width: 6px;
+        }
+        .scroll-content::-webkit-scrollbar-thumb {
+            background: #5d6d7e;
+            border-radius: 10px;
+        }
     </style>
 </head>
 <body>
@@ -289,7 +310,7 @@
         
         <button id="start-btn" onclick="showPage('game-page')" class="hidden">是的船長！</button>
     </div>
-
+    
     <div id="game-page" class="page hidden">
         <h1>請選擇難度</h1>
         <div class="difficulty-container">
