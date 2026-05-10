@@ -572,7 +572,7 @@
         
         // 統一處理註冊與登入
         async function handleAuth(action) {
-            const scriptUrl = "你的GAS網址";
+            const scriptUrl = "https://script.google.com/macros/s/AKfycbxtmxfP0xlAP-fK3UVEy_QzPbvAuQh-vJ_Vcs5iplYtC6xUOIO1b8YGzv-aKjfRH3aUWA/exec";
             const user = document.getElementById(action === 'register' ? 'reg-username' : 'login-username').value;
             const pass = document.getElementById(action === 'register' ? 'reg-password' : 'login-password').value;
             const btn = document.getElementById(action === 'register' ? 'reg-btn' : 'login-btn');
