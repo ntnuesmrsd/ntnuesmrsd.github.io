@@ -497,33 +497,30 @@
             document.querySelectorAll('.error-msg').forEach(el => el.innerText = "");
             btn.innerText = "驗證中...";
             btn.disabled = true;
-    
+        
             try {
+                // 只保留一個正常的 fetch，不要用 no-cors
                 const response = await fetch(GLOBAL_SCRIPT_URL, {
                     method: "POST",
-                    mode: 'no-cors', // 嘗試繞過某些瀏覽器的 CORS 限制
                     body: JSON.stringify({ action, username: user, password: pass })
                 });
                 
-                // 注意：因為 GAS 的特性，這裡如果用了 no-cors 會拿不到回傳 JSON
-                // 如果你剛才還是不行，我們改回正常的 fetch
-                const normalResp = await fetch(GLOBAL_SCRIPT_URL, {
-                    method: "POST",
-                    body: JSON.stringify({ action, username: user, password: pass })
-                });
-                const result = await normalResp.json();
-    
+                const result = await response.json();
+        
                 if (result.result === 'success') {
                     currentUser = user;
-                    showPage('game-page');
+                    alert(isReg ? "帳號建立成功！" : "登入成功！");
+                    showPage('game-page'); // 執行跳轉
                 } else {
+                    // 顯示來自 GAS 的錯誤訊息（例如：帳號已存在）
                     const errId = isReg ? 'reg-user-err' : 'login-pass-err';
                     document.getElementById(errId).innerText = "*" + result.message;
                     btn.disabled = false;
                 }
             } catch (e) {
-                console.error(e);
-                alert("連線發生錯誤！請確認 GAS 是否已設為「所有人(Anyone)」存取，並檢查試算表 ID 是否正確。");
+                console.error("Auth Error:", e);
+                // 如果噴出「你沒有權限呼叫 SpreadsheetApp」就是 GAS 端沒授權好
+                alert("系統回傳錯誤，請確認 GAS 權限設定（請見下方說明）");
                 btn.disabled = false;
             } finally {
                 btn.innerText = "開始遊戲";
