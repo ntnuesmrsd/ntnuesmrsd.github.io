@@ -622,7 +622,8 @@
                     const result = await response.json();
                     
                     if (result.isMatch) {
-                        alert("恭喜！發現新生物：" + result.target);
+                        // 找到對應的中文名（這需要你的 creatureData key 剛好是標籤名）
+                        alert("恭喜！發現新生物！"); 
                         unlockCreature(result.target);
                     } else {
                         alert(result.message);
@@ -640,27 +641,25 @@
         
         function unlockCreature(target) {
             const allImages = document.querySelectorAll('.creature-img');
-            const targetLower = target.toLowerCase().trim();
+            const targetLower = target.toLowerCase().trim(); // 例如 "numenius"
             
             allImages.forEach(img => {
-                // 正確獲取 src 並轉為小寫
-                const imgSrc = img.getAttribute('src').toLowerCase();
+                const imgSrc = img.getAttribute('src').toLowerCase(); // 例如 "numenius_phaeopus.jpg"
                 
-                // 檢查檔名是否包含 GAS 回傳的辨識標籤
-                if (imgSrc.includes(targetLower)) {
-                    // 執行解鎖動作
+                // 檢查圖片檔名是否包含 AI 回傳的種類關鍵字
+                if (imgSrc.indexOf(targetLower) !== -1) {
                     img.classList.remove('is-locked');
                     img.dataset.unlocked = "true";
                     
-                    // 更新名稱從 "???" 變回真實名稱
+                    // 更新名稱
                     const nameTag = img.parentElement.querySelector('.creature-name');
                     if (nameTag) {
                         nameTag.innerText = nameTag.dataset.realname;
                     }
-        
-                    // 成功解鎖動畫
-                    img.style.transform = "scale(1.2)";
-                    setTimeout(() => img.style.transform = "scale(1)", 300);
+                    
+                    // 慶祝動畫
+                    img.style.transform = "scale(1.3)";
+                    setTimeout(() => img.style.transform = "scale(1)", 500);
                 }
             });
         }
@@ -675,7 +674,10 @@
             const data = creatureData[fileName] || { name: "未知", hint: "無", info: "無" };
             
             // 【修改點】修正搜尋選取器，確保能找到該圖片
-            const targetImgInList = document.querySelector(`img[src*="${fileName}"]`);
+            // 在 openModal 函式內尋找對應圖片的邏輯
+            const targetImgInList = Array.from(document.querySelectorAll('.creature-img')).find(img => 
+                img.getAttribute('src').includes(fileName)
+            );
             const isUnlocked = targetImgInList && targetImgInList.dataset.unlocked === "true";
             
             if (isUnlocked) {
