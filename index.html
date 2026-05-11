@@ -644,7 +644,7 @@
             
             allImages.forEach(img => {
                 // 2. 取得該圖片的 src 路徑，並【轉為小寫】
-                const imgSrc = img.getAttribute('src').toLowerCase();
+                const searchTarget = target.toLowerCase().trim()
                 
                 // 3. 將 GAS 傳回來的標籤 (target) 也【轉為小寫】後進行比對
                 // 這樣就算一個是 "Numenius" 一個是 "numenius" 也能對得上
@@ -672,10 +672,14 @@
             const modalTextElement = document.getElementById('modal-text');
             modalImg.src = imgSrc;
             
-            const data = creatureData[imgSrc] || { name: "未知", hint: "無", info: "無" };
-            const targetImgInList = document.querySelector(`img[src="${imgSrc}"]`);
+            // 【修改點】從 imgSrc 中只擷取檔名部分，並確保比對時不因路徑出錯
+            const fileName = imgSrc.split('/').pop(); 
+            const data = creatureData[fileName] || { name: "未知", hint: "無", info: "無" };
+            
+            // 【修改點】修正搜尋選取器，確保能找到該圖片
+            const targetImgInList = document.querySelector(`img[src*="${fileName}"]`);
             const isUnlocked = targetImgInList && targetImgInList.dataset.unlocked === "true";
-        
+            
             if (isUnlocked) {
                 modalImg.style.filter = "none";
                 // 組合內容：名稱 + 科普 + eBird 連結按鈕
