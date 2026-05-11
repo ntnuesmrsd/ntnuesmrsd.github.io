@@ -531,15 +531,16 @@
         }
     
         // --- 5. 照片上傳與辨識 ---
+        // --- 5. 照片上傳與辨識 ---
         async function handleFileUpload(event) {
             const file = event.target.files[0];
             if (!file) return;
-    
+        
             const btn = event.target.nextElementSibling;
             const originalText = btn.innerText;
-            btn.innerText = "上傳中...";
+            btn.innerText = "辨識中...";
             btn.disabled = true;
-    
+        
             const reader = new FileReader();
             reader.readAsDataURL(file);
             reader.onload = async function () {
@@ -550,14 +551,20 @@
                         body: JSON.stringify({
                             base64: base64Data,
                             type: file.type,
-                            name: file.name
+                            name: file.name // GAS 會檢查這個檔名是否包含 bird, crab 等
                         })
                     });
                     const result = await response.json();
-                    alert(result.message);
-                    if (result.isMatch) unlockCreature(result.target);
+                    
+                    if (result.isMatch) {
+                        alert("恭喜！發現新生物：" + result.target);
+                        unlockCreature(result.target);
+                    } else {
+                        alert(result.message);
+                    }
                 } catch (error) {
-                    alert("辨識失敗");
+                    console.error(error);
+                    alert("連線失敗，請檢查網路或 GAS 設定");
                 } finally {
                     btn.innerText = originalText;
                     btn.disabled = false;
@@ -565,31 +572,38 @@
                 }
             };
         }
-    
+        
         function unlockCreature(targetName) {
-            console.log("正在嘗試解鎖目標:", targetName); // 除錯用
+            console.log("正在嘗試解鎖目標關鍵字:", targetName);
             const allImages = document.querySelectorAll('.creature-img');
+            
             allImages.forEach(img => {
-                // 取得圖片檔名（不含網址路徑）
-                const fileName = img.src.split('/').pop().toLowerCase();
+                // 直接取得 HTML 標籤上寫的 src 屬性字串，這比 img.src 更精準
+                const srcAttribute = img.getAttribute('src').toLowerCase();
                 
-                if (fileName.includes(targetName.toLowerCase())) {
-                    console.log("成功匹配並解鎖:", fileName);
+                if (srcAttribute.includes(targetName.toLowerCase())) {
+                    console.log("匹配成功！解鎖圖片:", srcAttribute);
                     img.classList.remove('is-locked');
-                    // 強制重整圖片路徑，確保它重新讀取
-                    img.src = img.src.split('?')[0] + '?' + new Date().getTime();
+                    // 加上一個標記，代表已解鎖
+                    img.dataset.unlocked = "true"; 
                 }
             });
         }
-    
+        
         function openModal(imgSrc, hintText) {
-            document.getElementById('modal-img').src = imgSrc;
+            const modalImg = document.getElementById('modal-img');
+            modalImg.src = imgSrc;
             document.getElementById('modal-text').innerText = hintText;
+            
+            // 檢查這張圖片在列表裡是否已經解鎖
+            const targetImgInList = document.querySelector(`img[src="${imgSrc}"]`);
+            if (targetImgInList && targetImgInList.dataset.unlocked === "true") {
+                modalImg.style.filter = "none"; // 解鎖了就顯示原色
+            } else {
+                modalImg.style.filter = "brightness(0) invert(1)"; // 沒解鎖就顯示剪影
+            }
+            
             document.getElementById('creature-modal').classList.add('active');
-        }
-    
-        function closeModal() {
-            document.getElementById('creature-modal').classList.remove('active');
         }
     </script>
     <div id="creature-modal" class="modal" onclick="closeModal()">
