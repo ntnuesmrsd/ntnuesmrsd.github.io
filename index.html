@@ -410,57 +410,68 @@
             "Numenius_phaeopus.jpg": {
                 name: "中杓鷸",
                 hint: "(提示)",
-                info: "(內容)"
+                info: "(內容)",
+                ebird: "https://ebird.org/species/whimbr" // eBird 連結
             },
             "Calidris_alpina.jpg": {
                 name: "黑腹濱鷸",
                 hint: "(提示)",
-                info: "(內容)"
+                info: "(內容)",
+                ebird: "https://ebird.org/species/whimbr" // eBird 連結
             },
             "Uca.jpg": {
                 name: "招潮蟹",
                 hint: "(提示)",
-                info: "(內容)"
+                info: "(內容)",
+                ebird: "https://ebird.org/species/whimbr" // eBird 連結
             },
             "Boleophthalmus_pectinirostris.jpg": {
                 name: "大彈塗魚",
                 hint: "(提示)",
-                info: "(內容)"
+                info: "(內容)",
+                ebird: "https://ebird.org/species/whimbr" // eBird 連結
             },
             "Ardea_cinerea.jpg": {
                 name: "蒼鷺",
                 hint: "(提示)",
-                info: "(內容)"
+                info: "(內容)",
+                ebird: "https://ebird.org/species/whimbr" // eBird 連結
             },
             "Egretta_eulophotes.jpg": {
                 name: "唐白鷺",
                 hint: "(提示)",
-                info: "(內容)"
+                info: "(內容)",
+                ebird: "https://ebird.org/species/whimbr" // eBird 連結
             },
             "Pluvialis_fulva.jpg": {
                 name: "太平洋金班鴴",
                 hint: "(提示)",
-                info: "(內容)"
+                info: "(內容)",
+                ebird: "https://ebird.org/species/whimbr" // eBird 連結
             },
             "Anser_cygnoides.jpg": {
                 name: "鴻雁",
                 hint: "(提示)",
-                info: "(內容)"
+                info: "(內容)",
+                ebird: "https://ebird.org/species/whimbr" // eBird 連結
             },
             "Gallinula_chloropus.jpg": {
                 name: "紅冠水雞",
                 hint: "(提示)",
-                info: "(內容)"
+                info: "(內容)",
+                ebird: "https://ebird.org/species/whimbr" // eBird 連結
             },
             "Sternula_albifrons.jpg": {
                 name: "小燕鷗",
                 hint: "(提示)",
-                info: "(內容)"
+                info: "(內容)",
+                ebird: "https://ebird.org/species/whimbr" // eBird 連結
             },
             "Anarhynchus_alexandrinus.jpg": {
                 name: "東方環頸鴴",
                 hint: "(提示)",
-                info: "(內容)"
+                info: "(內容)",
+                ebird: "https://ebird.org/species/whimbr" // eBird 連結
             }
             // ... 後續請依照這個格式補齊其餘生物
         };
@@ -654,25 +665,22 @@
         function openModal(imgSrc) {
             const modalImg = document.getElementById('modal-img');
             const modalTextElement = document.getElementById('modal-text');
-            
             modalImg.src = imgSrc;
             
-            // 取得生物資料，若無資料則預設為 "未知生物"
-            const data = creatureData[imgSrc] || { name: "未知生物", hint: "尚無提示", info: "尚無資料" };
-            
-            // 檢查小圖是否已解鎖
+            const data = creatureData[imgSrc] || { name: "未知", hint: "無", info: "無" };
             const targetImgInList = document.querySelector(`img[src="${imgSrc}"]`);
             const isUnlocked = targetImgInList && targetImgInList.dataset.unlocked === "true";
         
             if (isUnlocked) {
-                // --- 狀態：已解鎖 ---
                 modalImg.style.filter = "none";
-                // 顯示：名稱： (換行) 科普內容
-                modalTextElement.innerHTML = `<strong>${data.name}：</strong><br>${data.info}`;
+                // 組合內容：名稱 + 科普 + eBird 連結按鈕
+                let content = `<strong>${data.name}：</strong><br>${data.info}`;
+                if (data.ebird) {
+                    content += `<br><br><a href="${data.ebird}" target="_blank" style="color: #2c7a7b; text-decoration: underline;">查看 eBird 觀測紀錄</a>`;
+                }
+                modalTextElement.innerHTML = content;
             } else {
-                // --- 狀態：未解鎖（剪影） ---
                 modalImg.style.filter = "brightness(0) invert(1)";
-                // 顯示：提示： (換行) 提示內容
                 modalTextElement.innerHTML = `<strong>提示：</strong><br>${data.hint}`;
             }
             
