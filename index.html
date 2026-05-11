@@ -408,18 +408,16 @@
         const GLOBAL_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxtmxfP0xlAP-fK3UVEy_QzPbvAuQh-vJ_Vcs5iplYtC6xUOIO1b8YGzv-aKjfRH3aUWA/exec";
         const creatureData = {
             "Numenius_phaeopus.jpg": {
+                name: "中杓鷸",
                 hint: "牠有長長的、向下彎曲的嘴巴，喜歡在泥灘地找螃蟹吃。",
-                info: "中杓鷸：常見的遷徙性水鳥，那對向下彎曲的長嘴是牠的招牌，能深入泥洞捕捉甲殼類。"
+                info: "常見的遷徙性水鳥，那對向下彎曲的長嘴是牠的招牌，能深入泥洞捕捉甲殼類。"
             },
             "Calidris_alpina.jpg": {
+                name: "黑腹濱鷸",
                 hint: "體型較小，腹部在繁殖期會有一塊明顯的黑斑。",
-                info: "黑腹濱鷸：濕地常見的嬌客，成群飛行時動作整齊劃一，非常壯觀。"
+                info: "濕地常見的嬌客，成群飛行時動作整齊劃一，非常壯觀。"
             },
-            "Uca.jpg": {
-                hint: "雄性擁有一隻巨大的螯，像是在招手邀請你。",
-                info: "招潮蟹：潮間帶的靈魂角色，那隻大螯除了求偶，也是保衛領地的武器。"
-            }
-            // ... 依此類推，把剩下的 12 個生物都補進去
+            // ... 其他生物請以此類推加入 name 欄位
         };
         const fullText = "歡迎來到陳冠宇與他的十二個惡魔，在這裡你需要扮演一位小小史學家，因為一個故事而來到許厝港，利用一些跟濕地有關的知識，一步一步解開任務，體會有關這個地方的歷史故事。";
         let charIndex = 0;
@@ -611,20 +609,21 @@
             const modalImg = document.getElementById('modal-img');
             const modalTextElement = document.getElementById('modal-text');
             
-            // 設定圖片
             modalImg.src = imgSrc;
             
-            // 取得該生物的資料（如果找不到資料，就給一個預設值防止當機）
-            const data = creatureData[imgSrc] || { hint: "尚無提示", info: "尚無資料" };
+            // 取得資料
+            const data = creatureData[imgSrc] || { name: "未知生物", hint: "尚無提示", info: "尚無資料" };
             
             // 判斷是否已解鎖
             const targetImgInList = document.querySelector(`img[src="${imgSrc}"]`);
             const isUnlocked = targetImgInList && targetImgInList.dataset.unlocked === "true";
         
             if (isUnlocked) {
+                // --- 已解鎖：顯示「生物名稱：」與「科普內容」 ---
                 modalImg.style.filter = "none";
-                modalTextElement.innerHTML = `<strong>生物特徵：</strong><br>${data.info}`;
+                modalTextElement.innerHTML = `<strong>${data.name}：</strong><br>${data.info}`;
             } else {
+                // --- 未解鎖：顯示「提示：」與「提示內容」 ---
                 modalImg.style.filter = "brightness(0) invert(1)";
                 modalTextElement.innerHTML = `<strong>提示：</strong><br>${data.hint}`;
             }
