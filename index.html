@@ -574,18 +574,24 @@
         }
         
         function unlockCreature(targetName) {
-            console.log("正在嘗試解鎖目標關鍵字:", targetName);
+            console.log("正在嘗試解鎖目標:", targetName);
             const allImages = document.querySelectorAll('.creature-img');
             
             allImages.forEach(img => {
-                // 直接取得 HTML 標籤上寫的 src 屬性字串，這比 img.src 更精準
-                const srcAttribute = img.getAttribute('src').toLowerCase();
+                // 取得標籤上的 src 內容 (例如: "Numenius_phaeopus.jpg")
+                const imgSrc = img.getAttribute('src').toLowerCase();
                 
-                if (srcAttribute.includes(targetName.toLowerCase())) {
-                    console.log("匹配成功！解鎖圖片:", srcAttribute);
+                // 如果圖片檔名包含 GAS 回傳的關鍵字
+                if (imgSrc.includes(targetName.toLowerCase())) {
+                    console.log("匹配成功，解鎖圖片:", imgSrc);
                     img.classList.remove('is-locked');
-                    // 加上一個標記，代表已解鎖
-                    img.dataset.unlocked = "true"; 
+                    
+                    // 存入一個自定義屬性，確保之後點開 Modal 也是亮的
+                    img.dataset.unlocked = "true";
+                    
+                    // 選擇性：加上一點動畫效果讓使用者知道解鎖了
+                    img.style.transform = "scale(1.2)";
+                    setTimeout(() => img.style.transform = "scale(1)", 300);
                 }
             });
         }
@@ -595,12 +601,14 @@
             modalImg.src = imgSrc;
             document.getElementById('modal-text').innerText = hintText;
             
-            // 檢查這張圖片在列表裡是否已經解鎖
+            // 找出對應的小圖
             const targetImgInList = document.querySelector(`img[src="${imgSrc}"]`);
+            
+            // 如果小圖已經解鎖，大圖就不套用黑白濾鏡
             if (targetImgInList && targetImgInList.dataset.unlocked === "true") {
-                modalImg.style.filter = "none"; // 解鎖了就顯示原色
+                modalImg.style.filter = "none";
             } else {
-                modalImg.style.filter = "brightness(0) invert(1)"; // 沒解鎖就顯示剪影
+                modalImg.style.filter = "brightness(0) invert(1)";
             }
             
             document.getElementById('creature-modal').classList.add('active');
