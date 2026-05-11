@@ -639,29 +639,27 @@
         }
         
         function unlockCreature(target) {
-            // 1. 取得頁面上所有的生物圖片
             const allImages = document.querySelectorAll('.creature-img');
+            const targetLower = target.toLowerCase().trim();
             
             allImages.forEach(img => {
-                // 2. 取得該圖片的 src 路徑，並【轉為小寫】
-                const searchTarget = target.toLowerCase().trim()
+                // 正確獲取 src 並轉為小寫
+                const imgSrc = img.getAttribute('src').toLowerCase();
                 
-                // 3. 將 GAS 傳回來的標籤 (target) 也【轉為小寫】後進行比對
-                // 這樣就算一個是 "Numenius" 一個是 "numenius" 也能對得上
-                if (imgSrc.includes(target.toLowerCase())) {
-                    
-                    // --- 執行解鎖動作 ---
+                // 檢查檔名是否包含 GAS 回傳的辨識標籤
+                if (imgSrc.includes(targetLower)) {
+                    // 執行解鎖動作
                     img.classList.remove('is-locked');
                     img.dataset.unlocked = "true";
                     
-                    // 如果你有做「???」變回真實名稱的功能，也在這處理
+                    // 更新名稱從 "???" 變回真實名稱
                     const nameTag = img.parentElement.querySelector('.creature-name');
                     if (nameTag) {
                         nameTag.innerText = nameTag.dataset.realname;
                     }
         
-                    // 成功解鎖的小動畫
-                    img.style.transform = "scale(1.1)";
+                    // 成功解鎖動畫
+                    img.style.transform = "scale(1.2)";
                     setTimeout(() => img.style.transform = "scale(1)", 300);
                 }
             });
