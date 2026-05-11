@@ -610,6 +610,10 @@
             
             document.getElementById('creature-modal').classList.add('active');
         }
+        // 新增這個關閉函式
+        function closeModal() {
+            document.getElementById('creature-modal').classList.remove('active');
+        }
     </script>
     <div id="creature-modal" class="modal" onclick="closeModal()">
         <div class="modal-content" onclick="event.stopPropagation()">
