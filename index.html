@@ -417,7 +417,12 @@
                 hint: "體型較小，腹部在繁殖期會有一塊明顯的黑斑。",
                 info: "濕地常見的嬌客，成群飛行時動作整齊劃一，非常壯觀。"
             },
-            // ... 其他生物請以此類推加入 name 欄位
+            "Uca.jpg": {
+                name: "招潮蟹",
+                hint: "雄性擁有一隻巨大的螯，像是在招手邀請你。",
+                info: "潮間帶的靈魂角色，那隻大螯除了求偶，也是保衛領地的武器。"
+            }
+            // ... 後續請依照這個格式補齊其餘生物
         };
         const fullText = "歡迎來到陳冠宇與他的十二個惡魔，在這裡你需要扮演一位小小史學家，因為一個故事而來到許厝港，利用一些跟濕地有關的知識，一步一步解開任務，體會有關這個地方的歷史故事。";
         let charIndex = 0;
@@ -611,20 +616,22 @@
             
             modalImg.src = imgSrc;
             
-            // 取得資料
+            // 取得生物資料，若無資料則預設為 "未知生物"
             const data = creatureData[imgSrc] || { name: "未知生物", hint: "尚無提示", info: "尚無資料" };
             
-            // 判斷是否已解鎖
+            // 檢查小圖是否已解鎖
             const targetImgInList = document.querySelector(`img[src="${imgSrc}"]`);
             const isUnlocked = targetImgInList && targetImgInList.dataset.unlocked === "true";
         
             if (isUnlocked) {
-                // --- 已解鎖：顯示「生物名稱：」與「科普內容」 ---
+                // --- 狀態：已解鎖 ---
                 modalImg.style.filter = "none";
+                // 顯示：名稱： (換行) 科普內容
                 modalTextElement.innerHTML = `<strong>${data.name}：</strong><br>${data.info}`;
             } else {
-                // --- 未解鎖：顯示「提示：」與「提示內容」 ---
+                // --- 狀態：未解鎖（剪影） ---
                 modalImg.style.filter = "brightness(0) invert(1)";
+                // 顯示：提示： (換行) 提示內容
                 modalTextElement.innerHTML = `<strong>提示：</strong><br>${data.hint}`;
             }
             
