@@ -644,7 +644,7 @@
             allImages.forEach(img => {
                 const imgSrc = img.getAttribute('src').toLowerCase();
                 
-                if (imgSrc.includes(targetName.toLowerCase())) {
+                if (imgSrc.includes(target.toLowerCase())) {
                     // 1. 解鎖圖片
                     img.classList.remove('is-locked');
                     img.dataset.unlocked = "true";
