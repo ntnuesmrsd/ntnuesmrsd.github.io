@@ -275,35 +275,35 @@
         <div class="location-group">
             <div class="location-title">河口濕地</div>
             <div class="grid-container">
-                <div class="creature-item" onclick="openModal('Numenius_phaeopus.jpg', '這裡是內容 1')"><img src="Numenius_phaeopus.jpg" class="creature-img is-locked"><p>中杓鷸</p></div>
-                <div class="creature-item" onclick="openModal('Calidris_alpina.jpg', '這裡是內容 2')"><img src="Calidris_alpina.jpg" class="creature-img is-locked"><p>黑腹濱鷸</p></div>
-                <div class="creature-item" onclick="openModal('Uca.jpg', '這裡是內容 1')"><img src="Uca.jpg" class="creature-img is-locked"><p>招潮蟹</p></div>
-                <div class="creature-item" onclick="openModal('Boleophthalmus_pectinirostris.jpg', '這裡是內容 1')"><img src="Boleophthalmus_pectinirostris.jpg" class="creature-img is-locked"><p>大彈塗魚</p></div>
+                <div class="creature-item" onclick="openModal('Numenius_phaeopus.jpg')"><img src="Numenius_phaeopus.jpg" class="creature-img is-locked"><p>中杓鷸</p></div>
+                <div class="creature-item" onclick="openModal('Calidris_alpina.jpg')"><img src="Calidris_alpina.jpg" class="creature-img is-locked"><p>黑腹濱鷸</p></div>
+                <div class="creature-item" onclick="openModal('Uca.jpg')"><img src="Uca.jpg" class="creature-img is-locked"><p>招潮蟹</p></div>
+                <div class="creature-item" onclick="openModal('Boleophthalmus_pectinirostris.jpg')"><img src="Boleophthalmus_pectinirostris.jpg" class="creature-img is-locked"><p>大彈塗魚</p></div>
             </div>
         </div>
     
         <div class="location-group">
             <div class="location-title">感潮濕地</div>
             <div class="grid-container">
-                <div class="creature-item" onclick="openModal('Ardea_cinerea.jpg', '這裡是內容 1')"><img src="Ardea_cinerea.jpg" class="creature-img is-locked"><p>蒼鷺</p></div>
-                <div class="creature-item" onclick="openModal('Egretta_eulophotes.jpg', '這裡是內容 1')"><img src="Egretta_eulophotes.jpg" class="creature-img is-locked"><p>唐白鷺</p></div>
-                <div class="creature-item" onclick="openModal('Pluvialis_fulva.jpg', '這裡是內容 1')"><img src="Pluvialis_fulva.jpg" class="creature-img is-locked"><p>太平洋金斑鴴</p></div>
+                <div class="creature-item" onclick="openModal('Ardea_cinerea.jpg')"><img src="Ardea_cinerea.jpg" class="creature-img is-locked"><p>蒼鷺</p></div>
+                <div class="creature-item" onclick="openModal('Egretta_eulophotes.jpg')"><img src="Egretta_eulophotes.jpg" class="creature-img is-locked"><p>唐白鷺</p></div>
+                <div class="creature-item" onclick="openModal('Pluvialis_fulva.jpg')"><img src="Pluvialis_fulva.jpg" class="creature-img is-locked"><p>太平洋金斑鴴</p></div>
             </div>
         </div>
     
         <div class="location-group">
             <div class="location-title">深水埤塘區</div>
             <div class="grid-container">
-                <div class="creature-item" onclick="openModal('Anser_cygnoides.jpg', '這裡是內容 1')"><img src="Anser_cygnoides.jpg" class="creature-img is-locked"><p>鴻雁</p></div>
-                <div class="creature-item" onclick="openModal('Gallinula_chloropus.jpg', '這裡是內容 1')"><img src="Gallinula_chloropus.jpg" class="creature-img is-locked"><p>紅冠水雞</p></div>
+                <div class="creature-item" onclick="openModal('Anser_cygnoides.jpg')"><img src="Anser_cygnoides.jpg" class="creature-img is-locked"><p>鴻雁</p></div>
+                <div class="creature-item" onclick="openModal('Gallinula_chloropus.jpg')"><img src="Gallinula_chloropus.jpg" class="creature-img is-locked"><p>紅冠水雞</p></div>
             </div>
         </div>
     
         <div class="location-group">
             <div class="location-title">小燕鷗復育區</div>
             <div class="grid-container">
-                <div class="creature-item" onclick="openModal('Sternula_albifrons.jpg', '這裡是內容 1')"><img src="Sternula_albifrons.jpg" class="creature-img is-locked"><p>小燕鷗</p></div>
-                <div class="creature-item" onclick="openModal('Anarhynchus_alexandrinus.jpg', '這裡是內容 1')"><img src="Anarhynchus_alexandrinus.jpg" class="creature-img is-locked"><p>東方環頸鴴</p></div>
+                <div class="creature-item" onclick="openModal('Sternula_albifrons.jpg')"><img src="Sternula_albifrons.jpg" class="creature-img is-locked"><p>小燕鷗</p></div>
+                <div class="creature-item" onclick="openModal('Anarhynchus_alexandrinus.jpg')"><img src="Anarhynchus_alexandrinus.jpg" class="creature-img is-locked"><p>東方環頸鴴</p></div>
             </div>
         </div>
     </div>
@@ -406,7 +406,21 @@
     <script>
         // --- 1. 設定區：請將下方的網址換成你最新部署的、合併了「登入」與「照片」功能的 GAS 網址 ---
         const GLOBAL_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxtmxfP0xlAP-fK3UVEy_QzPbvAuQh-vJ_Vcs5iplYtC6xUOIO1b8YGzv-aKjfRH3aUWA/exec";
-    
+        const creatureData = {
+            "Numenius_phaeopus.jpg": {
+                hint: "牠有長長的、向下彎曲的嘴巴，喜歡在泥灘地找螃蟹吃。",
+                info: "中杓鷸：常見的遷徙性水鳥，那對向下彎曲的長嘴是牠的招牌，能深入泥洞捕捉甲殼類。"
+            },
+            "Calidris_alpina.jpg": {
+                hint: "體型較小，腹部在繁殖期會有一塊明顯的黑斑。",
+                info: "黑腹濱鷸：濕地常見的嬌客，成群飛行時動作整齊劃一，非常壯觀。"
+            },
+            "Uca.jpg": {
+                hint: "雄性擁有一隻巨大的螯，像是在招手邀請你。",
+                info: "招潮蟹：潮間帶的靈魂角色，那隻大螯除了求偶，也是保衛領地的武器。"
+            }
+            // ... 依此類推，把剩下的 12 個生物都補進去
+        };
         const fullText = "歡迎來到陳冠宇與他的十二個惡魔，在這裡你需要扮演一位小小史學家，因為一個故事而來到許厝港，利用一些跟濕地有關的知識，一步一步解開任務，體會有關這個地方的歷史故事。";
         let charIndex = 0;
         let isTyping = false;
@@ -593,19 +607,26 @@
             });
         }
         
-        function openModal(imgSrc, hintText) {
+        function openModal(imgSrc) {
             const modalImg = document.getElementById('modal-img');
+            const modalTextElement = document.getElementById('modal-text');
+            
+            // 設定圖片
             modalImg.src = imgSrc;
-            document.getElementById('modal-text').innerText = hintText;
             
-            // 找出對應的小圖
+            // 取得該生物的資料（如果找不到資料，就給一個預設值防止當機）
+            const data = creatureData[imgSrc] || { hint: "尚無提示", info: "尚無資料" };
+            
+            // 判斷是否已解鎖
             const targetImgInList = document.querySelector(`img[src="${imgSrc}"]`);
-            
-            // 如果小圖已經解鎖，大圖就不套用黑白濾鏡
-            if (targetImgInList && targetImgInList.dataset.unlocked === "true") {
+            const isUnlocked = targetImgInList && targetImgInList.dataset.unlocked === "true";
+        
+            if (isUnlocked) {
                 modalImg.style.filter = "none";
+                modalTextElement.innerHTML = `<strong>生物特徵：</strong><br>${data.info}`;
             } else {
                 modalImg.style.filter = "brightness(0) invert(1)";
+                modalTextElement.innerHTML = `<strong>提示：</strong><br>${data.hint}`;
             }
             
             document.getElementById('creature-modal').classList.add('active');
@@ -619,7 +640,6 @@
         <div class="modal-content" onclick="event.stopPropagation()">
             <img id="modal-img" class="modal-img" src="" alt="Creature">
             <div class="hint-text">
-                <p><strong>提示：</strong></p>
                 <p id="modal-text"></p>
             </div>
         </div>
