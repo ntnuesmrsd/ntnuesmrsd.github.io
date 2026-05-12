@@ -798,7 +798,8 @@
         // Q1 文本
         const q1MainText = "首先來到濕地，要確認現在是漲潮還是退潮。這會影響到等等的調查順序。\n\nQ1：請問現在是漲潮還是退潮？";
         // 提示的 HTML 字串（顏色改為 #bdc3c7 並加上底線與點擊事件）
-        const q1HintHtml = ' <span style="font-size: 16px; color: #bdc3c7; text-decoration: underline; cursor: pointer;" onclick="event.stopPropagation(); openHintModal();">提示</span>';
+        // 這樣「提示」會直接換行並承襲外層的置中對齊
+        const q1HintHtml = '<div style="font-size: 16px; color: #bdc3c7; text-decoration: underline; cursor: pointer; margin-top: 10px;" onclick="event.stopPropagation(); openHintModal();">提示</div>';
         
         let q1CharIndex = 0;
         let isQ1Typing = false;
