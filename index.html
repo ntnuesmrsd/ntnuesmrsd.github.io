@@ -737,15 +737,25 @@
         let hardTypeTimeout;
         
         // 修改原本的 showPage 函式，讓它在進入 hard-page 時自動觸發打字機
+        // 修改 showPage 函式，確保每一頁跳轉都能觸發正確的行為
         function showPage(pageId) {
+            // 1. 先隱藏所有頁面
             document.querySelectorAll('.page').forEach(page => page.classList.add('hidden'));
-            document.getElementById(pageId).classList.remove('hidden');
             
-            if (pageId === 'home-page') startTypewriter();
-            
-            // 如果進入困難頁面，啟動專屬打字機
-            if (pageId === 'hard-page') {
+            // 2. 顯示目標頁面
+            const targetPage = document.getElementById(pageId);
+            if (targetPage) {
+                targetPage.classList.remove('hidden');
+            }
+        
+            // 3. 根據進入的頁面 ID，啟動對應的打字機效果
+            if (pageId === 'home-page') {
+                startTypewriter();
+            } else if (pageId === 'hard-page') {
                 startHardTypewriter();
+            } else if (pageId === 'game-real-hard-content') {
+                // 就是少了這一段，導致 Q1 頁面進去沒反應
+                startQ1Typewriter();
             }
         }
         
