@@ -404,10 +404,36 @@
         <button id="hard-read-btn" class="hidden" onclick="showPage('game-real-hard-content')">閱讀完畢</button>
     </div>
 
-    <div id="game-real-hard-content" class="page hidden">
-        <h1>叫章魚哥上班...</h1>
-        <p>蟹老闆數錢 與 皮老闆找蟹堡秘方 功能</p>
-        <button onclick="showPage('game-page')">返回選擇</button>
+    <div id="game-real-hard-content" class="page hidden" onclick="skipQ1Typewriter()">
+        <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%;">
+            <div id="q1-typewriter-text" style="font-size: 22px; line-height: 1.8; margin-bottom: 20px; width: 80%;"></div>
+            
+            <span class="auth-link" style="font-size: 18px; color: #f1c40f; text-decoration: underline;" onclick="event.stopPropagation(); openHintModal();">提示</span>
+    
+            <div id="q1-btns" class="difficulty-container hidden">
+                <button onclick="showPage('high-tide-page')">漲潮</button>
+                <button onclick="showPage('low-tide-page')">退潮</button>
+            </div>
+        </div>
+    </div>
+    
+    <div id="hint-modal" class="modal" onclick="closeHintModal()">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <h2 style="color: #f1c40f;">提示：</h2>
+            <p style="font-size: 18px; line-height: 1.6; text-align: left;">
+                沿著路往東南走會經過一條很小的溪流，觀察水的流向是流向大海還是陸地。
+            </p>
+            <button class="tab-btn" style="margin-top: 20px;" onclick="closeHintModal()">知道了</button>
+        </div>
+    </div>
+    
+    <div id="high-tide-page" class="page hidden">
+        <h1>現在是漲潮</h1>
+        <button onclick="showPage('game-page')">返回</button>
+    </div>
+    <div id="low-tide-page" class="page hidden">
+        <h1>現在是退潮</h1>
+        <button onclick="showPage('game-page')">返回</button>
     </div>
 
     <script>
