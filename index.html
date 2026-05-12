@@ -408,8 +408,6 @@
         <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%;">
             <div id="q1-typewriter-text" style="font-size: 22px; line-height: 1.8; margin-bottom: 20px; width: 80%;"></div>
             
-            <span class="auth-link" style="font-size: 18px; color: #f1c40f; text-decoration: underline;" onclick="event.stopPropagation(); openHintModal();">提示</span>
-    
             <div id="q1-btns" class="difficulty-container hidden">
                 <button onclick="showPage('high-tide-page')">漲潮</button>
                 <button onclick="showPage('low-tide-page')">退潮</button>
@@ -787,26 +785,15 @@
             document.getElementById('hard-read-btn').classList.remove('hidden');
         }
         // Q1 文本與變數
-        const q1Text = "首先來到濕地，要確認現在是漲潮還是退潮。這會影響到等等的調查順序。\n\nQ1：請問現在是漲潮還是退潮？";
+        // Q1 文本
+        const q1MainText = "首先來到濕地，要確認現在是漲潮還是退潮。這會影響到等等的調查順序。\n\nQ1：請問現在是漲潮還是退潮？";
+        // 提示的 HTML 字串（顏色改為 #bdc3c7 並加上底線與點擊事件）
+        const q1HintHtml = ' <span style="font-size: 16px; color: #bdc3c7; text-decoration: underline; cursor: pointer;" onclick="event.stopPropagation(); openHintModal();">提示</span>';
+        
         let q1CharIndex = 0;
         let isQ1Typing = false;
         let q1TypeTimeout;
         
-        // 修改 showPage 增加 Q1 的判斷
-        function showPage(pageId) {
-            document.querySelectorAll('.page').forEach(page => page.classList.add('hidden'));
-            document.getElementById(pageId).classList.remove('hidden');
-            
-            if (pageId === 'home-page') startTypewriter();
-            if (pageId === 'hard-page') startHardTypewriter();
-            
-            // 進入 Q1 頁面時啟動
-            if (pageId === 'game-real-hard-content') {
-                startQ1Typewriter();
-            }
-        }
-        
-        // Q1 打字機邏輯
         function startQ1Typewriter() {
             const container = document.getElementById('q1-typewriter-text');
             const btns = document.getElementById('q1-btns');
@@ -818,13 +805,14 @@
             btns.classList.add('hidden');
             
             function type() {
-                if (q1CharIndex < q1Text.length) {
-                    // 處理換行符號
-                    let char = q1Text.charAt(q1CharIndex);
+                if (q1CharIndex < q1MainText.length) {
+                    let char = q1MainText.charAt(q1CharIndex);
                     container.innerHTML += char === "\n" ? "<br>" : char;
                     q1CharIndex++;
                     q1TypeTimeout = setTimeout(type, 60);
                 } else {
+                    // 當題目跑完後，直接接上「提示」按鈕
+                    container.innerHTML += q1HintHtml;
                     completeQ1Typing();
                 }
             }
@@ -834,7 +822,8 @@
         function skipQ1Typewriter() {
             if (!isQ1Typing) return;
             clearTimeout(q1TypeTimeout);
-            document.getElementById('q1-typewriter-text').innerHTML = q1Text.replace(/\n/g, "<br>");
+            // 直接顯示：題目文本 + 提示 HTML
+            document.getElementById('q1-typewriter-text').innerHTML = q1MainText.replace(/\n/g, "<br>") + q1HintHtml;
             completeQ1Typing();
         }
         
@@ -842,7 +831,6 @@
             isQ1Typing = false;
             document.getElementById('q1-btns').classList.remove('hidden');
         }
-        
         // 提示彈窗控制
         function openHintModal() {
             document.getElementById('hint-modal').classList.add('active');
