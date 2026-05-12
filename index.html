@@ -396,7 +396,15 @@
         <button onclick="showPage('game-page')">返回選擇</button>
     </div>
 
-    <div id="hard-page" class="page hidden">
+    <div id="hard-page" class="page hidden" onclick="skipHardTypewriter()">
+        <h1>任務起源</h1>
+        <div class="scroll-content">
+            <div id="hard-typewriter-text" style="min-height: 150px; font-size: 18px; line-height: 1.8;"></div>
+        </div>
+        <button id="hard-read-btn" class="hidden" onclick="showPage('game-real-hard-content')">閱讀完畢</button>
+    </div>
+
+    <div id="game-real-hard-content" class="page hidden">
         <h1>叫章魚哥上班...</h1>
         <p>蟹老闆數錢 與 皮老闆找蟹堡秘方 功能</p>
         <button onclick="showPage('game-page')">返回選擇</button>
@@ -697,6 +705,60 @@
         // 新增這個關閉函式
         function closeModal() {
             document.getElementById('creature-modal').classList.remove('active');
+        }
+        // 新增困難模式的文本內容
+        const hardText = "某天，你從網路上看到了一個匿名文章，內容大概是一個繁榮商港的興衰紀錄文獻，他希望能有人找出這個地方是哪裡，當然也會給予相對的報酬。但是並沒有實際的地名可以依據。因此留言區當然開始吵到底是府城、鹿港或是大稻埕時……聰明的你仔細閱讀了文獻發現：這不太像目前熟知的各大港口呢？然後你去查了一下資料發現，老街溪與雙溪口溪的河口，這個地方剛好叫「許厝港濕地」。但，這是濕地啊？沒想到以前竟然是個海港？ 於是為了報酬（神奇小卡）你決定來這裡一探究竟～";
+        let hardCharIndex = 0;
+        let isHardTyping = false;
+        let hardTypeTimeout;
+        
+        // 修改原本的 showPage 函式，讓它在進入 hard-page 時自動觸發打字機
+        function showPage(pageId) {
+            document.querySelectorAll('.page').forEach(page => page.classList.add('hidden'));
+            document.getElementById(pageId).classList.remove('hidden');
+            
+            if (pageId === 'home-page') startTypewriter();
+            
+            // 如果進入困難頁面，啟動專屬打字機
+            if (pageId === 'hard-page') {
+                startHardTypewriter();
+            }
+        }
+        
+        // 困難模式打字機邏輯
+        function startHardTypewriter() {
+            const container = document.getElementById('hard-typewriter-text');
+            const btn = document.getElementById('hard-read-btn');
+            if(!container) return;
+            
+            container.innerHTML = "";
+            hardCharIndex = 0;
+            isHardTyping = true;
+            btn.classList.add('hidden');
+            
+            function type() {
+                if (hardCharIndex < hardText.length) {
+                    container.innerHTML += hardText.charAt(hardCharIndex);
+                    hardCharIndex++;
+                    hardTypeTimeout = setTimeout(type, 50); // 劇情文字可以稍快一點點
+                } else {
+                    completeHardTyping();
+                }
+            }
+            type();
+        }
+        
+        // 跳過困難模式打字機
+        function skipHardTypewriter() {
+            if (!isHardTyping) return;
+            clearTimeout(hardTypeTimeout);
+            document.getElementById('hard-typewriter-text').innerHTML = hardText;
+            completeHardTyping();
+        }
+        
+        function completeHardTyping() {
+            isHardTyping = false;
+            document.getElementById('hard-read-btn').classList.remove('hidden');
         }
     </script>
     <div id="creature-modal" class="modal" onclick="closeModal()">
