@@ -507,6 +507,14 @@
         </div>
     </div>
     
+    <div id="q2-success-page" class="page hidden" onclick="skipQ2SuccessTypewriter()">
+        <h1 style="font-size: 32px; margin-bottom: 5px;">漫步</h1>
+        <div class="scroll-content">
+            <div id="q2-success-text" style="min-height: 150px; font-size: 19px; line-height: 1.8; text-align: left; letter-spacing: 1px; color: white;"></div>
+        </div>
+        <div id="q2-success-action" class="hidden" style="margin-top: 25px;"></div>
+    </div>
+    
     <div id="low-tide-page" class="page hidden">
         <h1>現在是退潮</h1>
         <button onclick="showPage('game-page')">返回</button>
@@ -560,6 +568,12 @@
         let isHighTideTyping = false;
         let highTideCharIndex = 0;
         let highTideTypeTimeout;
+
+        // 劇情文字內容
+        const q2SuccessText = "你繼續沿著堤防往許厝港大橋前進，靜靜的在這個悠閒的氛圍中漫步，腳邊的植物與遠處的鳥兒，即便叫不出名字卻也知道牠們跟平常家裡附近的很不一樣（若想看看他們是誰，請點擊連結或起點涼亭處有告示牌說明）。你打從心裡享受這個與日常不同的特殊感。到了橋上，最中間有個翅膀造景，這裡剛好可以看到第一個文獻內提到的兩條河的出海口，而且遠方還有神秘的水泥塔狀建築，看樣子那就是文獻二內提到的哨塔吧。往海看去，河口、沙洲、海浪拍打的岸邊、一望無際的大海依序出現在眼前。彷彿生活的煩惱全被帶到比海洋更遙遠的地方……";
+        let isQ2SuccessTyping = false;
+        let q2SuccessCharIndex = 0;
+        let q2SuccessTypeTimeout;
 
         // ==========================================
         // --- 1. 頁面導換與網頁初始化 ---
@@ -767,12 +781,67 @@
         function checkQ2Answer(isCorrect) {
             if (isCorrect) {
                 alert("🎉 答對了！水筆仔確實會透過枯黃落葉來排出鹽分。");
-                // 這裡可以繼續導向下一頁，例如：
-                // showPage('下一個劇情的頁面id'); 
+                // 答對了！跳轉到過場劇情頁面
+                showPage('q2-success-page');
+                // 啟動專用打字機
+                initQ2SuccessPage();
             } else {
                 alert("❌ 答案好像不對喔...再仔細觀察，重新想一下吧！");
-                // 答錯了，因為沒有切換頁面，使用者可以直接在原本的 q2-page 重新點選其他選項
             }
+        }
+
+        // 初始化並啟動過場劇情打字機
+        function initQ2SuccessPage() {
+            const textContainer = document.getElementById('q2-success-text');
+            const actionBtnContainer = document.getElementById('q2-success-action');
+            if(!textContainer) return;
+
+            // 初始化重置
+            textContainer.innerHTML = "";
+            if(actionBtnContainer) {
+                actionBtnContainer.innerHTML = "";
+                actionBtnContainer.classList.add('hidden');
+            }
+
+            isQ2SuccessTyping = true;
+            q2SuccessCharIndex = 0;
+
+            function type() {
+                if (!isQ2SuccessTyping) return;
+                if (q2SuccessCharIndex < q2SuccessText.length) {
+                    textContainer.innerHTML += q2SuccessText.charAt(q2SuccessCharIndex);
+                    q2SuccessCharIndex++;
+                    q2SuccessTypeTimeout = setTimeout(type, 40); // 舒適的40毫秒打字速度
+                } else {
+                    completeQ2SuccessTyping();
+                }
+            }
+            type();
+        }
+
+        // 點擊空白處可瞬間跳過打字機動畫
+        function skipQ2SuccessTypewriter() {
+            if (!isQ2SuccessTyping) return;
+            clearTimeout(q2SuccessTypeTimeout);
+            document.getElementById('q2-success-text').innerHTML = q2SuccessText;
+            completeQ2SuccessTyping();
+        }
+
+        // 打字結束，跳出紅色「閱讀完畢」按鈕
+        function completeQ2SuccessTyping() {
+            isQ2SuccessTyping = false;
+            const actionBtnContainer = document.getElementById('q2-success-action');
+            if (actionBtnContainer) {
+                // 這裡會自動套用您網頁原本設定的 .page button 漂亮紅色按鈕樣式
+                actionBtnContainer.innerHTML = '<button id="read-done-btn" onclick="goToNextStage()">閱讀完畢</button>';
+                actionBtnContainer.classList.remove('hidden');
+            }
+        }
+
+        // 點擊「閱讀完畢」後的動作
+        function goToNextStage() {
+            alert("觸發閱讀完畢！接下來可以準備進入下一道謎題或探索囉～");
+            // showPage('下一個頁面的id'); // 留給您之後擴充
         }
 
         function openHintModal() {
