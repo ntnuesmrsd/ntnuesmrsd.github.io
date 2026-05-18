@@ -5,7 +5,6 @@
     <title>早餐吃到飽挑戰賽</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
-        /* --- 1. 全域設定 --- */
         body {
             margin: 0;
             padding: 0;
@@ -18,15 +17,11 @@
             color: white;
             overflow: hidden;
         }
-
         .page { text-align: center; width: 100%; position: absolute; }
         .hidden { display: none !important; }
-
         .title-image { max-width: 300px; height: auto; margin-bottom: 20px; }
         h1 { font-size: 40px; margin-bottom: 10px; }
         p { font-size: 20px; }
-
-        /* 按鈕樣式 */
         .page button {
             padding: 15px 35px;
             font-size: 22px;
@@ -39,8 +34,6 @@
             box-shadow: 0 5px 0 #c0392b;
         }
         .page button:active { box-shadow: 0 2px 0 #c0392b; transform: translateY(3px); }
-
-        /* --- 2. 難度選單 (左右排列) --- */
         .difficulty-container {
             display: flex;
             justify-content: center;
@@ -51,8 +44,6 @@
             margin-top: 0 !important;
             width: 140px;
         }
-
-        /* --- 3. 選單按鈕 (全局固定) --- */
         .menu-button {
             position: fixed;
             top: 20px;
@@ -71,7 +62,6 @@
             padding: 0;
         }
         .menu-button .line { width: 70%; height: 4px; background-color: white; margin: 3px 0; border-radius: 2px; }
-
         .menu-drawer {
             position: fixed;
             top: 0;
@@ -87,7 +77,6 @@
             text-align: center;
         }
         .menu-drawer.active { transform: translateX(0); }
-
         .close-button {
             position: absolute;
             top: 20px;
@@ -106,11 +95,9 @@
             font-size: 30px;
             line-height: 1;
         }
-
         .tab-nav { margin-top: 80px; display: flex; justify-content: center; gap: 20px; }
         .tab-btn { background-color: #5d6d7e; padding: 12px 25px; border-radius: 10px; color: white; border: none; font-size: 18px; cursor: pointer; }
         .tab-content { margin-top: 40px; color: #ecf0f1; text-align: center; }
-        /* 圖鑑列表樣式 */
         #inventory {
             text-align: center;
             max-height: 60vh;
@@ -127,9 +114,6 @@
         .grid-container { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px;  justify-items: center; /* 這能確保 grid 內的項目內容也是置中的 */
         }
         .creature-item { text-align: center; }
-        /* 核心剪影效果 */
-        /* 修改這段 CSS */
-        /* 1. 設定所有圖鑑圖片的固定尺寸 */
         .creature-img {
             width: 60px;
             height: 60px;
@@ -139,12 +123,9 @@
             cursor: pointer;
             transition: filter 0.5s ease; /* 增加平滑解鎖效果 */
         }
-        
-        /* 2. 這是控制「未解鎖」狀態的濾鏡 */
         .is-locked {
             filter: brightness(0) invert(1);
         }
-        /* --- 彈出視窗樣式 --- */
         .modal {
             display: none; /* 預設隱藏 */
             position: fixed;
@@ -157,7 +138,6 @@
             flex-direction: column;
         }
         .modal.active { display: flex; } /* 顯示時使用 */
-        
         .modal-content {
             background: #34495e;
             padding: 30px;
@@ -171,7 +151,6 @@
             object-fit: contain;
         }
         .hint-text { margin-top: 20px; font-size: 20px; color: #f1c40f; }
-        /* 自定義上傳按鈕樣式 */
         .upload-btn {
             padding: 8px 18px;
             font-size: 14px;
@@ -187,18 +166,15 @@
             gap: 5px;
             margin-top: 0 !important; /* 強制覆蓋原本 button 的 margin-top */
         }
-        
         .upload-btn:hover {
             background-color: #2ecc71;
             transform: translateY(-2px);
             box-shadow: 0 6px 0 #1e8449;
         }
-        
         .upload-btn:active {
             transform: translateY(2px);
             box-shadow: 0 2px 0 #1e8449;
         }
-        /* 內容頁面的通用文字區塊，支援滑動 */
         .scroll-content {
             max-height: 60vh; /* 限制最高為螢幕高度的 60% */
             overflow-y: auto; /* 超出時顯示捲軸 */
@@ -210,8 +186,6 @@
             text-align: left; /* 安全須知通常靠左對齊較好閱讀 */
             line-height: 1.6;
         }
-        
-        /* 隱藏捲軸但仍可滑動 (選用，若想讓介面更乾淨) */
         .scroll-content::-webkit-scrollbar {
             width: 6px;
         }
@@ -250,13 +224,11 @@
     </style>
 </head>
 <body>
-
     <button class="menu-button" onclick="toggleMenu()">
         <div class="line"></div>
         <div class="line"></div>
         <div class="line"></div>
     </button>
-
     <nav id="menu-drawer" class="menu-drawer">
         <button class="close-button" onclick="toggleMenu()">×</button>
         <div class="tab-nav">
@@ -271,7 +243,6 @@
                         📷 上傳照片
                     </button>
                 </div>
-        
         <div class="location-group">
             <div class="location-title">河口濕地</div>
             <div class="grid-container">
@@ -281,7 +252,6 @@
                 <div class="creature-item" onclick="openModal('Boleophthalmus_pectinirostris.jpg')"><img src="Boleophthalmus_pectinirostris.jpg" class="creature-img is-locked"><p class="creature-name" data-realname="大彈塗魚">？？？</p></div>
             </div>
         </div>
-    
         <div class="location-group">
             <div class="location-title">感潮濕地</div>
             <div class="grid-container">
@@ -290,7 +260,6 @@
                 <div class="creature-item" onclick="openModal('Pluvialis_fulva.jpg')"><img src="Pluvialis_fulva.jpg" class="creature-img is-locked"><p class="creature-name" data-realname="太平洋金班鴴">？？？</p></div>
             </div>
         </div>
-    
         <div class="location-group">
             <div class="location-title">深水埤塘區</div>
             <div class="grid-container">
@@ -298,7 +267,6 @@
                 <div class="creature-item" onclick="openModal('Gallinula_chloropus.jpg')"><img src="Gallinula_chloropus.jpg" class="creature-img is-locked"><p class="creature-name" data-realname="紅冠水雞">？？？</p></div>
             </div>
         </div>
-    
         <div class="location-group">
             <div class="location-title">小燕鷗復育區</div>
             <div class="grid-container">
@@ -309,7 +277,6 @@
     </div>
         <div id="achievement" class="tab-content hidden">
             <h2>成就清單</h2>
-            
             <div class="location-group">
                 <div class="location-title">新手任務</div> 
                 <div class="grid-container">
@@ -319,7 +286,6 @@
                     </div>
                 </div>
             </div>
-        
             <div class="location-group">
                 <div class="location-title">隱藏秘辛</div>
                 <div class="grid-container">
@@ -331,14 +297,11 @@
             </div>
         </div>
     </nav>
-
     <div id="home-page" class="page" onclick="skipTypewriter()">
         <img src="title.jpg" alt="遊戲標題" class="title-image">
         <div id="typewriter-text" style="min-height: 120px; padding: 0 20px; font-size: 24px; line-height: 1.6; margin-bottom: 20px;"></div>
-        
         <button id="start-btn" onclick="showPage('safety-page')" class="hidden">是的船長！</button>
     </div>
-    
     <div id="safety-page" class="page hidden">
         <h1>安全須知</h1>
         <div class="scroll-content">
@@ -353,21 +316,17 @@
     <div id="register-page" class="page hidden">
         <h1>建立帳號</h1>
         <p style="font-size: 14px; color: #bdc3c7;">避免遊戲進度遺失，需要您建立一個遊戲帳號。我們不會取得任何個資相關內容，只是為了保留遊戲進度，不必擔心。</p>
-        
         <div class="auth-input-group">
             <input type="text" id="reg-username" placeholder="請輸入帳號名稱" oninput="validateRegister()">
             <div id="reg-user-err" class="error-msg"></div>
         </div>
-        
         <div class="auth-input-group">
             <input type="password" id="reg-password" placeholder="請輸入6位數字並記好密碼(可以截圖)" maxlength="6" oninput="validateRegister()">
             <div id="reg-pass-err" class="error-msg"></div>
         </div>
-        
         <span class="auth-link" onclick="showPage('login-page')">已有帳號 進行登入</span><br>
         <button id="reg-btn" onclick="handleAuth('register')" disabled style="opacity: 0.5;">開始遊戲</button>
     </div>
-    
     <div id="login-page" class="page hidden">
         <h1>帳號登入</h1>
         <div class="auth-input-group">
@@ -381,7 +340,6 @@
         <span class="auth-link" onclick="showPage('register-page')">返回建立帳號</span><br>
         <button id="login-btn" onclick="handleAuth('login')" disabled style="opacity: 0.5;">開始遊戲</button>
     </div>
-    
     <div id="game-page" class="page hidden">
         <h1>請選擇難度</h1>
         <div class="difficulty-container">
@@ -389,13 +347,11 @@
             <button onclick="showPage('hard-page')">困難</button>
         </div>
         </div>
-
     <div id="easy-page" class="page hidden">
         <h1>叫海綿寶寶做蟹堡...</h1>
         <p>讓章魚哥吹豎笛 與 派大星找到你了 功能</p>
         <button onclick="showPage('game-page')">返回選擇</button>
     </div>
-
     <div id="hard-page" class="page hidden" onclick="skipHardTypewriter()">
         <h1>任務起源</h1>
         <div class="scroll-content">
@@ -403,18 +359,15 @@
         </div>
         <button id="hard-read-btn" class="hidden" onclick="showPage('game-real-hard-content')">閱讀完畢</button>
     </div>
-
     <div id="game-real-hard-content" class="page hidden" onclick="skipQ1Typewriter()">
         <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%;">
             <div id="q1-typewriter-text" style="font-size: 22px; line-height: 1.8; margin-bottom: 20px; width: 80%;"></div>
-            
             <div id="q1-btns" class="difficulty-container hidden">
                 <button onclick="goToHighTidePage()">漲潮</button>
                 <button onclick="showPage('low-tide-page')">退潮</button>
             </div>
         </div>
     </div>
-    
     <div id="hint-modal" class="modal" onclick="closeHintModal()">
         <div class="modal-content" onclick="event.stopPropagation()">
             <h2 style="color: #f1c40f;">提示：</h2>
@@ -423,12 +376,10 @@
             </p>
         </div>
     </div>
-    
     <div id="low-tide-page" class="page hidden">
         <h1>現在是退潮</h1>
         <button onclick="showPage('game-page')">返回</button>
     </div>
-
     <script>
         // --- 1. 設定區：請將下方的網址換成你最新部署的、合併了「登入」與「照片」功能的 GAS 網址 ---
         const GLOBAL_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxtmxfP0xlAP-fK3UVEy_QzPbvAuQh-vJ_Vcs5iplYtC6xUOIO1b8YGzv-aKjfRH3aUWA/exec";
@@ -499,15 +450,13 @@
                 info: "(內容)",
                 ebird: "https://ebird.org/species/whimbr" // eBird 連結
             }
-            // ... 後續請依照這個格式補齊其餘生物
         };
         const fullText = "歡迎來到陳冠宇與他的十二個惡魔，在這裡你需要扮演一位小小史學家，因為一個故事而來到許厝港，利用一些跟濕地有關的知識，一步一步解開任務，體會有關這個地方的歷史故事。";
         let charIndex = 0;
         let isTyping = false;
         let typeTimeout;
         let currentUser = null;
-    
-        // --- 2. 打字機邏輯 ---
+        
         function startTypewriter() {
             const container = document.getElementById('typewriter-text');
             const btn = document.getElementById('start-btn');
@@ -528,38 +477,30 @@
             }
             type();
         }
-        
         function skipTypewriter() {
             if (!isTyping) return;
             clearTimeout(typeTimeout);
             document.getElementById('typewriter-text').innerHTML = fullText;
             completeTyping();
         }
-        
         function completeTyping() {
             isTyping = false;
             document.getElementById('start-btn').classList.remove('hidden');
         }
-    
         window.onload = startTypewriter;
     
-        // --- 3. 頁面導換 ---
         function showPage(pageId) {
             document.querySelectorAll('.page').forEach(page => page.classList.add('hidden'));
             document.getElementById(pageId).classList.remove('hidden');
             if (pageId === 'home-page') startTypewriter();
         }
-    
         function toggleMenu() {
             document.getElementById('menu-drawer').classList.toggle('active');
-        }
-    
+        }    
         function switchTab(tabId) {
             document.querySelectorAll('.tab-content').forEach(content => content.classList.add('hidden'));
             document.getElementById(tabId).classList.remove('hidden');
         }
-    
-        // --- 4. 帳號與登入邏輯 ---
         function validateRegister() {
             const user = document.getElementById('reg-username').value;
             const pass = document.getElementById('reg-password').value;
@@ -569,8 +510,7 @@
             passErr.innerText = (pass.length > 0 && !isPassValid) ? "*非為6位數字" : "";
             btn.disabled = !(user.length > 0 && isPassValid);
             btn.style.opacity = btn.disabled ? "0.5" : "1";
-        }
-    
+        }   
         function validateLogin() {
             const user = document.getElementById('login-username').value;
             const pass = document.getElementById('login-password').value;
@@ -580,58 +520,45 @@
             passErr.innerText = (pass.length > 0 && !isPassValid) ? "*非為6位數字" : "";
             btn.disabled = !(user.length > 0 && isPassValid);
             btn.style.opacity = btn.disabled ? "0.5" : "1";
-        }
-    
+        }    
         async function handleAuth(action) {
             const isReg = action === 'register';
             const user = document.getElementById(isReg ? 'reg-username' : 'login-username').value;
             const pass = document.getElementById(isReg ? 'reg-password' : 'login-password').value;
-            const btn = document.getElementById(isReg ? 'reg-btn' : 'login-btn');
-            
+            const btn = document.getElementById(isReg ? 'reg-btn' : 'login-btn');          
             document.querySelectorAll('.error-msg').forEach(el => el.innerText = "");
             btn.innerText = "驗證中...";
-            btn.disabled = true;
-        
+            btn.disabled = true;     
             try {
-                // 只保留一個正常的 fetch，不要用 no-cors
                 const response = await fetch(GLOBAL_SCRIPT_URL, {
                     method: "POST",
                     body: JSON.stringify({ action, username: user, password: pass })
-                });
-                
-                const result = await response.json();
-        
+                });                
+                const result = await response.json();        
                 if (result.result === 'success') {
                     currentUser = user;
                     alert(isReg ? "帳號建立成功！" : "登入成功！");
                     showPage('game-page'); // 執行跳轉
                 } else {
-                    // 顯示來自 GAS 的錯誤訊息（例如：帳號已存在）
                     const errId = isReg ? 'reg-user-err' : 'login-pass-err';
                     document.getElementById(errId).innerText = "*" + result.message;
                     btn.disabled = false;
                 }
             } catch (e) {
                 console.error("Auth Error:", e);
-                // 如果噴出「你沒有權限呼叫 SpreadsheetApp」就是 GAS 端沒授權好
                 alert("系統回傳錯誤，請確認 GAS 權限設定（請見下方說明）");
                 btn.disabled = false;
             } finally {
                 btn.innerText = "開始遊戲";
             }
         }
-    
-        // --- 5. 照片上傳與辨識 ---
-        // --- 5. 照片上傳與辨識 ---
         async function handleFileUpload(event) {
             const file = event.target.files[0];
             if (!file) return;
-        
             const btn = event.target.nextElementSibling;
             const originalText = btn.innerText;
             btn.innerText = "辨識中...";
             btn.disabled = true;
-        
             const reader = new FileReader();
             reader.readAsDataURL(file);
             reader.onload = async function () {
@@ -646,7 +573,6 @@
                         })
                     });
                     const result = await response.json();
-                    
                     if (result.isMatch) {
                         // 找到對應的中文名（這需要你的 creatureData key 剛好是標籤名）
                         alert("恭喜！發現新生物！"); 
@@ -664,51 +590,35 @@
                 }
             };
         }
-        
         function unlockCreature(target) {
             const allImages = document.querySelectorAll('.creature-img');
             const targetLower = target.toLowerCase().trim(); // 例如 "numenius"
-            
             allImages.forEach(img => {
                 const imgSrc = img.getAttribute('src').toLowerCase(); // 例如 "numenius_phaeopus.jpg"
-                
-                // 檢查圖片檔名是否包含 AI 回傳的種類關鍵字
                 if (imgSrc.indexOf(targetLower) !== -1) {
                     img.classList.remove('is-locked');
                     img.dataset.unlocked = "true";
-                    
-                    // 更新名稱
                     const nameTag = img.parentElement.querySelector('.creature-name');
                     if (nameTag) {
                         nameTag.innerText = nameTag.dataset.realname;
                     }
-                    
-                    // 慶祝動畫
                     img.style.transform = "scale(1.3)";
                     setTimeout(() => img.style.transform = "scale(1)", 500);
                 }
             });
-        }
-        
+        }  
         function openModal(imgSrc) {
             const modalImg = document.getElementById('modal-img');
             const modalTextElement = document.getElementById('modal-text');
             modalImg.src = imgSrc;
-            
-            // 【修改點】從 imgSrc 中只擷取檔名部分，並確保比對時不因路徑出錯
             const fileName = imgSrc.split('/').pop(); 
             const data = creatureData[fileName] || { name: "未知", hint: "無", info: "無" };
-            
-            // 【修改點】修正搜尋選取器，確保能找到該圖片
-            // 在 openModal 函式內尋找對應圖片的邏輯
             const targetImgInList = Array.from(document.querySelectorAll('.creature-img')).find(img => 
                 img.getAttribute('src').includes(fileName)
             );
             const isUnlocked = targetImgInList && targetImgInList.dataset.unlocked === "true";
-            
             if (isUnlocked) {
                 modalImg.style.filter = "none";
-                // 組合內容：名稱 + 科普 + eBird 連結按鈕
                 let content = `<strong>${data.name}：</strong><br>${data.info}`;
                 if (data.ebird) {
                     content += `<br><br><a href="${data.ebird}" target="_blank" style="color: #2c7a7b; text-decoration: underline;">查看 eBird 觀測紀錄</a>`;
@@ -717,49 +627,35 @@
             } else {
                 modalImg.style.filter = "brightness(0) invert(1)";
                 modalTextElement.innerHTML = `<strong>提示：</strong><br>${data.hint}`;
-            }
-            
+            } 
             document.getElementById('creature-modal').classList.add('active');
         }
-        // 新增這個關閉函式
         function closeModal() {
             document.getElementById('creature-modal').classList.remove('active');
         }
-        // 新增困難模式的文本內容
         const hardText = "某天，你從網路上看到了一個匿名文章，內容大概是一個繁榮商港的興衰紀錄文獻，他希望能有人找出這個地方是哪裡，當然也會給予相對的報酬。但是並沒有實際的地名可以依據。因此留言區當然開始吵到底是府城、鹿港或是大稻埕時……聰明的你仔細閱讀了文獻發現：這不太像目前熟知的各大港口呢？然後你去查了一下資料發現，老街溪與雙溪口溪的河口，這個地方剛好叫「許厝港濕地」。但，這是濕地啊？沒想到以前竟然是個海港？ 於是為了報酬（神奇小卡）你決定來這裡一探究竟～";
         let hardCharIndex = 0;
         let isHardTyping = false;
         let hardTypeTimeout;
         
-        // 修改原本的 showPage 函式，讓它在進入 hard-page 時自動觸發打字機
-        // 修改 showPage 函式，確保每一頁跳轉都能觸發正確的行為
         function showPage(pageId) {
-            // 1. 先隱藏所有頁面
             document.querySelectorAll('.page').forEach(page => page.classList.add('hidden'));
-            
-            // 2. 顯示目標頁面
             const targetPage = document.getElementById(pageId);
             if (targetPage) {
                 targetPage.classList.remove('hidden');
             }
-        
-            // 3. 根據進入的頁面 ID，啟動對應的打字機效果
             if (pageId === 'home-page') {
                 startTypewriter();
             } else if (pageId === 'hard-page') {
                 startHardTypewriter();
             } else if (pageId === 'game-real-hard-content') {
-                // 就是少了這一段，導致 Q1 頁面進去沒反應
                 startQ1Typewriter();
             }
         }
-        
-        // 困難模式打字機邏輯
         function startHardTypewriter() {
             const container = document.getElementById('hard-typewriter-text');
             const btn = document.getElementById('hard-read-btn');
             if(!container) return;
-            
             container.innerHTML = "";
             hardCharIndex = 0;
             isHardTyping = true;
@@ -776,31 +672,20 @@
             }
             type();
         }
-        
-        // 跳過困難模式打字機
         function skipHardTypewriter() {
             if (!isHardTyping) return;
             clearTimeout(hardTypeTimeout);
             document.getElementById('hard-typewriter-text').innerHTML = hardText;
             completeHardTyping();
-        }
-        
+        } 
         function completeHardTyping() {
             isHardTyping = false;
             document.getElementById('hard-read-btn').classList.remove('hidden');
         }
-        // Q1 文本與變數
-        // Q1 文本
         const q1MainText = "首先來到濕地，要確認現在是漲潮還是退潮。這會影響到等等的調查順序。\n\n問題：請問現在是漲潮還是退潮？";
-        // 提示的 HTML 字串（顏色改為 #bdc3c7 並加上底線與點擊事件）
-        // 這樣「提示」會直接換行並承襲外層的置中對齊
         const q1HintHtml = '<div style="font-size: 16px; color: #bdc3c7; text-decoration: underline; cursor: pointer; margin-top: 10px;" onclick="event.stopPropagation(); openHintModal();">提示</div>';
-
-        // 漲潮頁面的文本
         const highTideText = "看來是漲潮呢，那麼繼續往西南方那座橋（許厝港大橋）走好了。在這之前，剛才走過來的路上好像有看到一些水筆仔之類的植物長在泥巴地上，不愧是濕地呢。但我依稀記得好像有些水筆仔的葉子變黃了，難道秋天來得這麼快嗎？畢竟台灣的春夏秋冬是出了名的沒規則可言。但又很怪，一般植物在枯黃的時候會只枯黃一兩片葉子嗎？"; 
-        // 記錄目前是否正在跑漲潮頁面的打字機
         let isHighTideTyping = false;
-        
         let q1CharIndex = 0;
         let isQ1Typing = false;
         let q1TypeTimeout;
@@ -809,7 +694,6 @@
             const container = document.getElementById('q1-typewriter-text');
             const btns = document.getElementById('q1-btns');
             if(!container) return;
-            
             container.innerHTML = "";
             q1CharIndex = 0;
             isQ1Typing = true;
@@ -822,50 +706,37 @@
                     q1CharIndex++;
                     q1TypeTimeout = setTimeout(type, 60);
                 } else {
-                    // 當題目跑完後，直接接上「提示」按鈕
                     container.innerHTML += q1HintHtml;
                     completeQ1Typing();
                 }
             }
             type();
-        }
-        
+        }   
         function skipQ1Typewriter() {
             if (!isQ1Typing) return;
             clearTimeout(q1TypeTimeout);
             // 直接顯示：題目文本 + 提示 HTML
             document.getElementById('q1-typewriter-text').innerHTML = q1MainText.replace(/\n/g, "<br>") + q1HintHtml;
             completeQ1Typing();
-        }
-        
+        }        
         function completeQ1Typing() {
             isQ1Typing = false;
             document.getElementById('q1-btns').classList.remove('hidden');
         }
-        // 提示彈窗控制
         function openHintModal() {
             document.getElementById('hint-modal').classList.add('active');
-        }
-        
+        }        
         function closeHintModal() {
             document.getElementById('hint-modal').classList.remove('active');
         }
         function goToHighTidePage() {
-            // 1. 修改標題與清空內容外觀
             document.getElementById('page-title').innerText = "漲潮"; 
             const textContainer = document.getElementById('text-container'); // 確保這是你放文字的 div id
             textContainer.innerHTML = ""; // 先清空文字
-            
-            // 2. 隱藏原本 Q1 的選項按鈕（請對照你實際的按鈕 class 或 id）
-            // 假設你的按鈕容器叫 options-container
             document.getElementById('options-container').classList.add('hidden'); 
-        
-            // 3. 初始化打字機設定
             isHighTideTyping = true;
             let index = 0;
             textContainer.focus();
-        
-            // 4. 開始打字機效果
             function type() {
                 if (!isHighTideTyping) return; // 如果被點擊跳過了就停止
                 
@@ -878,9 +749,6 @@
                 }
             }
             type();
-        
-            // 5. 允許點擊空白處直接串完文字 (Skip 功能)
-            // 假設你的點擊大區塊是 click-area
             document.getElementById('click-area').onclick = function() {
                 if (isHighTideTyping) {
                     isHighTideTyping = false;
@@ -891,11 +759,7 @@
         }
         function completeHighTideTyping() {
             isHighTideTyping = false;
-            
-            // 找到你的按鈕區塊
             const actionContainer = document.getElementById('action-container'); 
-            
-            // 插入「回答問題」按鈕
             actionContainer.innerHTML = `
                 <button id="to-next-question-btn" class="action-btn" onclick="goToNextQuestion()">
                     回答問題
@@ -903,10 +767,7 @@
             `;
             actionContainer.classList.remove('hidden'); // 確保按鈕區塊有顯示
         }
-        
-        // 點擊「回答問題」後要做的事
         function goToNextQuestion() {
-            // 這裡放你進入下一個問題（例如 Q2）的程式碼
             alert("前往下一題！"); 
         }
     </script>
