@@ -5,7 +5,6 @@
     <title>早餐吃到飽挑戰賽</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
-        
         body {
             margin: 0;
             padding: 0;
@@ -37,390 +36,180 @@
             box-shadow: 0 5px 0 #c0392b;
         }
         
-        .page button:active { box-shadow: 0 2px 0 #c0392b; transform: translateY(3px); }
+        .page button:active {
+            box-shadow: none;
+            transform: translateY(5px);
+        }
+        
+        /* 漢堡選單樣式 */
+        .menu-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            font-size: 30px;
+            cursor: pointer;
+            z-index: 100;
+        }
+        
+        .menu-drawer {
+            position: fixed;
+            top: 0;
+            right: -300px;
+            width: 300px;
+            height: 100%;
+            background-color: #34495e;
+            box-shadow: -5px 0 15px rgba(0,0,0,0.5);
+            transition: right 0.3s;
+            z-index: 99;
+            padding-top: 60px;
+        }
+        
+        .menu-drawer.active { right: 0; }
+        .menu-tabs { display: flex; justify-content: space-around; border-bottom: 2px solid #2c3e50; }
+        .tab-btn { background: none; border: none; color: white; padding: 10px; cursor: pointer; font-size: 18px; }
+        .tab-content { padding: 20px; height: calc(100% - 120px); overflow-y: auto; }
+        
+        /* 圖鑑網格 */
+        .creature-grid { display: grid; grid-template-columns: repeat(3, 100px); gap: 10px; justify-content: center; }
+        .creature-item { text-align: center; font-size: 12px; }
+        .creature-img { width: 80px; height: 80px; object-fit: cover; border-radius: 10px; cursor: pointer; transition: transform 0.2s; }
+        .creature-img.is-locked { filter: brightness(0) invert(1); }
+        .creature-img:hover { transform: scale(1.1); }
+        
+        /* 彈出視窗 */
+        .modal { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); display:none; justify-content:center; align-items:center; z-index:200; }
+        .modal.active { display:flex; }
+        .modal-content { background:#fff; color:#333; padding:20px; border-radius:15px; text-align:center; max-width:400px; width:90%; position:relative; }
+        .modal-img { max-width:100%; max-height:200px; object-fit:contain; margin-bottom:15px; border-radius:10px; }
+        .hint-text { text-align:left; font-size:16px; line-height:1.6; }
+        
+        /* 表單樣式 */
+        .auth-container { display: flex; flex-direction: column; align-items: center; gap: 15px; margin-top: 20px; }
+        .auth-container input { padding: 10px; font-size: 18px; border-radius: 5px; border: none; width: 250px; text-align: center; }
+        .error-msg { color: #e74c3c; font-size: 14px; margin-top: -10px; height: 15px; }
+        
+        /* 困難模式排版：類似任務起源 */
+        .scroll-content {
+            background-color: rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px auto;
+            width: 80%;
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
         
         .difficulty-container {
             display: flex;
             justify-content: center;
             gap: 20px;
-            margin-top: 30px;
+            margin-top: 20px;
         }
         
-        .difficulty-container button {
-            margin-top: 0 !important;
-            width: 140px;
-        }
-        
-        .menu-button {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            width: 45px;
-            height: 40px;
-            background-color: #5d6d7e;
-            border-radius: 8px;
-            border: none;
-            cursor: pointer;
-            z-index: 1000;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            padding: 0;
-        }
-        
-        .menu-button .line { width: 70%; height: 4px; background-color: white; margin: 3px 0; border-radius: 2px; }
-        
-        .menu-drawer {
-            position: fixed;
-            top: 0;
-            right: 0;
-            width: 100%;
-            height: 100%;
-            background-color: #34495e;
-            z-index: 2000;
-            transform: translateX(100%);
-            transition: transform 0.5s ease;
-            padding: 20px;
-            box-sizing: border-box;
-            text-align: center;
-        }
-        
-        .menu-drawer.active { transform: translateX(0); }
-        
-        .close-button {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            width: 45px;
-            height: 45px;
-            background-color: #5d6d7e;
-            border-radius: 8px;
-            border: none;
-            color: white;
-            cursor: pointer;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 30px;
-            line-height: 1;
-        }
-        
-        .tab-nav { margin-top: 80px; display: flex; justify-content: center; gap: 20px; }
-        .tab-btn { background-color: #5d6d7e; padding: 12px 25px; border-radius: 10px; color: white; border: none; font-size: 18px; cursor: pointer; }
-        .tab-content { margin-top: 40px; color: #ecf0f1; text-align: center; }
-        
-        #inventory {
-            text-align: center;
-            max-height: 60vh;
-            overflow-y: auto; /* 超出高度時可滑動 */
-            padding: 0 10px;
-        }
-        
-        .location-group { margin-bottom: 25px; border-bottom: 1px solid #5d6d7e; padding-bottom: 10px; }
-        
-        .location-title {
-            color: #f1c40f;
-            font-size: 20px;
-            margin-bottom: 10px;
-            text-align: center; /* 只要加上這一行，所有使用這個類別的標題都會置中 */
-        }
-        
-        .grid-container { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px;  justify-items: center; /* 這能確保 grid 內的項目內容也是置中的 */
-        }
-        
-        .creature-item { text-align: center; }
-        
-        .creature-img {
-            width: 60px;
-            height: 60px;
-            object-fit: contain;
-            margin: 0 auto;
-            display: block;
-            cursor: pointer;
-            transition: filter 0.5s ease; /* 增加平滑解鎖效果 */
-        }
-        
-        .is-locked {
-            filter: brightness(0) invert(1);
-        }
-        
-        .modal {
-            display: none; /* 預設隱藏 */
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            background-color: rgba(0, 0, 0, 0.9); /* 半透明深色背景 */
-            z-index: 9999;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-        }
-        
-        .modal.active { display: flex; } /* 顯示時使用 */
-        
-        .modal-content {
-            background: #34495e;
-            padding: 30px;
-            border-radius: 20px;
-            text-align: center;
-            max-width: 80%;
-        }
-        
-        .modal-img {
-            width: 200px; height: 200px;
-            filter: brightness(0) invert(1); /* 放大後變成白色方便觀察 */
-            object-fit: contain;
-        }
-        
-        .hint-text { margin-top: 20px; font-size: 20px; color: #f1c40f; }
-        
-        .upload-btn {
-            padding: 8px 18px;
-            font-size: 14px;
-            background-color: #27ae60;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            box-shadow: 0 4px 0 #1e8449; /* 底部厚度感 */
-            cursor: pointer; /* 關鍵：鼠標移上去變手指 */
-            transition: all 0.2s ease;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            margin-top: 0 !important; /* 強制覆蓋原本 button 的 margin-top */
-        }
-        
-        .upload-btn:hover {
-            background-color: #2ecc71;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 0 #1e8449;
-        }
-        
-        .upload-btn:active {
-            transform: translateY(2px);
-            box-shadow: 0 2px 0 #1e8449;
-        }
-        
-        .scroll-content {
-            max-height: 60vh; /* 限制最高為螢幕高度的 60% */
-            overflow-y: auto; /* 超出時顯示捲軸 */
-            padding: 20px;
-            margin: 20px auto;
-            background: rgba(0, 0, 0, 0.2); /* 輕微背景深色，增加閱讀性 */
-            border-radius: 15px;
-            width: 80%;
-            text-align: left; /* 安全須知通常靠左對齊較好閱讀 */
-            line-height: 1.6;
-        }
-        
-        .scroll-content::-webkit-scrollbar {
-            width: 6px;
-        }
-        
-        .scroll-content::-webkit-scrollbar-thumb {
-            background: #5d6d7e;
-            border-radius: 10px;
-        }
-        
-        .auth-input-group {
-            margin: 15px auto;
-            width: 80%;
-            max-width: 300px;
-            text-align: left;
-        }
-        
-        .auth-input-group input {
-            width: 100%;
-            padding: 10px;
-            border-radius: 5px;
-            border: 1px solid #ccc;
-            box-sizing: border-box;
-            font-size: 16px;
-        }
-        
-        .error-msg {
-            color: #ff4757;
-            font-size: 12px;
-            margin-top: 5px;
-            height: 15px; /* 固定高度防止跳動 */
-        }
-        
-        .auth-link {
-            text-decoration: underline;
-            cursor: pointer;
-            font-size: 14px;
-            color: #bdc3c7;
-            margin-top: 10px;
-            display: inline-block;
-        }
-        
-        #high-tide-action {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            width: 100%;
-        }
-        
+        .difficulty-container button { margin-top: 0; }
     </style>
 </head>
 <body>
-    
-    <button class="menu-button" onclick="toggleMenu()">
-        <div class="line"></div>
-        <div class="line"></div>
-        <div class="line"></div>
-    </button>
-    
-    <nav id="menu-drawer" class="menu-drawer">
-        <button class="close-button" onclick="toggleMenu()">×</button>
-        <div class="tab-nav">
-            <button class="tab-btn" onclick="switchTab('inventory')">圖鑑列表</button>
-            <button class="tab-btn" onclick="switchTab('achievement')">成就清單</button>
+
+    <div class="menu-btn" onclick="toggleMenu()">☰</div>
+
+    <div id="menu-drawer" class="menu-drawer">
+        <div class="menu-tabs">
+            <button class="tab-btn" onclick="switchTab('tab-bag')">背包</button>
+            <button class="tab-btn" onclick="switchTab('tab-book')">生物圖鑑</button>
         </div>
-            <div id="inventory" class="tab-content">
-                <div style="display: flex; justify-content: center; align-items: center; gap: 15px; margin-bottom: 20px;">
-                    <h2 style="margin: 0;">圖鑑列表</h2>
-                    <input type="file" id="photo-upload" accept="image/*" style="display: none;" onchange="handleFileUpload(event)">
-                    <button class="upload-btn" onclick="document.getElementById('photo-upload').click()">
-                        📷 上傳照片
-                    </button>
-                </div>
-        <div class="location-group">
-            <div class="location-title">河口濕地</div>
-            <div class="grid-container">
-                <div class="creature-item" onclick="openModal('Numenius_phaeopus.jpg')"><img src="Numenius_phaeopus.jpg" class="creature-img is-locked"><p class="creature-name" data-realname="中杓鷸">？？？</p></div>
-                <div class="creature-item" onclick="openModal('Calidris_alpina.jpg')"><img src="Calidris_alpina.jpg" class="creature-img is-locked"><p class="creature-name" data-realname="黑腹濱鷸">？？？</p></div>
-                <div class="creature-item" onclick="openModal('Uca.jpg')"><img src="Uca.jpg" class="creature-img is-locked"><p class="creature-name" data-realname="招潮蟹">？？？</p></div>
-                <div class="creature-item" onclick="openModal('Boleophthalmus_pectinirostris.jpg')"><img src="Boleophthalmus_pectinirostris.jpg" class="creature-img is-locked"><p class="creature-name" data-realname="大彈塗魚">？？？</p></div>
-            </div>
-        </div>
-        <div class="location-group">
-            <div class="location-title">感潮濕地</div>
-            <div class="grid-container">
-                <div class="creature-item" onclick="openModal('Ardea_cinerea.jpg')"><img src="Ardea_cinerea.jpg" class="creature-img is-locked"><p class="creature-name" data-realname="蒼鷺">？？？</p></div>
-                <div class="creature-item" onclick="openModal('Egretta_eulophotes.jpg')"><img src="Egretta_eulophotes.jpg" class="creature-img is-locked"><p class="creature-name" data-realname="唐白鷺">？？？</p></div>
-                <div class="creature-item" onclick="openModal('Pluvialis_fulva.jpg')"><img src="Pluvialis_fulva.jpg" class="creature-img is-locked"><p class="creature-name" data-realname="太平洋金班鴴">？？？</p></div>
-            </div>
-        </div>
-        <div class="location-group">
-            <div class="location-title">深水埤塘區</div>
-            <div class="grid-container">
-                <div class="creature-item" onclick="openModal('Anser_cygnoides.jpg')"><img src="Anser_cygnoides.jpg" class="creature-img is-locked"><p class="creature-name" data-realname="鴻雁">？？？</p></div>
-                <div class="creature-item" onclick="openModal('Gallinula_chloropus.jpg')"><img src="Gallinula_chloropus.jpg" class="creature-img is-locked"><p class="creature-name" data-realname="紅冠水雞">？？？</p></div>
-            </div>
-        </div>
-        <div class="location-group">
-            <div class="location-title">小燕鷗復育區</div>
-            <div class="grid-container">
-                <div class="creature-item" onclick="openModal('Sternula_albifrons.jpg')"><img src="Sternula_albifrons.jpg" class="creature-img is-locked"><p class="creature-name" data-realname="小燕鷗">？？？</p></div>
-                <div class="creature-item" onclick="openModal('Anarhynchus_alexandrinus.jpg')"><img src="Anarhynchus_alexandrinus.jpg" class="creature-img is-locked"><p class="creature-name" data-realname="東方環頸鴴">？？？</p></div>
+        <div id="tab-bag" class="tab-content"><h3>目前背包空空如也...</h3></div>
+        <div id="tab-book" class="tab-content">
+            <div class="creature-grid">
+                <div class="creature-item"><img src="Numenius_phaeopus.jpg" class="creature-img is-locked" onclick="openModal(this.src)"><div class="creature-name" data-realname="中杓鷸">？？？</div></div>
+                <div class="creature-item"><img src="Calidris_alpina.jpg" class="creature-img is-locked" onclick="openModal(this.src)"><div class="creature-name" data-realname="黑腹濱鷸">？？？</div></div>
+                <div class="creature-item"><img src="Uca.jpg" class="creature-img is-locked" onclick="openModal(this.src)"><div class="creature-name" data-realname="招潮蟹">？？？</div></div>
+                <div class="creature-item"><img src="Boleophthalmus_pectinirostris.jpg" class="creature-img is-locked" onclick="openModal(this.src)"><div class="creature-name" data-realname="大彈塗魚">？？？</div></div>
+                <div class="creature-item"><img src="Ardea_cinerea.jpg" class="creature-img is-locked" onclick="openModal(this.src)"><div class="creature-name" data-realname="蒼鷺">？？？</div></div>
+                <div class="creature-item"><img src="Egretta_eulophotes.jpg" class="creature-img is-locked" onclick="openModal(this.src)"><div class="creature-name" data-realname="唐白鷺">？？？</div></div>
+                <div class="creature-item"><img src="Pluvialis_fulva.jpg" class="creature-img is-locked" onclick="openModal(this.src)"><div class="creature-name" data-realname="太平洋金班鴴">？？？</div></div>
+                <div class="creature-item"><img src="Anser_cygnoides.jpg" class="creature-img is-locked" onclick="openModal(this.src)"><div class="creature-name" data-realname="鴻雁">？？？</div></div>
+                <div class="creature-item"><img src="Gallinula_chloropus.jpg" class="creature-img is-locked" onclick="openModal(this.src)"><div class="creature-name" data-realname="紅冠水雞">？？？</div></div>
+                <div class="creature-item"><img src="Sternula_albifrons.jpg" class="creature-img is-locked" onclick="openModal(this.src)"><div class="creature-name" data-realname="小燕鷗">？？？</div></div>
+                <div class="creature-item"><img src="Anarhynchus_alexandrinus.jpg" class="creature-img is-locked" onclick="openModal(this.src)"><div class="creature-name" data-realname="東方環頸鴴">？？？</div></div>
             </div>
         </div>
     </div>
-        <div id="achievement" class="tab-content hidden">
-            <h2>成就清單</h2>
-            <div class="location-group">
-                <div class="location-title">新手任務</div> 
-                <div class="grid-container">
-                    <div class="creature-item" onclick="openModal('badge1.png', '恭喜你！在早餐挑戰賽中獲得最佳員工殊榮！')">
-                        <img src="badge1.png" class="silhouette">
-                        <p>最佳員工</p>
-                    </div>
-                </div>
-            </div>
-            <div class="location-group">
-                <div class="location-title">隱藏秘辛</div>
-                <div class="grid-container">
-                    <div class="creature-item" onclick="openModal('badge2.png', '你找到了隱藏的美味秘方！')">
-                        <img src="badge2.png" class="silhouette">
-                        <p>秘方收藏家</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </nav>
+
     <div id="home-page" class="page" onclick="skipTypewriter()">
-        <img src="title.jpg" alt="遊戲標題" class="title-image">
-        <div id="typewriter-text" style="min-height: 120px; padding: 0 20px; font-size: 24px; line-height: 1.6; margin-bottom: 20px;"></div>
-        <button id="start-btn" onclick="showPage('safety-page')" class="hidden">是的船長！</button>
+        <img src="https://media.discordapp.net/attachments/1126781297594900543/1305413444005171241/d41a780e07172ec1.png?ex=6732f703&is=6731a583&hm=2aef31835560b49cb376e7f7ca72d4ccf1ccf11f44e1f7cbf5a2f5c765ccdfd0&=&format=webp&quality=lossless&width=531&height=531" class="title-image" alt="Title">
+        <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 0 20px;">
+            <div id="typewriter-text" style="min-height: 120px; max-width: 600px; font-size: 22px; line-height: 1.8; margin-bottom: 20px;"></div>
+            <button id="start-btn" class="hidden" onclick="event.stopPropagation(); showPage('mode-page')">開始冒險</button>
+        </div>
     </div>
-    <div id="safety-page" class="page hidden">
-        <h1>安全須知</h1>
-        <div class="scroll-content">
-            <p>（內容）</p>
-            <p>1. 請注意腳下濕滑。</p>
-            <p>2. 觀察生物時請保持距離。</p>
-            <p>3. 請勿留下垃圾。</p>
-            <p>（這裡可以繼續增加文字...）</p>
-        </div>
-        <button onclick="showPage('register-page')">閱讀完畢</button>
-    </div>
-    <div id="register-page" class="page hidden">
-        <h1>建立帳號</h1>
-        <p style="font-size: 14px; color: #bdc3c7;">避免遊戲進度遺失，需要您建立一個遊戲帳號。我們不會取得任何個資相關內容，只是為了保留遊戲進度，不必擔心。</p>
-        <div class="auth-input-group">
-            <input type="text" id="reg-username" placeholder="請輸入帳號名稱" oninput="validateRegister()">
-            <div id="reg-user-err" class="error-msg"></div>
-        </div>
-        <div class="auth-input-group">
-            <input type="password" id="reg-password" placeholder="請輸入6位數字並記好密碼(可以截圖)" maxlength="6" oninput="validateRegister()">
-            <div id="reg-pass-err" class="error-msg"></div>
-        </div>
-        <span class="auth-link" onclick="showPage('login-page')">已有帳號 進行登入</span><br>
-        <button id="reg-btn" onclick="handleAuth('register')" disabled style="opacity: 0.5;">開始遊戲</button>
-    </div>
-    <div id="login-page" class="page hidden">
-        <h1>帳號登入</h1>
-        <div class="auth-input-group">
-            <input type="text" id="login-username" placeholder="請輸入帳號名稱" oninput="validateLogin()">
-            <div id="login-user-err" class="error-msg"></div>
-        </div>
-        <div class="auth-input-group">
-            <input type="password" id="login-password" placeholder="請輸入6位數字密碼" maxlength="6" oninput="validateLogin()">
-            <div id="login-pass-err" class="error-msg"></div>
-        </div>
-        <span class="auth-link" onclick="showPage('register-page')">返回建立帳號</span><br>
-        <button id="login-btn" onclick="handleAuth('login')" disabled style="opacity: 0.5;">開始遊戲</button>
-    </div>
-    <div id="game-page" class="page hidden">
-        <h1>請選擇難度</h1>
+
+    <div id="mode-page" class="page hidden">
+        <h1>請選擇挑戰模式</h1>
         <div class="difficulty-container">
-            <button onclick="showPage('easy-page')">簡單</button>
-            <button onclick="showPage('hard-page')">困難</button>
+            <button onclick="showPage('normal-auth-page')">一般模式</button>
+            <button onclick="showPage('hard-auth-page')">困難模式</button>
         </div>
-        </div>
-    <div id="easy-page" class="page hidden">
-        <h1>叫海綿寶寶做蟹堡...</h1>
-        <p>讓章魚哥吹豎笛 與 派大星找到你了 功能</p>
-        <button onclick="showPage('game-page')">返回選擇</button>
     </div>
+
+    <div id="normal-auth-page" class="page hidden">
+        <h1>一般模式 - 團隊登入</h1>
+        <div class="auth-container">
+            <input type="text" id="login-username" placeholder="請輸入隊名" oninput="validateLogin()">
+            <input type="password" id="login-password" placeholder="密碼 (6位數字)" maxlength="6" oninput="validateLogin()">
+            <div id="login-pass-err" class="error-msg"></div>
+            <button id="login-btn" onclick="handleAuth('login')" disabled style="opacity: 0.5;">開始遊戲</button>
+        </div>
+        <button onclick="showPage('mode-page')" style="background-color:#7f8c8d; box-shadow:0 5px 0 #95a5a6;">返回</button>
+    </div>
+
+    <div id="hard-auth-page" class="page hidden">
+        <h1>困難模式 - 建立團隊</h1>
+        <div class="auth-container">
+            <input type="text" id="reg-username" placeholder="請輸入隊名" oninput="validateRegister()">
+            <input type="password" id="reg-password" placeholder="設定密碼 (6位數字)" maxlength="6" oninput="validateRegister()">
+            <div id="reg-pass-err" class="error-msg"></div>
+            <button id="reg-btn" onclick="handleAuth('register')" disabled style="opacity: 0.5;">開始遊戲</button>
+        </div>
+        <button onclick="showPage('mode-page')" style="background-color:#7f8c8d; box-shadow:0 5px 0 #95a5a6;">返回</button>
+    </div>
+
+    <div id="game-page" class="page hidden">
+        <h1>發現野生動物！</h1>
+        <p>請拍攝並上傳照片來辨識生物</p>
+        <div style="margin-top: 30px;">
+            <input type="file" id="photo-input" accept="image/*" style="display: none;" onchange="handleFileUpload(event)">
+            <button onclick="document.getElementById('photo-input').click()">開啟相機 / 上傳照片</button>
+        </div>
+    </div>
+
     <div id="hard-page" class="page hidden" onclick="skipHardTypewriter()">
         <h1>任務起源</h1>
         <div class="scroll-content">
-            <div id="hard-typewriter-text" style="min-height: 150px; font-size: 18px; line-height: 1.8;"></div>
+            <div id="hard-typewriter-text" style="min-height: 150px; font-size: 18px; line-height: 1.8; text-align: left;"></div>
         </div>
-        <button id="hard-read-btn" class="hidden" onclick="showPage('game-real-hard-content')">閱讀完畢</button>
+        <button id="hard-read-btn" class="hidden" onclick="event.stopPropagation(); showPage('game-real-hard-content')">閱讀完畢</button>
     </div>
+
     <div id="game-real-hard-content" class="page hidden" onclick="skipQ1Typewriter()">
         <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%;">
             <div id="q1-typewriter-text" style="font-size: 22px; line-height: 1.8; margin-bottom: 20px; width: 80%;"></div>
             <div id="q1-btns" class="difficulty-container hidden">
-                <button onclick="goToHighTidePage()">漲潮</button>
-                <button onclick="showPage('low-tide-page')">退潮</button>
+                <button onclick="event.stopPropagation(); showPage('high-tide-page')">漲潮</button>
+                <button onclick="event.stopPropagation(); showPage('low-tide-page')">退潮</button>
             </div>
         </div>
     </div>
 
     <div id="high-tide-page" class="page hidden" onclick="skipHighTideTypewriter()">
-        <h1 id="high-tide-title">漲潮</h1>
+        <h1>漲潮</h1>
         <div class="scroll-content">
-            <div id="high-tide-text" style="min-height: 150px; font-size: 18px; line-height: 1.8;"></div>
+            <div id="high-tide-text" style="min-height: 150px; font-size: 18px; line-height: 1.8; padding: 0 20px; text-align: left;"></div>
         </div>
-        <div id="high-tide-action" class="hidden"></div>
+        <div id="high-tide-action" class="hidden" style="display: flex; justify-content: center; align-items: center; width: 100%;"></div>
     </div>
-    
+
     <div id="hint-modal" class="modal" onclick="closeHintModal()">
         <div class="modal-content" onclick="event.stopPropagation()">
             <h2 style="color: #f1c40f;">提示：</h2>
@@ -429,38 +218,100 @@
             </p>
         </div>
     </div>
-    
-    <div id="high-tide-page" class="page hidden" onclick="skipHighTideTypewriter()">
-        <h1 id="high-tide-title">漲潮</h1>
-        <div class="scroll-content">
-            <div id="high-tide-text" style="min-height: 150px; font-size: 18px; line-height: 1.8; padding: 0 20px; text-align: left;"></div>
+
+    <div id="creature-modal" class="modal" onclick="closeModal()">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <img id=\"modal-img\" class="modal-img" src="" alt="Creature">
+            <div class="hint-text">
+                <p id="modal-text"></p>
+            </div>
         </div>
-        <div id="high-tide-action" class="hidden"></div>
     </div>
-    <div id="low-tide-page" class="page hidden">
-        <h1>現在是退潮</h1>
-        <button onclick="showPage('game-page')">返回</button>
-    </div>
+
     <script>
-       // ==========================================
-        // ⭐ 漲潮頁面專用變數（確保全域只宣告這一次）
-        // ==========================================
-        let isHighTideTyping = false;
+        // --- 1. 設定與生物資料 ---
+        const GLOBAL_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxtmxfP0xlAP-fK3UVEy_QzPbvAuQh-vJ_Vcs5iplYtC6xUOIO1b8YGzv-aKjfRH3aUWA/exec";
+        const creatureData = {
+            "Numenius_phaeopus.jpg": { name: "中杓鷸", hint: "(提示)", info: "(內容)", ebird: "https://ebird.org/species/whimbr" },
+            "Calidris_alpina.jpg": { name: "黑腹濱鷸", hint: "(提示)", info: "(內容)", ebird: "https://ebird.org/species/whimbr" },
+            "Uca.jpg": { name: "招潮蟹", hint: "(提示)", info: "(內容)", ebird: "https://ebird.org/species/whimbr" },
+            "Boleophthalmus_pectinirostris.jpg": { name: "大彈塗魚", hint: "(提示)", info: "(內容)", ebird: "https://ebird.org/species/whimbr" },
+            "Ardea_cinerea.jpg": { name: "蒼鷺", hint: "(提示)", info: "(內容)", ebird: "https://ebird.org/species/whimbr" },
+            "Egretta_eulophotes.jpg": { name: "唐白鷺", hint: "(提示)", info: "(內容)", ebird: "https://ebird.org/species/whimbr" },
+            "Pluvialis_fulva.jpg": { name: "太平洋金班鴴", hint: "(提示)", info: "(內容)", ebird: "https://ebird.org/species/whimbr" },
+            "Anser_cygnoides.jpg": { name: "鴻雁", hint: "(提示)", info: "(內容)", ebird: "https://ebird.org/species/whimbr" },
+            "Gallinula_chloropus.jpg": { name: "紅冠水雞", hint: "(提示)", info: "(內容)", ebird: "https://ebird.org/species/whimbr" },
+            "Sternula_albifrons.jpg": { name: "小燕鷗", hint: "(提示)", info: "(內容)", ebird: "https://ebird.org/species/whimbr" },
+            "Anarhynchus_alexandrinus.jpg": { name: "東方環頸鴴", hint: "(提示)", info: "(內容)", ebird: "https://ebird.org/species/whimbr" }
+        };
+
+        // --- 全域變數宣告區 ---
+        const fullText = "歡迎來到陳冠宇與他的十二個惡魔，在這裡你需要扮演一位小小史學家，因為一個故事而來到許厝港，利用一些跟濕地有關的知識，一步一步解開任務，體會有關這個地方的歷史故事。";
+        let charIndex = 0;
+        let isTyping = false;
+        let typeTimeout;
+        let currentUser = null;
+
+        const hardText = "某天，你從網路上看到了一個匿名文章，內容大概是一個繁榮商港的興衰紀錄文獻，他希望能有人找出這個地方是哪裡，當然也會給予相對的報酬。但是並沒有實際的地名可以依據。因此留言區當然開始吵到底是府城、鹿港或是大稻埕時……聰明的你仔細閱讀了文獻發現：這不太像目前熟知的各大港口呢？然後你去查了一下資料發現，老街溪與雙溪口溪的河口，這個地方剛好叫「許厝港濕地」。但，這是濕地啊？沒想到以前竟然是個海港？ 於是為了報酬（神奇小卡）你決定來這裡一探究竟～";
+        let hardCharIndex = 0;
+        let isHardTyping = false;
+        let hardTypeTimeout;
+
+        const q1MainText = "首先來到濕地，要確認現在是漲潮還是退潮。這會影響到等等的調查順序。\n\nQ1：請問現在是漲潮還是退潮？";
+        const q1HintHtml = '<br><span style="font-size: 16px; color: #bdc3c7; text-decoration: underline; cursor: pointer;" onclick="event.stopPropagation(); openHintModal();">提示</span>';
+        let q1CharIndex = 0;
+        let isQ1Typing = false;
+        let q1TypeTimeout;
+
+        const highTideText = "看來是漲潮呢，那麼繼續往西南方那座橋（許厝港大橋）走好了。在這之前，剛才走過來的路上好像有看到一些水筆仔之類的植物長在泥巴地上，不愧是濕地呢。但我依稀記得好像有些水筆仔的葉子變黃了，難道秋天來得這麼快嗎？畢竟台灣的春夏秋冬是出了名的沒規則可言。但又很怪，一般植物在枯黃的時候會只枯黃一難道兩片葉子嗎？";
         let highTideCharIndex = 0;
+        let isHighTideTyping = false;
         let highTideTypeTimeout;
+
+        // --- 2. 打字機邏輯 (首頁) ---
+        function startTypewriter() {
+            const container = document.getElementById('typewriter-text');
+            const btn = document.getElementById('start-btn');
+            if(!container) return;
+            container.innerHTML = "";
+            charIndex = 0;
+            isTyping = true;
+            if(btn) btn.classList.add('hidden');
+            
+            function type() {
+                if (charIndex < fullText.length) {
+                    container.innerHTML += fullText.charAt(charIndex);
+                    charIndex++;
+                    typeTimeout = setTimeout(type, 100);
+                } else {
+                    completeTyping();
+                }
+            }
+            type();
+        }
+        
+        function skipTypewriter() {
+            if (!isTyping) return;
+            clearTimeout(typeTimeout);
+            document.getElementById('typewriter-text').innerHTML = fullText;
+            completeTyping();
+        }
+        
+        function completeTyping() {
+            isTyping = false;
+            const btn = document.getElementById('start-btn');
+            if(btn) btn.classList.remove('hidden');
+        }
 
         // --- 3. 頁面導換邏輯 ---
         function showPage(pageId) {
-            // 1. 先隱藏所有頁面
             document.querySelectorAll('.page').forEach(page => page.classList.add('hidden'));
             
-            // 2. 顯示目標頁面
             const targetPage = document.getElementById(pageId);
             if (targetPage) {
                 targetPage.classList.remove('hidden');
             }
             
-            // 3. 根據切換到的頁面 ID，確實啟動各自獨立的打字機效果
             if (pageId === 'home-page') {
                 startTypewriter();
             } else if (pageId === 'hard-page') {
@@ -468,12 +319,10 @@
             } else if (pageId === 'game-real-hard-content') {
                 startQ1Typewriter();
             } else if (pageId === 'high-tide-page') {
-                // 當進入漲潮頁面時，立刻執行漲潮打字機
                 initHighTidePage(); 
             }
         }
 
-        // 網頁首次加載時，自動安全地呼叫首頁打字機
         window.onload = function() {
             startTypewriter();
         };
@@ -529,10 +378,11 @@
                 if (result.result === 'success') {
                     currentUser = user;
                     alert(isReg ? "帳號建立成功！" : "登入成功！");
-                    showPage('game-page');
+                    showPage(isReg ? 'hard-page' : 'game-page');
                 } else {
                     const errId = isReg ? 'reg-user-err' : 'login-pass-err';
-                    document.getElementById(errId).innerText = "*" + result.message;
+                    const targetErrEl = document.getElementById(errId);
+                    if(targetErrEl) targetErrEl.innerText = "*" + result.message;
                     btn.disabled = false;
                 }
             } catch (e) {
@@ -606,6 +456,7 @@
         function openModal(imgSrc) {
             const modalImg = document.getElementById('modal-img');
             const modalTextElement = document.getElementById('modal-text');
+            if(!modalImg || !modalTextElement) return;
             modalImg.src = imgSrc;
             const fileName = imgSrc.split('/').pop(); 
             const data = creatureData[fileName] || { name: "未知", hint: "無", info: "無" };
@@ -760,13 +611,5 @@
             alert("前往下一題！");
         }
     </script>
-    <div id="creature-modal" class="modal" onclick="closeModal()">
-        <div class="modal-content" onclick="event.stopPropagation()">
-            <img id="modal-img" class="modal-img" src="" alt="Creature">
-            <div class="hint-text">
-                <p id="modal-text"></p>
-            </div>
-        </div>
-    </div>
 </body>
 </html>
