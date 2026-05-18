@@ -514,6 +514,20 @@
         </div>
         <div id="q2-success-action" class="hidden" style="margin-top: 25px;"></div>
     </div>
+
+    <div id="q3-page" class="page hidden">
+        <h1 style="color: #f1c40f; font-size: 32px; margin-bottom: 5px;">問題：</h1>
+        <h2 style="font-size: 22px; padding: 0 25px; line-height: 1.6; font-weight: normal;">
+            為什麼在河口和海洋交界處會有沙洲？
+        </h2>
+        
+        <div class="q2-btn-container">
+            <button class="q2-option-btn" onclick="checkQ3Answer(false)">海陸交界處剛好也是海風跟陸風交會，更容易帶來砂石</button>
+            <button class="q2-option-btn" onclick="checkQ3Answer(false)">海鳥和水中生物喜歡在這裡排泄，提供更多雜質累積沉積物</button>
+            <button class="q2-option-btn" onclick="checkQ3Answer(true)">海水和河水交會之處，容易堆積沉積物</button>
+            <button class="q2-option-btn" onclick="checkQ3Answer(false)">東方神秘力量還在作祟</button>
+        </div>
+    </div>
     
     <div id="low-tide-page" class="page hidden">
         <h1>現在是退潮</h1>
@@ -838,10 +852,21 @@
             }
         }
 
-        // 點擊「閱讀完畢」後的動作
+        // 點擊「閱讀完畢」按鈕後觸發：切換到問題三頁面
         function goToNextStage() {
-            alert("觸發閱讀完畢！接下來可以準備進入下一道謎題或探索囉～");
-            // showPage('下一個頁面的id'); // 留給您之後擴充
+            showPage('q3-page');
+        }
+
+        // 判斷問題三的答案
+        function checkQ3Answer(isCorrect) {
+            if (isCorrect) {
+                alert("🎉 答對了！當河流流速減緩與海水交會時，泥沙就會在這裡慢慢沉積形成沙洲。");
+                // 這裡可以繼續導向下一頁，例如：
+                // showPage('下一個劇情的頁面id'); 
+            } else {
+                alert("❌ 答案好像不太對喔...再仔細想想看河流與海洋的關係吧！");
+                // 答錯了，不切換頁面，讓玩家在原本的 q3-page 繼續點選其他選項
+            }
         }
 
         function openHintModal() {
