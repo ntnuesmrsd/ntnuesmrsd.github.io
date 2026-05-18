@@ -442,80 +442,12 @@
         <button onclick="showPage('game-page')">返回</button>
     </div>
     <script>
-        // --- 1. 設定區：請將下方的網址換成你最新部署的、合併了「登入」與「照片」功能的 GAS 網址 ---
-        const GLOBAL_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxtmxfP0xlAP-fK3UVEy_QzPbvAuQh-vJ_Vcs5iplYtC6xUOIO1b8YGzv-aKjfRH3aUWA/exec";
-        const creatureData = {
-            "Numenius_phaeopus.jpg": { name: "中杓鷸", hint: "(提示)", info: "(內容)", ebird: "https://ebird.org/species/whimbr" },
-            "Calidris_alpina.jpg": { name: "黑腹濱鷸", hint: "(提示)", info: "(內容)", ebird: "https://ebird.org/species/whimbr" },
-            "Uca.jpg": { name: "招潮蟹", hint: "(提示)", info: "(內容)", ebird: "https://ebird.org/species/whimbr" },
-            "Boleophthalmus_pectinirostris.jpg": { name: "大彈塗魚", hint: "(提示)", info: "(內容)", ebird: "https://ebird.org/species/whimbr" },
-            "Ardea_cinerea.jpg": { name: "蒼鷺", hint: "(提示)", info: "(內容)", ebird: "https://ebird.org/species/whimbr" },
-            "Egretta_eulophotes.jpg": { name: "唐白鷺", hint: "(提示)", info: "(內容)", ebird: "https://ebird.org/species/whimbr" },
-            "Pluvialis_fulva.jpg": { name: "太平洋金班鴴", hint: "(提示)", info: "(內容)", ebird: "https://ebird.org/species/whimbr" },
-            "Anser_cygnoides.jpg": { name: "鴻雁", hint: "(提示)", info: "(內容)", ebird: "https://ebird.org/species/whimbr" },
-            "Gallinula_chloropus.jpg": { name: "紅冠水雞", hint: "(提示)", info: "(內容)", ebird: "https://ebird.org/species/whimbr" },
-            "Sternula_albifrons.jpg": { name: "小燕鷗", hint: "(提示)", info: "(內容)", ebird: "https://ebird.org/species/whimbr" },
-            "Anarhynchus_alexandrinus.jpg": { name: "東方環頸鴴", hint: "(提示)", info: "(內容)", ebird: "https://ebird.org/species/whimbr" }
-        };
-
-        // --- 全域變數宣告區 ---
-        const fullText = "歡迎來到陳冠宇與他的十二個惡魔，在這裡你需要扮演一位小小史學家，因為一個故事而來到許厝港，利用一些跟濕地有關的知識，一步一步解開任務，體會有關這個地方的歷史故事。";
-        let charIndex = 0;
-        let isTyping = false;
-        let typeTimeout;
-        let currentUser = null;
-
-        const hardText = "某天，你從網路上看到了一個匿名文章，內容大概是一個繁榮商港的興衰紀錄文獻，他希望能有人找出這個地方是哪裡，當然也會給予相對的報酬。但是並沒有實際的地名可以依據。因此留言區當然開始吵到底是府城、鹿港或是大稻埕時……聰明的你仔細閱讀了文獻發現：這不太像目前熟知的各大港口呢？然後你去查了一下資料發現，老街溪與雙溪口溪的河口，這個地方剛好叫「許厝港濕地」。但，這是濕地啊？沒想到以前竟然是個海港？ 於是為了報酬（神奇小卡）你決定來這裡一探究竟～";
-        let hardCharIndex = 0;
-        let isHardTyping = false;
-        let hardTypeTimeout;
-
-        const q1MainText = "首先來到濕地，要確認現在是漲潮還是退潮。這會影響到等等的調查順序。\n\nQ1：請問現在是漲潮還是退潮？";
-        const q1HintHtml = '<br><span style="font-size: 16px; color: #bdc3c7; text-decoration: underline; cursor: pointer;" onclick="event.stopPropagation(); openHintModal();">提示</span>';
-        let q1CharIndex = 0;
-        let isQ1Typing = false;
-        let q1TypeTimeout;
-
-        // ⭐【修正點 1】確實宣告漲潮頁面的控制變數，避免 ReferenceError
-        const highTideText = "看來是漲潮呢，那麼繼續往西南方那座橋（許厝港大橋）走好了。在這之前，剛才走過來的路上好像有看到一些水筆仔之類的植物長在泥巴地上，不愧是濕地呢。但我依稀記得好像有些水筆仔的葉子變黃了，難道秋天來得這麼快嗎？畢竟台灣的春夏秋冬是出了名的沒規則可言。但又很怪，一般植物在枯黃的時候會只枯黃一兩片葉子嗎？";
-        let highTideCharIndex = 0;
+       // ==========================================
+        // ⭐ 漲潮頁面專用變數（確保全域只宣告這一次）
+        // ==========================================
         let isHighTideTyping = false;
+        let highTideCharIndex = 0;
         let highTideTypeTimeout;
-
-        // --- 2. 打字機邏輯 (首頁) ---
-        function startTypewriter() {
-            const container = document.getElementById('typewriter-text');
-            const btn = document.getElementById('start-btn');
-            if(!container) return;
-            container.innerHTML = "";
-            charIndex = 0;
-            isTyping = true;
-            if(btn) btn.classList.add('hidden');
-            
-            function type() {
-                if (charIndex < fullText.length) {
-                    container.innerHTML += fullText.charAt(charIndex);
-                    charIndex++;
-                    typeTimeout = setTimeout(type, 100);
-                } else {
-                    completeTyping();
-                }
-            }
-            type();
-        }
-        
-        function skipTypewriter() {
-            if (!isTyping) return;
-            clearTimeout(typeTimeout);
-            document.getElementById('typewriter-text').innerHTML = fullText;
-            completeTyping();
-        }
-        
-        function completeTyping() {
-            isTyping = false;
-            const btn = document.getElementById('start-btn');
-            if(btn) btn.classList.remove('hidden');
-        }
 
         // --- 3. 頁面導換邏輯 ---
         function showPage(pageId) {
@@ -528,7 +460,7 @@
                 targetPage.classList.remove('hidden');
             }
             
-            // 3. 根據切換到的頁面 ID，確實啟動各自獨立的打字機效果（這次完全包在 showPage 裡面了）
+            // 3. 根據切換到的頁面 ID，確實啟動各自獨立的打字機效果
             if (pageId === 'home-page') {
                 startTypewriter();
             } else if (pageId === 'hard-page') {
@@ -536,11 +468,12 @@
             } else if (pageId === 'game-real-hard-content') {
                 startQ1Typewriter();
             } else if (pageId === 'high-tide-page') {
-                // ⭐ 確實連動：進入漲潮頁面後，立刻執行漲潮打字機
+                // 當進入漲潮頁面時，立刻執行漲潮打字機
                 initHighTidePage(); 
             }
         }
-        // ⭐【修正點 3】網頁首次加載時，自動安全地呼叫首頁打字機
+
+        // 網頁首次加載時，自動安全地呼叫首頁打字機
         window.onload = function() {
             startTypewriter();
         };
