@@ -508,7 +508,6 @@
     </div>
     
     <div id="q2-success-page" class="page hidden" onclick="skipQ2SuccessTypewriter()">
-        <h1 style="font-size: 32px; margin-bottom: 5px;">漫步</h1>
         <div class="scroll-content">
             <div id="q2-success-text" style="min-height: 150px; font-size: 19px; line-height: 1.8; text-align: left; letter-spacing: 1px; color: white;"></div>
         </div>
@@ -516,10 +515,9 @@
     </div>
 
     <div id="q3-page" class="page hidden">
-        <h1 style="color: #f1c40f; font-size: 32px; margin-bottom: 5px;">問題：</h1>
-        <h2 style="font-size: 22px; padding: 0 25px; line-height: 1.6; font-weight: normal;">
-            為什麼在河口和海洋交界處會有沙洲？
-        </h2>
+        <h1 style="font-size: 22px; padding: 0 25px; line-height: 1.6; font-weight: normal;">
+            問題：為什麼在河口和海洋交界處會有沙洲？
+        </h1>
         
         <div class="q2-btn-container">
             <button class="q2-option-btn" onclick="checkQ3Answer(false)">海陸交界處剛好也是海風跟陸風交會，更容易帶來砂石</button>
@@ -527,6 +525,13 @@
             <button class="q2-option-btn" onclick="checkQ3Answer(true)">海水和河水交會之處，容易堆積沉積物</button>
             <button class="q2-option-btn" onclick="checkQ3Answer(false)">東方神秘力量還在作祟</button>
         </div>
+    </div>
+
+    <div id="q3-success-page" class="page hidden" onclick="skipQ3SuccessTypewriter()">
+        <div class="scroll-content">
+            <div id="q3-success-text" style="min-height: 120px; font-size: 19px; line-height: 1.8; text-align: left; letter-spacing: 1px; color: white;"></div>
+        </div>
+        <div id="q3-success-action" class="hidden" style="margin-top: 25px;"></div>
     </div>
     
     <div id="low-tide-page" class="page hidden">
@@ -588,6 +593,12 @@
         let isQ2SuccessTyping = false;
         let q2SuccessCharIndex = 0;
         let q2SuccessTypeTimeout;
+
+        // 劇情文字內容
+        const q3SuccessText = "啊！不行，我必須得來尋找這裡就是文獻中所描述的地方的證據。再混下去搞不好報酬就被別人拿走了。";
+        let isQ3SuccessTyping = false;
+        let q3SuccessCharIndex = 0;
+        let q3SuccessTypeTimeout;
 
         // ==========================================
         // --- 1. 頁面導換與網頁初始化 ---
@@ -857,16 +868,72 @@
             showPage('q3-page');
         }
 
-        // 判斷問題三的答案
+        // 判斷問題三的答案（更新版）
         function checkQ3Answer(isCorrect) {
             if (isCorrect) {
                 alert("🎉 答對了！當河流流速減緩與海水交會時，泥沙就會在這裡慢慢沉積形成沙洲。");
-                // 這裡可以繼續導向下一頁，例如：
-                // showPage('下一個劇情的頁面id'); 
+                // 答對了！跳轉到清醒劇情頁面
+                showPage('q3-success-page');
+                // 啟動專用打字機
+                initQ3SuccessPage();
             } else {
                 alert("❌ 答案好像不太對喔...再仔細想想看河流與海洋的關係吧！");
-                // 答錯了，不切換頁面，讓玩家在原本的 q3-page 繼續點選其他選項
             }
+        }
+
+        // 初始化並啟動清醒劇情打字機
+        function initQ3SuccessPage() {
+            const textContainer = document.getElementById('q3-success-text');
+            const actionBtnContainer = document.getElementById('q3-success-action');
+            if(!textContainer) return;
+
+            // 初始化重置
+            textContainer.innerHTML = "";
+            if(actionBtnContainer) {
+                actionBtnContainer.innerHTML = "";
+                actionBtnContainer.classList.add('hidden');
+            }
+
+            isQ3SuccessTyping = true;
+            q3SuccessCharIndex = 0;
+
+            function type() {
+                if (!isQ3SuccessTyping) return;
+                if (q3SuccessCharIndex < q3SuccessText.length) {
+                    textContainer.innerHTML += q3SuccessText.charAt(q3SuccessCharIndex);
+                    q3SuccessCharIndex++;
+                    q3SuccessTypeTimeout = setTimeout(type, 40); // 舒服的40毫秒打字速度
+                } else {
+                    completeQ3SuccessTyping();
+                }
+            }
+            type();
+        }
+
+        // 點擊空白處可瞬間跳過打字機動畫
+        function skipQ3SuccessTypewriter() {
+            if (!isQ3SuccessTyping) return;
+            clearTimeout(q3SuccessTypeTimeout);
+            document.getElementById('q3-success-text');
+            document.getElementById('q3-success-text').innerHTML = q3SuccessText;
+            completeQ3SuccessTyping();
+        }
+
+        // 打字結束，跳出紅色「回答問題」按鈕
+        function completeQ3SuccessTyping() {
+            isQ3SuccessTyping = false;
+            const actionBtnContainer = document.getElementById('q3-success-action');
+            if (actionBtnContainer) {
+                // 產生回答問題按鈕，並綁定前往下一個任務的函式
+                actionBtnContainer.innerHTML = '<button id="q3-answer-btn" onclick="goToNextMission()">回答問題</button>';
+                actionBtnContainer.classList.remove('hidden');
+            }
+        }
+
+        // 點擊「回答問題」後的動作
+        function goToNextMission() {
+            alert("觸發回答問題！即將進入文獻比對或哨塔等下一個核心任務！");
+            // showPage('下一個任務的頁面id'); // 留給您之後擴充
         }
 
         function openHintModal() {
