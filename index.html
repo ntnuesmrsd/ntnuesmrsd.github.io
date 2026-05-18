@@ -305,6 +305,28 @@
             transform: translateY(4px);
             box-shadow: 0 0px 0 #c0392b;
         }
+        /* 📝 問題二專用：由上到下直列按鈕排版容器 */
+        .q2-btn-container {
+            display: flex;
+            flex-direction: column; /* 關鍵：強制由上到下直排 */
+            align-items: center;
+            gap: 15px;              /* 按鈕彼此間的間距 */
+            margin-top: 30px;
+            width: 100%;
+        }
+
+        /* 讓長文字按鈕在手機上更好看 */
+        .q2-option-btn {
+            width: 85%;             /* 限制按鈕寬度，不貼死螢幕 */
+            max-width: 500px;
+            padding: 14px 20px !important;
+            font-size: 18px !important; /* 稍微縮小字體以適應長文字 */
+            line-height: 1.4;
+            white-space: normal;    /* 允許長文字自動換行 */
+            word-break: break-all;
+            margin-top: 0 !important; /* 覆蓋原本預設的 margin */
+            border-radius: 12px !important;
+        }
     </style>
 </head>
 <body>
@@ -469,6 +491,20 @@
             <p style="font-size: 18px; line-height: 1.6; text-align: left;">
                 沿著路往東南走會經過一條很小的溪流，觀察水的流向是流向大海還是陸地。
             </p>
+        </div>
+    </div>
+    
+    <div id="q2-page" class="page hidden">
+        <h1 style="color: #f1c40f; font-size: 32px; margin-bottom: 5px;">問題：</h1>
+        <h2 style="font-size: 22px; padding: 0 25px; line-height: 1.6; font-weight: normal;">
+            為什麼那些水筆仔的葉片會枯黃？
+        </h2>
+        
+        <div class="q2-btn-container">
+            <button class="q2-option-btn" onclick="checkQ2Answer(false)">單純只是剛開始枯掉，之後就會漸漸整支掉落</button>
+            <button class="q2-option-btn" onclick="checkQ2Answer(false)">生長角度的關係造成少數葉片無法照到太陽因而枯萎</button>
+            <button class="q2-option-btn" onclick="checkQ2Answer(true)">為了排除從根部吸收的鹽分</button>
+            <button class="q2-option-btn" onclick="checkQ2Answer(false)">東方神秘力量在作祟</button>
         </div>
     </div>
     
@@ -724,10 +760,20 @@
             }
         }
 
-        // 點擊回答問題後的行為
+        // 點擊「回答問題」按鈕後觸發：切換到問題二頁面
         function goToNextQuestion() {
-            alert("觸發回答問題邏輯！可在這裡加入 showPage('下一題頁面')");
-            // showPage('q2-page'); // 範例：如果您未來有第二題的話
+            showPage('q2-page');
+        }
+        // 判斷問題二的答案
+        function checkQ2Answer(isCorrect) {
+            if (isCorrect) {
+                alert("🎉 答對了！水筆仔確實會透過枯黃落葉來排鹽。");
+                // 這裡可以繼續導向下一頁，例如：
+                // showPage('下一個劇情的頁面id'); 
+            } else {
+                alert("❌ 答案好像不對喔...再仔細觀察、重新想一下吧！");
+                // 答錯了，因為沒有切換頁面，使用者可以直接在原本的 q2-page 重新點選其他選項
+            }
         }
 
         function openHintModal() {
