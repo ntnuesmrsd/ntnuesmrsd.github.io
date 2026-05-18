@@ -495,10 +495,9 @@
     </div>
     
     <div id="q2-page" class="page hidden">
-        <h1 style="color: #f1c40f; font-size: 32px; margin-bottom: 5px;">問題：</h1>
-        <h2 style="font-size: 22px; padding: 0 25px; line-height: 1.6; font-weight: normal;">
-            為什麼那些水筆仔的葉片會枯黃？
-        </h2>
+        <h1 style="font-size: 22px; padding: 0 25px; line-height: 1.6; font-weight: normal;">
+            問題：為什麼那些水筆仔的葉片會枯黃？
+        </h1>
         
         <div class="q2-btn-container">
             <button class="q2-option-btn" onclick="checkQ2Answer(false)">單純只是剛開始枯掉，之後就會漸漸整支掉落</button>
@@ -767,11 +766,11 @@
         // 判斷問題二的答案
         function checkQ2Answer(isCorrect) {
             if (isCorrect) {
-                alert("🎉 答對了！水筆仔確實會透過枯黃落葉來排鹽。");
+                alert("🎉 答對了！水筆仔確實會透過枯黃落葉來排出鹽分。");
                 // 這裡可以繼續導向下一頁，例如：
                 // showPage('下一個劇情的頁面id'); 
             } else {
-                alert("❌ 答案好像不對喔...再仔細觀察、重新想一下吧！");
+                alert("❌ 答案好像不對喔...再仔細觀察，重新想一下吧！");
                 // 答錯了，因為沒有切換頁面，使用者可以直接在原本的 q2-page 重新點選其他選項
             }
         }
