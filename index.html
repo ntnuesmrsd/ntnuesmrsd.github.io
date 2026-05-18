@@ -409,7 +409,7 @@
             <div id="q1-typewriter-text" style="font-size: 22px; line-height: 1.8; margin-bottom: 20px; width: 80%;"></div>
             
             <div id="q1-btns" class="difficulty-container hidden">
-                <button onclick="showPage('high-tide-page')">漲潮</button>
+                <button onclick="goToHighTidePage()">漲潮</button>
                 <button onclick="showPage('low-tide-page')">退潮</button>
             </div>
         </div>
@@ -424,10 +424,6 @@
         </div>
     </div>
     
-    <div id="high-tide-page" class="page hidden">
-        <h1>現在是漲潮</h1>
-        <button onclick="showPage('game-page')">返回</button>
-    </div>
     <div id="low-tide-page" class="page hidden">
         <h1>現在是退潮</h1>
         <button onclick="showPage('game-page')">返回</button>
@@ -795,10 +791,15 @@
         }
         // Q1 文本與變數
         // Q1 文本
-        const q1MainText = "首先來到濕地，要確認現在是漲潮還是退潮。這會影響到等等的調查順序。\n\nQ1：請問現在是漲潮還是退潮？";
+        const q1MainText = "首先來到濕地，要確認現在是漲潮還是退潮。這會影響到等等的調查順序。\n\n問題：請問現在是漲潮還是退潮？";
         // 提示的 HTML 字串（顏色改為 #bdc3c7 並加上底線與點擊事件）
         // 這樣「提示」會直接換行並承襲外層的置中對齊
         const q1HintHtml = '<div style="font-size: 16px; color: #bdc3c7; text-decoration: underline; cursor: pointer; margin-top: 10px;" onclick="event.stopPropagation(); openHintModal();">提示</div>';
+
+        // 漲潮頁面的文本
+        const highTideText = "看來是漲潮呢，那麼繼續往西南方那座橋（許厝港大橋）走好了。在這之前，剛才走過來的路上好像有看到一些水筆仔之類的植物長在泥巴地上，不愧是濕地呢。但我依稀記得好像有些水筆仔的葉子變黃了，難道秋天來得這麼快嗎？畢竟台灣的春夏秋冬是出了名的沒規則可言。但又很怪，一般植物在枯黃的時候會只枯黃一兩片葉子嗎？"; 
+        // 記錄目前是否正在跑漲潮頁面的打字機
+        let isHighTideTyping = false;
         
         let q1CharIndex = 0;
         let isQ1Typing = false;
@@ -848,6 +849,65 @@
         
         function closeHintModal() {
             document.getElementById('hint-modal').classList.remove('active');
+        }
+        function goToHighTidePage() {
+            // 1. 修改標題與清空內容外觀
+            document.getElementById('page-title').innerText = "漲潮"; 
+            const textContainer = document.getElementById('text-container'); // 確保這是你放文字的 div id
+            textContainer.innerHTML = ""; // 先清空文字
+            
+            // 2. 隱藏原本 Q1 的選項按鈕（請對照你實際的按鈕 class 或 id）
+            // 假設你的按鈕容器叫 options-container
+            document.getElementById('options-container').classList.add('hidden'); 
+        
+            // 3. 初始化打字機設定
+            isHighTideTyping = true;
+            let index = 0;
+            textContainer.focus();
+        
+            // 4. 開始打字機效果
+            function type() {
+                if (!isHighTideTyping) return; // 如果被點擊跳過了就停止
+                
+                if (index < highTideText.length) {
+                    textContainer.innerHTML += highTideText.charAt(index);
+                    index++;
+                    setTimeout(type, 50); // 50毫秒打一個字，可調整速度
+                } else {
+                    completeHighTideTyping();
+                }
+            }
+            type();
+        
+            // 5. 允許點擊空白處直接串完文字 (Skip 功能)
+            // 假設你的點擊大區塊是 click-area
+            document.getElementById('click-area').onclick = function() {
+                if (isHighTideTyping) {
+                    isHighTideTyping = false;
+                    textContainer.innerHTML = highTideText; // 直接顯示全文
+                    completeHighTideTyping();
+                }
+            };
+        }
+        function completeHighTideTyping() {
+            isHighTideTyping = false;
+            
+            // 找到你的按鈕區塊
+            const actionContainer = document.getElementById('action-container'); 
+            
+            // 插入「回答問題」按鈕
+            actionContainer.innerHTML = `
+                <button id="to-next-question-btn" class="action-btn" onclick="goToNextQuestion()">
+                    回答問題
+                </button>
+            `;
+            actionContainer.classList.remove('hidden'); // 確保按鈕區塊有顯示
+        }
+        
+        // 點擊「回答問題」後要做的事
+        function goToNextQuestion() {
+            // 這裡放你進入下一個問題（例如 Q2）的程式碼
+            alert("前往下一題！"); 
         }
     </script>
     <div id="creature-modal" class="modal" onclick="closeModal()">
