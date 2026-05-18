@@ -416,7 +416,7 @@
     <div id="high-tide-page" class="page hidden" onclick="skipHighTideTypewriter()">
         <h1 id="high-tide-title">漲潮</h1>
         <div class="scroll-content">
-            <div id="high-tide-text" style="min-height: 150px; font-size: 18px; line-height: 1.8;"></div>
+            <div id="high-tide-text" style="min-height: 150px; font-size: 18px; line-height: 1.8; padding: 0 20px; text-align: left;"></div>
         </div>
         <div id="high-tide-action" class="hidden"></div>
     </div>
@@ -430,78 +430,74 @@
         </div>
     </div>
     
-    <div id="high-tide-page" class="page hidden" onclick="skipHighTideTypewriter()">
-        <h1 id="high-tide-title">漲潮</h1>
-        <div class="scroll-content">
-            <div id="high-tide-text" style="min-height: 150px; font-size: 18px; line-height: 1.8; padding: 0 20px; text-align: left;"></div>
-        </div>
-        <div id="high-tide-action" class="hidden"></div>
-    </div>
     <div id="low-tide-page" class="page hidden">
         <h1>現在是退潮</h1>
         <button onclick="showPage('game-page')">返回</button>
     </div>
+
     <script>
-        // ⭐ 補充首頁打字機所需的變數與文字內容
-        let isTypewriterTyping = false;
-        let typewriterCharIndex = 0;
-        let typewriterTimeout;
-        // 請在此處輸入您想在第一頁顯示的文字
-        const homeText = "歡迎來到陳冠宇與他的十二個惡魔，在這裡你需要扮演一位小小史學家，因為一個故事而來到許厝港，利用一些跟濕地有關的知識，一步一步解開任務，體會有關這個地方的歷史故事。"; 
-        
-        // ⭐ 補充首頁打字機主函式
-        function startTypewriter() {
-            const container = document.getElementById('typewriter-text');
-            const btn = document.getElementById('start-btn');
-            if(!container) return;
-            
-            container.innerHTML = "";
-            typewriterCharIndex = 0;
-            isTypewriterTyping = true;
-            if(btn) btn.classList.add('hidden'); // 執行時先隱藏按鈕
-            
-            function type() {
-                if (typewriterCharIndex < homeText.length) {
-                    container.innerHTML += homeText.charAt(typewriterCharIndex);
-                    typewriterCharIndex++;
-                    typewriterTimeout = setTimeout(type, 50); // 調整打字速度
-                } else {
-                    completeTypewriter();
-                }
-            }
-            type();
-        }
-        
-        // ⭐ 補充點擊跳過打字機的函式
-        function skipTypewriter() {
-            if (!isTypewriterTyping) return;
-            clearTimeout(typewriterTimeout);
-            document.getElementById('typewriter-text').innerHTML = homeText;
-            completeTypewriter();
-        }
-        
-        // ⭐ 補充打字完成後顯示按鈕的函式
-        function completeTypewriter() {
-            isTypewriterTyping = false;
-            const btn = document.getElementById('start-btn');
-            if(btn) btn.classList.remove('hidden'); // 顯示「是的船長！」按鈕
-        }
+        // ==========================================
+        // ⭐ 全域設定與圖鑑基礎資料區
+        // ==========================================
+        const GLOBAL_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxtmxfP0xlAP-fK3UVEy_QzPbvAuQh-vJ_Vcs5iplYtC6xUOIO1b8YGzv-aKjfRH3aUWA/exec";
+        const creatureData = {
+            "Numenius_phaeopus.jpg": { name: "中杓鷸", hint: "(提示)", info: "(內容)", ebird: "https://ebird.org/species/whimbr" },
+            "Calidris_alpina.jpg": { name: "黑腹濱鷸", hint: "(提示)", info: "(內容)", ebird: "https://ebird.org/species/whimbr" },
+            "Uca.jpg": { name: "招潮蟹", hint: "(提示)", info: "(內容)", ebird: "https://ebird.org/species/whimbr" },
+            "Boleophthalmus_pectinirostris.jpg": { name: "大彈塗魚", hint: "(提示)", info: "(內容)", ebird: "https://ebird.org/species/whimbr" },
+            "Ardea_cinerea.jpg": { name: "蒼鷺", hint: "(提示)", info: "(內容)", ebird: "https://ebird.org/species/whimbr" },
+            "Egretta_eulophotes.jpg": { name: "唐白鷺", hint: "(提示)", info: "(內容)", ebird: "https://ebird.org/species/whimbr" },
+            "Pluvialis_fulva.jpg": { name: "太平洋金班鴴", hint: "(提示)", info: "(內容)", ebird: "https://ebird.org/species/whimbr" },
+            "Anser_cygnoides.jpg": { name: "鴻雁", hint: "(提示)", info: "(內容)", ebird: "https://ebird.org/species/whimbr" },
+            "Gallinula_chloropus.jpg": { name: "紅冠水雞", hint: "(提示)", info: "(內容)", ebird: "https://ebird.org/species/whimbr" },
+            "Sternula_albifrons.jpg": { name: "小燕鷗", hint: "(提示)", info: "(內容)", ebird: "https://ebird.org/species/whimbr" },
+            "Anarhynchus_alexandrinus.jpg": { name: "東方環頸鴴", hint: "(提示)", info: "(內容)", ebird: "https://ebird.org/species/whimbr" }
+        };
+
+        // ==========================================
+        // ⭐ 核心變數宣告區（補回漏掉的變數與文字）
+        // ==========================================
+        let currentUser = null;
+
+        // 首頁變數
+        const fullText = "歡迎來到陳冠宇與他的十二個惡魔，在這裡你需要扮演一位小小史學家，因為一個故事而來到許厝港，利用一些跟濕地有關的知識，一步一步解開任務，體會有關這個地方的歷史故事。";
+        let charIndex = 0;
+        let isTyping = false;
+        let typeTimeout;
+
+        // 困難模式變數
+        const hardText = "某天，你從網路上看到了一個匿名文章，內容大概是一個繁榮商港的興衰紀錄文獻，他希望能有人找出這個地方是哪裡，當然也會給予相對的報酬。但是並沒有實際的地名可以依據。因此留言區當然開始吵到底是府城、鹿港或是大稻埕時……聰明的你仔細閱讀了文獻發現：這不太像目前熟知的各大港口呢？然後你去查了一下資料發現，老街溪與雙溪口溪的河口，這個地方剛好叫「許厝港濕地」。但，這是濕地啊？沒想到以前竟然是個海港？ 於是為了報酬（神奇小卡）你決定來這裡一探究竟～";
+        let hardCharIndex = 0;
+        let isHardTyping = false;
+        let hardTypeTimeout;
+
+        // Q1問題變數
+        const q1MainText = "首先來到濕地，要確認現在是漲潮還是退潮。這會影響到等等的調查順序。\n\nQ1：請問現在是漲潮還是退潮？";
+        const q1HintHtml = '<br><span style="font-size: 16px; color: #bdc3c7; text-decoration: underline; cursor: pointer;" onclick="event.stopPropagation(); openHintModal();">提示</span>';
+        let q1CharIndex = 0;
+        let isQ1Typing = false;
+        let q1TypeTimeout;
+
+        // 漲潮頁面變數
+        const highTideText = "看來是漲潮呢，那麼繼續往西南方那座橋（許厝港大橋）走好了。在這之前，剛才走過來的路上好像有看到一些水筆仔之類的植物長在泥巴地上，不愧是濕地呢。但我依稀記得好像有些水筆仔的葉子變黃了，難道秋天來得這麼快嗎？畢竟台灣的春夏秋冬是出了名的沒規則可言。但又很怪，一般植物在枯黃的時候會只枯黃一難道一兩片葉子嗎？";
         let isHighTideTyping = false;
         let highTideCharIndex = 0;
         let highTideTypeTimeout;
 
-        // --- 3. 頁面導換邏輯 ---
+        // ==========================================
+        // --- 1. 頁面導換與網頁初始化 ---
+        // ==========================================
         function showPage(pageId) {
-            // 1. 先隱藏所有頁面
+            // 隱藏所有頁面
             document.querySelectorAll('.page').forEach(page => page.classList.add('hidden'));
             
-            // 2. 顯示目標頁面
+            // 顯示目標頁面
             const targetPage = document.getElementById(pageId);
             if (targetPage) {
                 targetPage.classList.remove('hidden');
             }
             
-            // 3. 根據切換到的頁面 ID，確實啟動各自獨立的打字機效果
+            // 根據切換到的頁面，確實啟動各自獨立的打字機效果
             if (pageId === 'home-page') {
                 startTypewriter();
             } else if (pageId === 'hard-page') {
@@ -509,16 +505,15 @@
             } else if (pageId === 'game-real-hard-content') {
                 startQ1Typewriter();
             } else if (pageId === 'high-tide-page') {
-                // 當進入漲潮頁面時，立刻執行漲潮打字機
                 initHighTidePage(); 
             }
         }
 
-        // 網頁首次加載時，自動安全地呼叫首頁打字機
+        // 網頁首次加載時，自動呼叫首頁打字機
         window.onload = function() {
             startTypewriter();
         };
-    
+
         function toggleMenu() {
             document.getElementById('menu-drawer').classList.toggle('active');
         }
@@ -527,8 +522,177 @@
             document.querySelectorAll('.tab-content').forEach(content => content.classList.add('hidden'));
             document.getElementById(tabId).classList.remove('hidden');
         }
+
+        // ==========================================
+        // --- 2. 各頁面打字機控制邏輯 ---
+        // ==========================================
+        
+        // 【首頁打字機】
+        function startTypewriter() {
+            const container = document.getElementById('typewriter-text');
+            const btn = document.getElementById('start-btn');
+            if(!container) return;
+            container.innerHTML = "";
+            charIndex = 0;
+            isTyping = true;
+            if(btn) btn.classList.add('hidden');
+            
+            function type() {
+                if (charIndex < fullText.length) {
+                    container.innerHTML += fullText.charAt(charIndex);
+                    charIndex++;
+                    typeTimeout = setTimeout(type, 50);
+                } else {
+                    completeTyping();
+                }
+            }
+            type();
+        }
+        
+        function skipTypewriter() {
+            if (!isTyping) return;
+            clearTimeout(typeTimeout);
+            document.getElementById('typewriter-text').innerHTML = fullText;
+            completeTyping();
+        }
+        
+        function completeTyping() {
+            isTyping = false;
+            const btn = document.getElementById('start-btn');
+            if(btn) btn.classList.remove('hidden');
+        }
+
+        // 【困難模式打字機】
+        function startHardTypewriter() {
+            const container = document.getElementById('hard-typewriter-text');
+            const btn = document.getElementById('hard-read-btn');
+            if(!container) return;
+            
+            container.innerHTML = "";
+            hardCharIndex = 0;
+            isHardTyping = true;
+            if(btn) btn.classList.add('hidden');
+            
+            function type() {
+                if (hardCharIndex < hardText.length) {
+                    container.innerHTML += hardText.charAt(hardCharIndex);
+                    hardCharIndex++;
+                    hardTypeTimeout = setTimeout(type, 30);
+                } else {
+                    completeHardTyping();
+                }
+            }
+            type();
+        }
+        
+        function skipHardTypewriter() {
+            if (!isHardTyping) return;
+            clearTimeout(hardTypeTimeout);
+            document.getElementById('hard-typewriter-text').innerHTML = hardText;
+            completeHardTyping();
+        }
+        
+        function completeHardTyping() {
+            isHardTyping = false;
+            document.getElementById('hard-read-btn').classList.remove('hidden');
+        }
+
+        // 【Q1問題打字機】
+        function startQ1Typewriter() {
+            const container = document.getElementById('q1-typewriter-text');
+            const btns = document.getElementById('q1-btns');
+            if(!container) return;
+            
+            container.innerHTML = "";
+            q1CharIndex = 0;
+            isQ1Typing = true;
+            if(btns) btns.classList.add('hidden');
+            
+            function type() {
+                if (q1CharIndex < q1MainText.length) {
+                    let char = q1MainText.charAt(q1CharIndex);
+                    container.innerHTML += char === "\n" ? "<br>" : char;
+                    q1CharIndex++;
+                    q1TypeTimeout = setTimeout(type, 40);
+                } else {
+                    container.innerHTML += q1HintHtml;
+                    completeQ1Typing();
+                }
+            }
+            type();
+        }
+        
+        function skipQ1Typewriter() {
+            if (!isQ1Typing) return;
+            clearTimeout(q1TypeTimeout);
+            document.getElementById('q1-typewriter-text').innerHTML = q1MainText.replace(/\n/g, "<br>") + q1HintHtml;
+            completeQ1Typing();
+        }
+        
+        function completeQ1Typing() {
+            isQ1Typing = false;
+            document.getElementById('q1-btns').classList.remove('hidden');
+        }
+
+        // 【漲潮頁面打字機】
+        function initHighTidePage() {
+            const textContainer = document.getElementById('high-tide-text');
+            const actionBtnContainer = document.getElementById('high-tide-action');
+            if(!textContainer) return;
+
+            textContainer.innerHTML = "";
+            if(actionBtnContainer) {
+                actionBtnContainer.innerHTML = "";
+                actionBtnContainer.classList.add('hidden');
+            }
+
+            isHighTideTyping = true;
+            highTideCharIndex = 0;
+
+            function type() {
+                if (!isHighTideTyping) return;
+                if (highTideCharIndex < highTideText.length) {
+                    textContainer.innerHTML += highTideText.charAt(highTideCharIndex);
+                    highTideCharIndex++;
+                    highTideTypeTimeout = setTimeout(type, 30);
+                } else {
+                    completeHighTideTyping();
+                }
+            }
+            type();
+        }
+
+        function skipHighTideTypewriter() {
+            if (!isHighTideTyping) return;
+            clearTimeout(highTideTypeTimeout);
+            document.getElementById('high-tide-text').innerHTML = highTideText;
+            completeHighTideTyping();
+        }
+
+        function completeHighTideTyping() {
+            isHighTideTyping = false;
+            const actionBtnContainer = document.getElementById('high-tide-action');
+            if (actionBtnContainer) {
+                actionBtnContainer.innerHTML = '<button id="to-next-question-btn" onclick="goToNextQuestion()">回答問題</button>';
+                actionBtnContainer.classList.remove('hidden');
+            }
+        }
+
+        function goToNextQuestion() {
+            alert("前往下一題！");
+        }
+
+        function openHintModal() {
+            document.getElementById('hint-modal').classList.add('active');
+        }
+        
+        function closeHintModal() {
+            document.getElementById('hint-modal').classList.remove('active');
+        }
     
-        // --- 4. 帳號與登入邏輯 ---
+        // ==========================================
+        // --- 3. 帳號與登入邏輯 ---
+        // ==========================================
         function validateRegister() {
             const user = document.getElementById('reg-username').value;
             const pass = document.getElementById('reg-password').value;
@@ -585,7 +749,9 @@
             }
         }
     
-        // --- 5. 照片上傳與辨識 ---
+        // ==========================================
+        // --- 4. 照片上傳與生物圖鑑邏輯 ---
+        // ==========================================
         async function handleFileUpload(event) {
             const file = event.target.files[0];
             if (!file) return;
@@ -671,134 +837,6 @@
 
         function closeModal() {
             document.getElementById('creature-modal').classList.remove('active');
-        }
-        
-        // --- 6. 困難模式打字機邏輯 ---
-        function startHardTypewriter() {
-            const container = document.getElementById('hard-typewriter-text');
-            const btn = document.getElementById('hard-read-btn');
-            if(!container) return;
-            
-            container.innerHTML = "";
-            hardCharIndex = 0;
-            isHardTyping = true;
-            if(btn) btn.classList.add('hidden');
-            
-            function type() {
-                if (hardCharIndex < hardText.length) {
-                    container.innerHTML += hardText.charAt(hardCharIndex);
-                    hardCharIndex++;
-                    hardTypeTimeout = setTimeout(type, 50);
-                } else {
-                    completeHardTyping();
-                }
-            }
-            type();
-        }
-        
-        function skipHardTypewriter() {
-            if (!isHardTyping) return;
-            clearTimeout(hardTypeTimeout);
-            document.getElementById('hard-typewriter-text').innerHTML = hardText;
-            completeHardTyping();
-        }
-        
-        function completeHardTyping() {
-            isHardTyping = false;
-            document.getElementById('hard-read-btn').classList.remove('hidden');
-        }
-
-        // --- 7. Q1 模式打字機邏輯 ---
-        function startQ1Typewriter() {
-            const container = document.getElementById('q1-typewriter-text');
-            const btns = document.getElementById('q1-btns');
-            if(!container) return;
-            
-            container.innerHTML = "";
-            q1CharIndex = 0;
-            isQ1Typing = true;
-            if(btns) btns.classList.add('hidden');
-            
-            function type() {
-                if (q1CharIndex < q1MainText.length) {
-                    let char = q1MainText.charAt(q1CharIndex);
-                    container.innerHTML += char === "\n" ? "<br>" : char;
-                    q1CharIndex++;
-                    q1TypeTimeout = setTimeout(type, 60);
-                } else {
-                    container.innerHTML += q1HintHtml;
-                    completeQ1Typing();
-                }
-            }
-            type();
-        }
-        
-        function skipQ1Typewriter() {
-            if (!isQ1Typing) return;
-            clearTimeout(q1TypeTimeout);
-            document.getElementById('q1-typewriter-text').innerHTML = q1MainText.replace(/\n/g, "<br>") + q1HintHtml;
-            completeQ1Typing();
-        }
-        
-        function completeQ1Typing() {
-            isQ1Typing = false;
-            document.getElementById('q1-btns').classList.remove('hidden');
-        }
-
-        function openHintModal() {
-            document.getElementById('hint-modal').classList.add('active');
-        }
-        
-        function closeHintModal() {
-            document.getElementById('hint-modal').classList.remove('active');
-        }
-
-        // --- 8. 漲潮頁面獨立邏輯 ---
-        function initHighTidePage() {
-            const textContainer = document.getElementById('high-tide-text');
-            const actionBtnContainer = document.getElementById('high-tide-action');
-            if(!textContainer) return;
-
-            textContainer.innerHTML = "";
-            if(actionBtnContainer) {
-                actionBtnContainer.innerHTML = "";
-                actionBtnContainer.classList.add('hidden');
-            }
-
-            isHighTideTyping = true;
-            highTideCharIndex = 0;
-
-            function type() {
-                if (!isHighTideTyping) return;
-                if (highTideCharIndex < highTideText.length) {
-                    textContainer.innerHTML += highTideText.charAt(highTideCharIndex);
-                    highTideCharIndex++;
-                    highTideTypeTimeout = setTimeout(type, 50);
-                } else {
-                    completeHighTideTyping();
-                }
-            }
-            type();
-        }
-
-        function skipHighTideTypewriter() {
-            if (!isHighTideTyping) return;
-            clearTimeout(highTideTypeTimeout);
-            document.getElementById('high-tide-text').innerHTML = highTideText;
-            completeHighTideTyping();
-        }
-
-        function completeHighTideTyping() {
-            isHighTideTyping = false;
-            const actionBtnContainer = document.getElementById('high-tide-action');
-            if (actionBtnContainer) {
-                actionBtnContainer.innerHTML = '<button id="to-next-question-btn" onclick="goToNextQuestion()">回答問題</button>';
-                actionBtnContainer.classList.remove('hidden');
-            }
-        }
-
-        function goToNextQuestion() {
-            alert("前往下一題！");
         }
     </script>
     <div id="creature-modal" class="modal" onclick="closeModal()">
