@@ -738,25 +738,28 @@
         function closeHintModal() {
             document.getElementById('hint-modal').classList.remove('active');
         }
+        // --- 漲潮頁面專用控制變數 ---
+        let isHighTideTyping = false; 
         let highTideCharIndex = 0;
         let highTideTypeTimeout;
+        const highTideText = "看來是漲潮呢，那麼繼續往西南方那座橋（許厝港大橋）走好了。在這之前，剛才走過來的路上好像有看到一些水筆仔之類的植物長在泥巴地上，不愧是濕地呢。但我依稀記得好像有些水筆仔的葉子變黃了，難道秋天來得這麼快嗎？畢竟台灣的春夏秋冬是出了名的沒規則可言。但又很怪，一般植物在枯黃的時候會只枯黃一兩片葉子嗎？";
 
         function goToHighTidePage() {
-            // 1. 先隱藏 Q1 頁面，顯示新的漲潮頁面
+            // 1. 切換頁面顯示
             document.querySelectorAll('.page').forEach(page => page.classList.add('hidden'));
             document.getElementById('high-tide-page').classList.remove('hidden');
 
-            // 2. 初始化容器
+            // 2. 清空並重設容器狀態
             const textContainer = document.getElementById('high-tide-text');
             const actionBtnContainer = document.getElementById('high-tide-action');
             textContainer.innerHTML = "";
             actionBtnContainer.innerHTML = "";
-            actionBtnContainer.classList.add('hidden');
+            actionBtnContainer.classList.add('hidden'); // 先隱藏按鈕容器
 
             isHighTideTyping = true;
             highTideCharIndex = 0;
 
-            // 3. 開始跑專屬打字機
+            // 3. 啟動打字機
             function type() {
                 if (!isHighTideTyping) return;
                 if (highTideCharIndex < highTideText.length) {
@@ -770,7 +773,7 @@
             type();
         }
 
-        // 點擊畫面空白處可以跳過打字機
+        // 點擊空白處跳過打字機
         function skipHighTideTypewriter() {
             if (!isHighTideTyping) return;
             clearTimeout(highTideTypeTimeout);
@@ -778,35 +781,20 @@
             completeHighTideTyping();
         }
 
+        // 打字結束，確實把按鈕塞進 HTML 並移除 hidden
         function completeHighTideTyping() {
             isHighTideTyping = false;
             const actionBtnContainer = document.getElementById('high-tide-action');
             
-            // 產生你指定的「回答問題」按鈕
-            actionBtnContainer.innerHTML = `
-                <button id="to-next-question-btn" onclick="goToNextQuestion()">
-                    回答問題
-                </button>
-            `;
+            // 渲染按鈕
+            actionBtnContainer.innerHTML = '<button id="to-next-question-btn" onclick="goToNextQuestion()">回答問題</button>';
+            
+            // 移除隱藏 class
             actionBtnContainer.classList.remove('hidden');
         }
 
         function goToNextQuestion() {
             alert("前往下一題！");
-            // 這裡未來可以寫 showPage('q2-page') 之類的跳轉
-        }
-        function completeHighTideTyping() {
-            isHighTideTyping = false;
-            const actionContainer = document.getElementById('action-container'); 
-            actionContainer.innerHTML = `
-                <button id="to-next-question-btn" class="action-btn" onclick="goToNextQuestion()">
-                    回答問題
-                </button>
-            `;
-            actionContainer.classList.remove('hidden'); // 確保按鈕區塊有顯示
-        }
-        function goToNextQuestion() {
-            alert("前往下一題！"); 
         }
     </script>
     <div id="creature-modal" class="modal" onclick="closeModal()">
