@@ -519,14 +519,16 @@
 
         // --- 3. 頁面導換邏輯 ---
         function showPage(pageId) {
+            // 1. 先隱藏所有頁面
             document.querySelectorAll('.page').forEach(page => page.classList.add('hidden'));
             
+            // 2. 顯示目標頁面
             const targetPage = document.getElementById(pageId);
             if (targetPage) {
                 targetPage.classList.remove('hidden');
             }
             
-            // 根據切換到的頁面 ID，啟動各自獨立的打字機效果
+            // 3. 根據切換到的頁面 ID，啟動各自獨立的打字機效果
             if (pageId === 'home-page') {
                 startTypewriter();
             } else if (pageId === 'hard-page') {
@@ -534,7 +536,7 @@
             } else if (pageId === 'game-real-hard-content') {
                 startQ1Typewriter();
             } else if (pageId === 'high-tide-page') {
-                // ⭐【修正點 2】在 showPage 裡面觸發漲潮打字機，切斷無窮迴圈
+                // ⭐ 修正點：當點擊漲潮按鈕切換到 high-tide-page 時，確實觸發漲潮打字機！
                 initHighTidePage(); 
             }
         }
