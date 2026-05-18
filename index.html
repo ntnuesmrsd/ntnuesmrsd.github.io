@@ -442,9 +442,50 @@
         <button onclick="showPage('game-page')">返回</button>
     </div>
     <script>
-       // ==========================================
-        // ⭐ 漲潮頁面專用變數（確保全域只宣告這一次）
-        // ==========================================
+        // ⭐ 補充首頁打字機所需的變數與文字內容
+        let isTypewriterTyping = false;
+        let typewriterCharIndex = 0;
+        let typewriterTimeout;
+        // 請在此處輸入您想在第一頁顯示的文字
+        const homeText = "歡迎來到陳冠宇與他的十二個惡魔，在這裡你需要扮演一位小小史學家，因為一個故事而來到許厝港，利用一些跟濕地有關的知識，一步一步解開任務，體會有關這個地方的歷史故事。"; 
+        
+        // ⭐ 補充首頁打字機主函式
+        function startTypewriter() {
+            const container = document.getElementById('typewriter-text');
+            const btn = document.getElementById('start-btn');
+            if(!container) return;
+            
+            container.innerHTML = "";
+            typewriterCharIndex = 0;
+            isTypewriterTyping = true;
+            if(btn) btn.classList.add('hidden'); // 執行時先隱藏按鈕
+            
+            function type() {
+                if (typewriterCharIndex < homeText.length) {
+                    container.innerHTML += homeText.charAt(typewriterCharIndex);
+                    typewriterCharIndex++;
+                    typewriterTimeout = setTimeout(type, 50); // 調整打字速度
+                } else {
+                    completeTypewriter();
+                }
+            }
+            type();
+        }
+        
+        // ⭐ 補充點擊跳過打字機的函式
+        function skipTypewriter() {
+            if (!isTypewriterTyping) return;
+            clearTimeout(typewriterTimeout);
+            document.getElementById('typewriter-text').innerHTML = homeText;
+            completeTypewriter();
+        }
+        
+        // ⭐ 補充打字完成後顯示按鈕的函式
+        function completeTypewriter() {
+            isTypewriterTyping = false;
+            const btn = document.getElementById('start-btn');
+            if(btn) btn.classList.remove('hidden'); // 顯示「是的船長！」按鈕
+        }
         let isHighTideTyping = false;
         let highTideCharIndex = 0;
         let highTideTypeTimeout;
