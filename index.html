@@ -661,20 +661,30 @@
         let isHardTyping = false;
         let hardTypeTimeout;
         
+        // --- 3. 頁面導換 ---
         function showPage(pageId) {
             document.querySelectorAll('.page').forEach(page => page.classList.add('hidden'));
             const targetPage = document.getElementById(pageId);
             if (targetPage) {
                 targetPage.classList.remove('hidden');
             }
+            
+            // 進入不同頁面時，分別啟動對應的打字機效果
             if (pageId === 'home-page') {
                 startTypewriter();
             } else if (pageId === 'hard-page') {
                 startHardTypewriter();
             } else if (pageId === 'game-real-hard-content') {
                 startQ1Typewriter();
+            } else if (pageId === 'high-tide-page') {
+                goToHighTidePage();
             }
         }
+
+        // ⭐【關鍵修正點】補上這行：當網頁打開時，立刻自動執行首頁的打字機！
+        window.onload = function() {
+            startTypewriter();
+        };
         function startHardTypewriter() {
             const container = document.getElementById('hard-typewriter-text');
             const btn = document.getElementById('hard-read-btn');
