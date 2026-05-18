@@ -368,6 +368,15 @@
             </div>
         </div>
     </div>
+
+    <div id="high-tide-page" class="page hidden" onclick="skipHighTideTypewriter()">
+        <h1 id="high-tide-title">漲潮</h1>
+        <div class="scroll-content">
+            <div id="high-tide-text" style="min-height: 150px; font-size: 18px; line-height: 1.8;"></div>
+        </div>
+        <div id="high-tide-action" class="hidden"></div>
+    </div>
+    
     <div id="hint-modal" class="modal" onclick="closeHintModal()">
         <div class="modal-content" onclick="event.stopPropagation()">
             <h2 style="color: #f1c40f;">提示：</h2>
@@ -729,33 +738,62 @@
         function closeHintModal() {
             document.getElementById('hint-modal').classList.remove('active');
         }
+        let highTideCharIndex = 0;
+        let highTideTypeTimeout;
+
         function goToHighTidePage() {
-            document.getElementById('page-title').innerText = "漲潮"; 
-            const textContainer = document.getElementById('text-container'); // 確保這是你放文字的 div id
-            textContainer.innerHTML = ""; // 先清空文字
-            document.getElementById('options-container').classList.add('hidden'); 
+            // 1. 先隱藏 Q1 頁面，顯示新的漲潮頁面
+            document.querySelectorAll('.page').forEach(page => page.classList.add('hidden'));
+            document.getElementById('high-tide-page').classList.remove('hidden');
+
+            // 2. 初始化容器
+            const textContainer = document.getElementById('high-tide-text');
+            const actionBtnContainer = document.getElementById('high-tide-action');
+            textContainer.innerHTML = "";
+            actionBtnContainer.innerHTML = "";
+            actionBtnContainer.classList.add('hidden');
+
             isHighTideTyping = true;
-            let index = 0;
-            textContainer.focus();
+            highTideCharIndex = 0;
+
+            // 3. 開始跑專屬打字機
             function type() {
-                if (!isHighTideTyping) return; // 如果被點擊跳過了就停止
-                
-                if (index < highTideText.length) {
-                    textContainer.innerHTML += highTideText.charAt(index);
-                    index++;
-                    setTimeout(type, 50); // 50毫秒打一個字，可調整速度
+                if (!isHighTideTyping) return;
+                if (highTideCharIndex < highTideText.length) {
+                    textContainer.innerHTML += highTideText.charAt(highTideCharIndex);
+                    highTideCharIndex++;
+                    highTideTypeTimeout = setTimeout(type, 50);
                 } else {
                     completeHighTideTyping();
                 }
             }
             type();
-            document.getElementById('click-area').onclick = function() {
-                if (isHighTideTyping) {
-                    isHighTideTyping = false;
-                    textContainer.innerHTML = highTideText; // 直接顯示全文
-                    completeHighTideTyping();
-                }
-            };
+        }
+
+        // 點擊畫面空白處可以跳過打字機
+        function skipHighTideTypewriter() {
+            if (!isHighTideTyping) return;
+            clearTimeout(highTideTypeTimeout);
+            document.getElementById('high-tide-text').innerHTML = highTideText;
+            completeHighTideTyping();
+        }
+
+        function completeHighTideTyping() {
+            isHighTideTyping = false;
+            const actionBtnContainer = document.getElementById('high-tide-action');
+            
+            // 產生你指定的「回答問題」按鈕
+            actionBtnContainer.innerHTML = `
+                <button id="to-next-question-btn" onclick="goToNextQuestion()">
+                    回答問題
+                </button>
+            `;
+            actionBtnContainer.classList.remove('hidden');
+        }
+
+        function goToNextQuestion() {
+            alert("前往下一題！");
+            // 這裡未來可以寫 showPage('q2-page') 之類的跳轉
         }
         function completeHighTideTyping() {
             isHighTideTyping = false;
