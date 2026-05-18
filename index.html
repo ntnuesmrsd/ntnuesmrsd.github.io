@@ -445,79 +445,44 @@
         // --- 1. 設定區：請將下方的網址換成你最新部署的、合併了「登入」與「照片」功能的 GAS 網址 ---
         const GLOBAL_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxtmxfP0xlAP-fK3UVEy_QzPbvAuQh-vJ_Vcs5iplYtC6xUOIO1b8YGzv-aKjfRH3aUWA/exec";
         const creatureData = {
-            "Numenius_phaeopus.jpg": {
-                name: "中杓鷸",
-                hint: "(提示)",
-                info: "(內容)",
-                ebird: "https://ebird.org/species/whimbr" // eBird 連結
-            },
-            "Calidris_alpina.jpg": {
-                name: "黑腹濱鷸",
-                hint: "(提示)",
-                info: "(內容)",
-                ebird: "https://ebird.org/species/whimbr" // eBird 連結
-            },
-            "Uca.jpg": {
-                name: "招潮蟹",
-                hint: "(提示)",
-                info: "(內容)",
-                ebird: "https://ebird.org/species/whimbr" // eBird 連結
-            },
-            "Boleophthalmus_pectinirostris.jpg": {
-                name: "大彈塗魚",
-                hint: "(提示)",
-                info: "(內容)",
-                ebird: "https://ebird.org/species/whimbr" // eBird 連結
-            },
-            "Ardea_cinerea.jpg": {
-                name: "蒼鷺",
-                hint: "(提示)",
-                info: "(內容)",
-                ebird: "https://ebird.org/species/whimbr" // eBird 連結
-            },
-            "Egretta_eulophotes.jpg": {
-                name: "唐白鷺",
-                hint: "(提示)",
-                info: "(內容)",
-                ebird: "https://ebird.org/species/whimbr" // eBird 連結
-            },
-            "Pluvialis_fulva.jpg": {
-                name: "太平洋金班鴴",
-                hint: "(提示)",
-                info: "(內容)",
-                ebird: "https://ebird.org/species/whimbr" // eBird 連結
-            },
-            "Anser_cygnoides.jpg": {
-                name: "鴻雁",
-                hint: "(提示)",
-                info: "(內容)",
-                ebird: "https://ebird.org/species/whimbr" // eBird 連結
-            },
-            "Gallinula_chloropus.jpg": {
-                name: "紅冠水雞",
-                hint: "(提示)",
-                info: "(內容)",
-                ebird: "https://ebird.org/species/whimbr" // eBird 連結
-            },
-            "Sternula_albifrons.jpg": {
-                name: "小燕鷗",
-                hint: "(提示)",
-                info: "(內容)",
-                ebird: "https://ebird.org/species/whimbr" // eBird 連結
-            },
-            "Anarhynchus_alexandrinus.jpg": {
-                name: "東方環頸鴴",
-                hint: "(提示)",
-                info: "(內容)",
-                ebird: "https://ebird.org/species/whimbr" // eBird 連結
-            }
+            "Numenius_phaeopus.jpg": { name: "中杓鷸", hint: "(提示)", info: "(內容)", ebird: "https://ebird.org/species/whimbr" },
+            "Calidris_alpina.jpg": { name: "黑腹濱鷸", hint: "(提示)", info: "(內容)", ebird: "https://ebird.org/species/whimbr" },
+            "Uca.jpg": { name: "招潮蟹", hint: "(提示)", info: "(內容)", ebird: "https://ebird.org/species/whimbr" },
+            "Boleophthalmus_pectinirostris.jpg": { name: "大彈塗魚", hint: "(提示)", info: "(內容)", ebird: "https://ebird.org/species/whimbr" },
+            "Ardea_cinerea.jpg": { name: "蒼鷺", hint: "(提示)", info: "(內容)", ebird: "https://ebird.org/species/whimbr" },
+            "Egretta_eulophotes.jpg": { name: "唐白鷺", hint: "(提示)", info: "(內容)", ebird: "https://ebird.org/species/whimbr" },
+            "Pluvialis_fulva.jpg": { name: "太平洋金班鴴", hint: "(提示)", info: "(內容)", ebird: "https://ebird.org/species/whimbr" },
+            "Anser_cygnoides.jpg": { name: "鴻雁", hint: "(提示)", info: "(內容)", ebird: "https://ebird.org/species/whimbr" },
+            "Gallinula_chloropus.jpg": { name: "紅冠水雞", hint: "(提示)", info: "(內容)", ebird: "https://ebird.org/species/whimbr" },
+            "Sternula_albifrons.jpg": { name: "小燕鷗", hint: "(提示)", info: "(內容)", ebird: "https://ebird.org/species/whimbr" },
+            "Anarhynchus_alexandrinus.jpg": { name: "東方環頸鴴", hint: "(提示)", info: "(內容)", ebird: "https://ebird.org/species/whimbr" }
         };
+
+        // --- 全域變數宣告區 ---
         const fullText = "歡迎來到陳冠宇與他的十二個惡魔，在這裡你需要扮演一位小小史學家，因為一個故事而來到許厝港，利用一些跟濕地有關的知識，一步一步解開任務，體會有關這個地方的歷史故事。";
         let charIndex = 0;
         let isTyping = false;
         let typeTimeout;
         let currentUser = null;
-        
+
+        const hardText = "某天，你從網路上看到了一個匿名文章，內容大概是一個繁榮商港的興衰紀錄文獻，他希望能有人找出這個地方是哪裡，當然也會給予相對的報酬。但是並沒有實際的地名可以依據。因此留言區當然開始吵到底是府城、鹿港或是大稻埕時……聰明的你仔細閱讀了文獻發現：這不太像目前熟知的各大港口呢？然後你去查了一下資料發現，老街溪與雙溪口溪的河口，這個地方剛好叫「許厝港濕地」。但，這是濕地啊？沒想到以前竟然是個海港？ 於是為了報酬（神奇小卡）你決定來這裡一探究竟～";
+        let hardCharIndex = 0;
+        let isHardTyping = false;
+        let hardTypeTimeout;
+
+        const q1MainText = "首先來到濕地，要確認現在是漲潮還是退潮。這會影響到等等的調查順序。\n\nQ1：請問現在是漲潮還是退潮？";
+        const q1HintHtml = '<br><span style="font-size: 16px; color: #bdc3c7; text-decoration: underline; cursor: pointer;" onclick="event.stopPropagation(); openHintModal();">提示</span>';
+        let q1CharIndex = 0;
+        let isQ1Typing = false;
+        let q1TypeTimeout;
+
+        // ⭐【修正點 1】確實宣告漲潮頁面的控制變數，避免 ReferenceError
+        const highTideText = "看來是漲潮呢，那麼繼續往西南方那座橋（許厝港大橋）走好了。在這之前，剛才走過來的路上好像有看到一些水筆仔之類的植物長在泥巴地上，不愧是濕地呢。但我依稀記得好像有些水筆仔的葉子變黃了，難道秋天來得這麼快嗎？畢竟台灣的春夏秋冬是出了名的沒規則可言。但又很怪，一般植物在枯黃的時候會只枯黃一兩片葉子嗎？";
+        let highTideCharIndex = 0;
+        let isHighTideTyping = false;
+        let highTideTypeTimeout;
+
+        // --- 2. 打字機邏輯 (首頁) ---
         function startTypewriter() {
             const container = document.getElementById('typewriter-text');
             const btn = document.getElementById('start-btn');
@@ -525,7 +490,7 @@
             container.innerHTML = "";
             charIndex = 0;
             isTyping = true;
-            btn.classList.add('hidden');
+            if(btn) btn.classList.add('hidden');
             
             function type() {
                 if (charIndex < fullText.length) {
@@ -538,30 +503,57 @@
             }
             type();
         }
+        
         function skipTypewriter() {
             if (!isTyping) return;
             clearTimeout(typeTimeout);
             document.getElementById('typewriter-text').innerHTML = fullText;
             completeTyping();
         }
+        
         function completeTyping() {
             isTyping = false;
-            document.getElementById('start-btn').classList.remove('hidden');
+            const btn = document.getElementById('start-btn');
+            if(btn) btn.classList.remove('hidden');
         }
-        window.onload = startTypewriter;
-    
+
+        // --- 3. 頁面導換邏輯 ---
         function showPage(pageId) {
             document.querySelectorAll('.page').forEach(page => page.classList.add('hidden'));
-            document.getElementById(pageId).classList.remove('hidden');
-            if (pageId === 'home-page') startTypewriter();
+            
+            const targetPage = document.getElementById(pageId);
+            if (targetPage) {
+                targetPage.classList.remove('hidden');
+            }
+            
+            // 根據切換到的頁面 ID，啟動各自獨立的打字機效果
+            if (pageId === 'home-page') {
+                startTypewriter();
+            } else if (pageId === 'hard-page') {
+                startHardTypewriter();
+            } else if (pageId === 'game-real-hard-content') {
+                startQ1Typewriter();
+            } else if (pageId === 'high-tide-page') {
+                // ⭐【修正點 2】在 showPage 裡面觸發漲潮打字機，切斷無窮迴圈
+                initHighTidePage(); 
+            }
         }
+
+        // ⭐【修正點 3】網頁首次加載時，自動安全地呼叫首頁打字機
+        window.onload = function() {
+            startTypewriter();
+        };
+    
         function toggleMenu() {
             document.getElementById('menu-drawer').classList.toggle('active');
-        }    
+        }
+    
         function switchTab(tabId) {
             document.querySelectorAll('.tab-content').forEach(content => content.classList.add('hidden'));
             document.getElementById(tabId).classList.remove('hidden');
         }
+    
+        // --- 4. 帳號與登入邏輯 ---
         function validateRegister() {
             const user = document.getElementById('reg-username').value;
             const pass = document.getElementById('reg-password').value;
@@ -571,7 +563,8 @@
             passErr.innerText = (pass.length > 0 && !isPassValid) ? "*非為6位數字" : "";
             btn.disabled = !(user.length > 0 && isPassValid);
             btn.style.opacity = btn.disabled ? "0.5" : "1";
-        }   
+        }
+    
         function validateLogin() {
             const user = document.getElementById('login-username').value;
             const pass = document.getElementById('login-password').value;
@@ -581,25 +574,28 @@
             passErr.innerText = (pass.length > 0 && !isPassValid) ? "*非為6位數字" : "";
             btn.disabled = !(user.length > 0 && isPassValid);
             btn.style.opacity = btn.disabled ? "0.5" : "1";
-        }    
+        }
+    
         async function handleAuth(action) {
             const isReg = action === 'register';
             const user = document.getElementById(isReg ? 'reg-username' : 'login-username').value;
             const pass = document.getElementById(isReg ? 'reg-password' : 'login-password').value;
-            const btn = document.getElementById(isReg ? 'reg-btn' : 'login-btn');          
+            const btn = document.getElementById(isReg ? 'reg-btn' : 'login-btn');
+            
             document.querySelectorAll('.error-msg').forEach(el => el.innerText = "");
             btn.innerText = "驗證中...";
-            btn.disabled = true;     
+            btn.disabled = true;
+        
             try {
                 const response = await fetch(GLOBAL_SCRIPT_URL, {
                     method: "POST",
                     body: JSON.stringify({ action, username: user, password: pass })
-                });                
-                const result = await response.json();        
+                });
+                const result = await response.json();
                 if (result.result === 'success') {
                     currentUser = user;
                     alert(isReg ? "帳號建立成功！" : "登入成功！");
-                    showPage('game-page'); // 執行跳轉
+                    showPage('game-page');
                 } else {
                     const errId = isReg ? 'reg-user-err' : 'login-pass-err';
                     document.getElementById(errId).innerText = "*" + result.message;
@@ -607,19 +603,23 @@
                 }
             } catch (e) {
                 console.error("Auth Error:", e);
-                alert("系統回傳錯誤，請確認 GAS 權限設定（請見下方說明）");
+                alert("系統回傳錯誤，請確認 GAS 權限設定");
                 btn.disabled = false;
             } finally {
                 btn.innerText = "開始遊戲";
             }
         }
+    
+        // --- 5. 照片上傳與辨識 ---
         async function handleFileUpload(event) {
             const file = event.target.files[0];
             if (!file) return;
+        
             const btn = event.target.nextElementSibling;
             const originalText = btn.innerText;
             btn.innerText = "辨識中...";
             btn.disabled = true;
+        
             const reader = new FileReader();
             reader.readAsDataURL(file);
             reader.onload = async function () {
@@ -630,12 +630,11 @@
                         body: JSON.stringify({
                             base64: base64Data,
                             type: file.type,
-                            name: file.name // GAS 會檢查這個檔名是否包含 bird, crab 等
+                            name: file.name
                         })
                     });
                     const result = await response.json();
                     if (result.isMatch) {
-                        // 找到對應的中文名（這需要你的 creatureData key 剛好是標籤名）
                         alert("恭喜！發現新生物！"); 
                         unlockCreature(result.target);
                     } else {
@@ -651,11 +650,12 @@
                 }
             };
         }
+        
         function unlockCreature(target) {
             const allImages = document.querySelectorAll('.creature-img');
-            const targetLower = target.toLowerCase().trim(); // 例如 "numenius"
+            const targetLower = target.toLowerCase().trim();
             allImages.forEach(img => {
-                const imgSrc = img.getAttribute('src').toLowerCase(); // 例如 "numenius_phaeopus.jpg"
+                const imgSrc = img.getAttribute('src').toLowerCase();
                 if (imgSrc.indexOf(targetLower) !== -1) {
                     img.classList.remove('is-locked');
                     img.dataset.unlocked = "true";
@@ -667,7 +667,8 @@
                     setTimeout(() => img.style.transform = "scale(1)", 500);
                 }
             });
-        }  
+        }
+        
         function openModal(imgSrc) {
             const modalImg = document.getElementById('modal-img');
             const modalTextElement = document.getElementById('modal-text');
@@ -678,6 +679,7 @@
                 img.getAttribute('src').includes(fileName)
             );
             const isUnlocked = targetImgInList && targetImgInList.dataset.unlocked === "true";
+            
             if (isUnlocked) {
                 modalImg.style.filter = "none";
                 let content = `<strong>${data.name}：</strong><br>${data.info}`;
@@ -688,87 +690,59 @@
             } else {
                 modalImg.style.filter = "brightness(0) invert(1)";
                 modalTextElement.innerHTML = `<strong>提示：</strong><br>${data.hint}`;
-            } 
+            }
             document.getElementById('creature-modal').classList.add('active');
         }
+
         function closeModal() {
             document.getElementById('creature-modal').classList.remove('active');
         }
-        const hardText = "某天，你從網路上看到了一個匿名文章，內容大概是一個繁榮商港的興衰紀錄文獻，他希望能有人找出這個地方是哪裡，當然也會給予相對的報酬。但是並沒有實際的地名可以依據。因此留言區當然開始吵到底是府城、鹿港或是大稻埕時……聰明的你仔細閱讀了文獻發現：這不太像目前熟知的各大港口呢？然後你去查了一下資料發現，老街溪與雙溪口溪的河口，這個地方剛好叫「許厝港濕地」。但，這是濕地啊？沒想到以前竟然是個海港？ 於是為了報酬（神奇小卡）你決定來這裡一探究竟～";
-        let hardCharIndex = 0;
-        let isHardTyping = false;
-        let hardTypeTimeout;
         
-        // --- 3. 頁面導換 ---
-        function showPage(pageId) {
-            document.querySelectorAll('.page').forEach(page => page.classList.add('hidden'));
-            const targetPage = document.getElementById(pageId);
-            if (targetPage) {
-                targetPage.classList.remove('hidden');
-            }
-            
-            // 進入不同頁面時，分別啟動對應的打字機效果
-            if (pageId === 'home-page') {
-                startTypewriter();
-            } else if (pageId === 'hard-page') {
-                startHardTypewriter();
-            } else if (pageId === 'game-real-hard-content') {
-                startQ1Typewriter();
-            } else if (pageId === 'high-tide-page') {
-                goToHighTidePage();
-            }
-        }
-
-        // ⭐【關鍵修正點】補上這行：當網頁打開時，立刻自動執行首頁的打字機！
-        window.onload = function() {
-            startTypewriter();
-        };
+        // --- 6. 困難模式打字機邏輯 ---
         function startHardTypewriter() {
             const container = document.getElementById('hard-typewriter-text');
             const btn = document.getElementById('hard-read-btn');
             if(!container) return;
+            
             container.innerHTML = "";
             hardCharIndex = 0;
             isHardTyping = true;
-            btn.classList.add('hidden');
+            if(btn) btn.classList.add('hidden');
             
             function type() {
                 if (hardCharIndex < hardText.length) {
                     container.innerHTML += hardText.charAt(hardCharIndex);
                     hardCharIndex++;
-                    hardTypeTimeout = setTimeout(type, 50); // 劇情文字可以稍快一點點
+                    hardTypeTimeout = setTimeout(type, 50);
                 } else {
                     completeHardTyping();
                 }
             }
             type();
         }
+        
         function skipHardTypewriter() {
             if (!isHardTyping) return;
             clearTimeout(hardTypeTimeout);
             document.getElementById('hard-typewriter-text').innerHTML = hardText;
             completeHardTyping();
-        } 
+        }
+        
         function completeHardTyping() {
             isHardTyping = false;
             document.getElementById('hard-read-btn').classList.remove('hidden');
         }
-        const q1MainText = "首先來到濕地，要確認現在是漲潮還是退潮。這會影響到等等的調查順序。\n\n問題：請問現在是漲潮還是退潮？";
-        const q1HintHtml = '<div style="font-size: 16px; color: #bdc3c7; text-decoration: underline; cursor: pointer; margin-top: 10px;" onclick="event.stopPropagation(); openHintModal();">提示</div>';
-        const highTideText = "看來是漲潮呢，那麼繼續往西南方那座橋（許厝港大橋）走好了。在這之前，剛才走過來的路上好像有看到一些水筆仔之類的植物長在泥巴地上，不愧是濕地呢。但我依稀記得好像有些水筆仔的葉子變黃了，難道秋天來得這麼快嗎？畢竟台灣的春夏秋冬是出了名的沒規則可言。但又很怪，一般植物在枯黃的時候會只枯黃一兩片葉子嗎？"; 
-        let isHighTideTyping = false;
-        let q1CharIndex = 0;
-        let isQ1Typing = false;
-        let q1TypeTimeout;
-        
+
+        // --- 7. Q1 模式打字機邏輯 ---
         function startQ1Typewriter() {
             const container = document.getElementById('q1-typewriter-text');
             const btns = document.getElementById('q1-btns');
             if(!container) return;
+            
             container.innerHTML = "";
             q1CharIndex = 0;
             isQ1Typing = true;
-            btns.classList.add('hidden');
+            if(btns) btns.classList.add('hidden');
             
             function type() {
                 if (q1CharIndex < q1MainText.length) {
@@ -782,46 +756,43 @@
                 }
             }
             type();
-        }   
+        }
+        
         function skipQ1Typewriter() {
             if (!isQ1Typing) return;
             clearTimeout(q1TypeTimeout);
-            // 直接顯示：題目文本 + 提示 HTML
             document.getElementById('q1-typewriter-text').innerHTML = q1MainText.replace(/\n/g, "<br>") + q1HintHtml;
             completeQ1Typing();
-        }        
+        }
+        
         function completeQ1Typing() {
             isQ1Typing = false;
             document.getElementById('q1-btns').classList.remove('hidden');
         }
+
         function openHintModal() {
             document.getElementById('hint-modal').classList.add('active');
-        }        
+        }
+        
         function closeHintModal() {
             document.getElementById('hint-modal').classList.remove('active');
         }
-        // --- 漲潮頁面專用控制變數 ---
-        let isHighTideTyping = false; 
-        let highTideCharIndex = 0;
-        let highTideTypeTimeout;
-        const highTideText = "看來是漲潮呢，那麼繼續往西南方那座橋（許厝港大橋）走好了。在這之前，剛才走過來的路上好像有看到一些水筆仔之類的植物長在泥巴地上，不愧是濕地呢。但我依稀記得好像有些水筆仔的葉子變黃了，難道秋天來得這麼快嗎？畢竟台灣的春夏秋冬是出了名的沒規則可言。但又很怪，一般植物在枯黃的時候會只枯黃一兩片葉子嗎？";
 
-        function goToHighTidePage() {
-            // 1. 切換頁面顯示
-            document.querySelectorAll('.page').forEach(page => page.classList.add('hidden'));
-            document.getElementById('high-tide-page').classList.remove('hidden');
-
-            // 2. 清空並重設容器狀態
+        // --- 8. 漲潮頁面獨立邏輯 ---
+        function initHighTidePage() {
             const textContainer = document.getElementById('high-tide-text');
             const actionBtnContainer = document.getElementById('high-tide-action');
+            if(!textContainer) return;
+
             textContainer.innerHTML = "";
-            actionBtnContainer.innerHTML = "";
-            actionBtnContainer.classList.add('hidden'); // 先隱藏按鈕容器
+            if(actionBtnContainer) {
+                actionBtnContainer.innerHTML = "";
+                actionBtnContainer.classList.add('hidden');
+            }
 
             isHighTideTyping = true;
             highTideCharIndex = 0;
 
-            // 3. 啟動打字機
             function type() {
                 if (!isHighTideTyping) return;
                 if (highTideCharIndex < highTideText.length) {
@@ -835,7 +806,6 @@
             type();
         }
 
-        // 點擊空白處跳過打字機
         function skipHighTideTypewriter() {
             if (!isHighTideTyping) return;
             clearTimeout(highTideTypeTimeout);
@@ -843,16 +813,13 @@
             completeHighTideTyping();
         }
 
-        // 打字結束，確實把按鈕塞進 HTML 並移除 hidden
         function completeHighTideTyping() {
             isHighTideTyping = false;
             const actionBtnContainer = document.getElementById('high-tide-action');
-            
-            // 渲染按鈕
-            actionBtnContainer.innerHTML = '<button id="to-next-question-btn" onclick="goToNextQuestion()">回答問題</button>';
-            
-            // 移除隱藏 class
-            actionBtnContainer.classList.remove('hidden');
+            if (actionBtnContainer) {
+                actionBtnContainer.innerHTML = '<button id="to-next-question-btn" onclick="goToNextQuestion()">回答問題</button>';
+                actionBtnContainer.classList.remove('hidden');
+            }
         }
 
         function goToNextQuestion() {
