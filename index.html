@@ -528,7 +528,7 @@
                 targetPage.classList.remove('hidden');
             }
             
-            // 3. 根據切換到的頁面 ID，確實啟動各自獨立的打字機效果
+            // 3. 根據切換到的頁面 ID，確實啟動各自獨立的打字機效果（這次完全包在 showPage 裡面了）
             if (pageId === 'home-page') {
                 startTypewriter();
             } else if (pageId === 'hard-page') {
@@ -536,11 +536,10 @@
             } else if (pageId === 'game-real-hard-content') {
                 startQ1Typewriter();
             } else if (pageId === 'high-tide-page') {
-                // ⭐ 確實連動：一進入漲潮頁面，就立刻執行漲潮打字機
+                // ⭐ 確實連動：進入漲潮頁面後，立刻執行漲潮打字機
                 initHighTidePage(); 
             }
         }
-
         // ⭐【修正點 3】網頁首次加載時，自動安全地呼叫首頁打字機
         window.onload = function() {
             startTypewriter();
