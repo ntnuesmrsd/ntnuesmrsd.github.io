@@ -262,7 +262,48 @@
             align-items: center;
             width: 100%;
         }
-        
+        /* 漲潮、退潮等獨立劇情頁面的半透明背景與排版 */
+        .page .scroll-content {
+            background: rgba(0, 0, 0, 0.65); /* 半透明黑底，讓文字更清晰 */
+            border-radius: 15px;            /* 圓角 */
+            padding: 25px;                  /* 內部留白 */
+            margin: 20px auto;              /* 外距 */
+            max-width: 80%;                 /* 限制最大寬度 */
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        }
+
+        /* 讓對話劇情文字靠左對齊，讀起來更像冒險遊戲 */
+        #high-tide-text {
+            min-height: 150px; 
+            font-size: 19px; 
+            line-height: 1.8; 
+            text-align: left; /* 關鍵：文字靠左 */
+            letter-spacing: 1px;
+        }
+
+        /* 大標題樣式優化 */
+        .page h1 {
+            font-size: 36px;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.6);
+        }
+
+        /* 劇情結束後的動作按鈕（回答問題）樣式 */
+        #high-tide-action button {
+            padding: 12px 40px;
+            font-size: 20px;
+            cursor: pointer;
+            background-color: #e74c3c; /* 紅色主題按鈕 */
+            color: white;
+            border: none;
+            border-radius: 50px;
+            box-shadow: 0 4px 0 #c0392b;
+            transition: all 0.2s ease;
+        }
+        #high-tide-action button:active {
+            transform: translateY(4px);
+            box-shadow: 0 0px 0 #c0392b;
+        }
     </style>
 </head>
 <body>
@@ -414,11 +455,11 @@
     </div>
 
     <div id="high-tide-page" class="page hidden" onclick="skipHighTideTypewriter()">
-        <h1 id="high-tide-title">漲潮</h1>
+        <h1>漲潮</h1>
         <div class="scroll-content">
-            <div id="high-tide-text" style="min-height: 150px; font-size: 18px; line-height: 1.8; padding: 0 20px; text-align: left;"></div>
+            <div id="high-tide-text"></div>
         </div>
-        <div id="high-tide-action" class="hidden"></div>
+        <div id="high-tide-action" class="hidden" style="margin-top: 25px;"></div>
     </div>
     
     <div id="hint-modal" class="modal" onclick="closeHintModal()">
@@ -478,8 +519,8 @@
         let isQ1Typing = false;
         let q1TypeTimeout;
 
-        // 漲潮頁面變數
-        const highTideText = "看來是漲潮呢，那麼繼續往西南方那座橋（許厝港大橋）走好了。在這之前，剛才走過來的路上好像有看到一些水筆仔之類的植物長在泥巴地上，不愧是濕地呢。但我依稀記得好像有些水筆仔的葉子變黃了，難道秋天來得這麼快嗎？畢竟台灣的春夏秋冬是出了名的沒規則可言。但又很怪，一般植物在枯黃的時候會只枯黃一難道一兩片葉子嗎？";
+        // 漲潮頁面專用文字（已理順並修正錯字）
+        const highTideText = "看來是漲潮呢，那麼繼續往西南方那座橋（許厝港大橋）走好了。在這之前，剛才走過來的路上好像有看到一些水筆仔之類的植物長在泥巴地上，不愧是濕地呢。但我依稀記得好像有些水筆仔的葉子變黃了，難道秋天來得這麼快嗎？畢竟台灣的春夏秋冬是出了名的沒規則可言。但又很怪，一般植物在枯黃的時候會只枯黃一兩片葉子嗎？";
         let isHighTideTyping = false;
         let highTideCharIndex = 0;
         let highTideTypeTimeout;
@@ -640,6 +681,7 @@
             const actionBtnContainer = document.getElementById('high-tide-action');
             if(!textContainer) return;
 
+            // 初始化重置
             textContainer.innerHTML = "";
             if(actionBtnContainer) {
                 actionBtnContainer.innerHTML = "";
@@ -654,7 +696,7 @@
                 if (highTideCharIndex < highTideText.length) {
                     textContainer.innerHTML += highTideText.charAt(highTideCharIndex);
                     highTideCharIndex++;
-                    highTideTypeTimeout = setTimeout(type, 30);
+                    highTideTypeTimeout = setTimeout(type, 40); // 調整為40毫秒跑一個字，體感最順暢
                 } else {
                     completeHighTideTyping();
                 }
@@ -662,6 +704,7 @@
             type();
         }
 
+        // 點擊空白跳過打字
         function skipHighTideTypewriter() {
             if (!isHighTideTyping) return;
             clearTimeout(highTideTypeTimeout);
@@ -669,17 +712,21 @@
             completeHighTideTyping();
         }
 
+        // 打字結束顯示「回答問題」按鈕
         function completeHighTideTyping() {
             isHighTideTyping = false;
             const actionBtnContainer = document.getElementById('high-tide-action');
             if (actionBtnContainer) {
+                // 生成按鈕，並綁定您之後要觸發的下一個問題函式
                 actionBtnContainer.innerHTML = '<button id="to-next-question-btn" onclick="goToNextQuestion()">回答問題</button>';
                 actionBtnContainer.classList.remove('hidden');
             }
         }
 
+        // 點擊回答問題後的行為
         function goToNextQuestion() {
-            alert("前往下一題！");
+            alert("觸發回答問題邏輯！可在這裡加入 showPage('下一題頁面')");
+            // showPage('q2-page'); // 範例：如果您未來有第二題的話
         }
 
         function openHintModal() {
