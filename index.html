@@ -327,6 +327,11 @@
             margin-top: 0 !important; /* 覆蓋原本預設的 margin */
             border-radius: 12px !important;
         }
+
+        /* 確保彈窗內的大圖在未解鎖時，也能完美呈現純白剪影 */
+        .modal-img.silhouette {
+            filter: brightness(0) invert(1) !important;
+        }
     </style>
 </head>
 <body>
@@ -1246,7 +1251,7 @@
             document.getElementById('creature-modal').classList.remove('active');
         }
 
-        // 2. 點擊成就格子彈出放大視窗 (完美對齊純白剪影與彩色邏輯)
+        // 2. 點擊成就格子彈出放大視窗 (修正：連同彈窗內的大圖也同步純白剪影)
         function openAchievementModal(imgSrc) {
             const modalImg = document.getElementById('modal-img');
             const modalTextElement = document.getElementById('modal-text');
@@ -1262,14 +1267,13 @@
             const isUnlocked = targetImg && targetImg.dataset.unlocked === "true";
 
             modalImg.src = imgSrc;
-            modalImg.style.filter = ""; // 清除舊的行內樣式干擾
 
             if (isUnlocked) {
-                // 已解鎖：移除純白剪影效果，顯示正常彩色名稱與恭喜內容
+                // 已解鎖：移除大圖的純白剪影，回復彩色，顯示成就名稱與恭喜內容
                 modalImg.classList.remove('silhouette');
                 modalTextElement.innerHTML = `<strong>【成就解鎖】${data.name}</strong><br><br>${data.info}`;
             } else {
-                // 未解鎖：加上純白剪影效果（共用 CSS 的 brightness(0) invert(1)），並顯示提示
+                // 未解鎖：強制幫大圖加上純白剪影（吃剛剛新增的 CSS），並顯示提示
                 modalImg.classList.add('silhouette');
                 modalTextElement.innerHTML = `<strong>成就提示：</strong><br>${data.hint}`;
             }
