@@ -328,11 +328,12 @@
             border-radius: 12px !important;
         }
 
-        /* 讓帶有白色底色的 JPG 圖片，在未解鎖時也能呈現完美的亮白剪影輪廓 */
+        /* ✨ JPG 專用終極純白剪影濾鏡（邊緣 100% 乾淨無瑕） */
         .creature-img.silhouette,
         .modal-img.silhouette {
-            filter: grayscale(1) brightness(1.8) contrast(20) !important;
-            background-color: transparent;
+            mix-blend-mode: multiply; /* 1. 瞬間將 JPG 的方形白底變透明 */
+            filter: contrast(100) brightness(10) invert(1) !important; /* 2. 將中間圖案逼成純白剪影 */
+            background-color: transparent !important;
         }
     </style>
 </head>
@@ -1253,7 +1254,7 @@
             document.getElementById('creature-modal').classList.remove('active');
         }
 
-        // 2. 點擊成就格子彈出放大視窗 (完美控制 JPG 剪影切換)
+        // 2. 點擊成就格子彈出放大視窗 (修正：採用 JPG 終極乾淨剪影濾鏡)
         function openAchievementModal(imgSrc) {
             const modalImg = document.getElementById('modal-img');
             const modalTextElement = document.getElementById('modal-text');
@@ -1269,19 +1270,21 @@
             modalImg.src = imgSrc;
 
             if (isUnlocked) {
-                // 已解鎖：移除大圖的 .silhouette，變回彩色的完整 JPG 圖片檔
+                // 已解鎖：移除大圖的 .silhouette，關閉白底隱形效果，變回彩色原圖
                 modalImg.classList.remove('silhouette');
+                modalImg.style.mixBlendMode = "normal"; // 恢復一般混合模式
                 modalTextElement.innerHTML = `<strong>【成就解鎖】${data.name}</strong><br><br>${data.info}`;
             } else {
-                // 未解鎖：幫大圖加上 .silhouette，讓它在大視窗中也維持均勻的亮白剪影
+                // 未解鎖：強制幫大圖加上 .silhouette，啟動終極純白去底剪影
                 modalImg.classList.add('silhouette');
+                modalImg.style.mixBlendMode = "multiply"; // 啟動白底隱形
                 modalTextElement.innerHTML = `<strong>成就提示：</strong><br>${data.hint}`;
             }
 
             document.getElementById('creature-modal').classList.add('active');
         }
 
-        // 3. 全局解鎖功能：通關呼叫它，立刻解鎖 JPG 圖片
+        // 3. 全局解鎖功能：通關呼叫它，立刻將 JPG 圖片完美點亮
         function unlockAchievement(fileName) {
             const data = achievementData[fileName];
             if (!data) return;
@@ -1291,8 +1294,9 @@
 
             if (targetImg && targetImg.dataset.unlocked === "false") {
                 targetImg.dataset.unlocked = "true";
-                targetImg.classList.remove('silhouette'); // 移除濾鏡，JPG 直接秀出原圖
-                if (targetName) targetName.innerText = data.name; // 「？？？」變更為原本的成就名字
+                targetImg.classList.remove('silhouette'); // 移除純白剪影
+                targetImg.style.mixBlendMode = "normal";   // 恢復一般混合模式，秀出完美彩色 JPG
+                if (targetName) targetName.innerText = data.name; // 「？？？」更換為正式的成就名稱
             }
 
             if (fileName === 'ach_tide.jpg' || fileName === 'ach_ebb.jpg') {
