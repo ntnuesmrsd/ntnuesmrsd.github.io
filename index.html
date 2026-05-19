@@ -707,22 +707,25 @@
             if(btn) btn.classList.remove('hidden');
         }
 
-        // 【困難模式打字機】
+        // 【困難模式打字機】修正版
         function startHardTypewriter() {
             const container = document.getElementById('hard-typewriter-text');
-            const btn = document.getElementById('hard-read-btn');
+            // 修正：如果您的容器是 hard-action-container，先確保它隱藏
+            const actionContainer = document.getElementById('hard-action-container');
             if(!container) return;
             
             container.innerHTML = "";
             hardCharIndex = 0;
             isHardTyping = true;
-            if(btn) btn.classList.add('hidden');
+            if(actionContainer) actionContainer.classList.add('hidden');
             
             function type() {
+                if (!isHardTyping) return; // 確保中途可以被中斷
                 if (hardCharIndex < hardText.length) {
                     container.innerHTML += hardText.charAt(hardCharIndex);
                     hardCharIndex++;
-                    hardTypeTimeout = setTimeout(type, 30);
+                    // 統一計時器名稱為 hardTypeTimeout
+                    hardTypeTimeout = setTimeout(type, 30); 
                 } else {
                     completeHardTyping();
                 }
@@ -763,13 +766,13 @@
         function skipHardTypewriter() {
             if (!isHardTyping) return;
             
-            // 1. 成功清除計時器，防止字體繼續抖動生成
-            clearTimeout(hardTimeout); 
+            // 1. 修正：成功清除正確的計時器名稱 hardTypeTimeout
+            clearTimeout(hardTypeTimeout); 
             
-            // 2. 瞬間灌入完整的文字內文
-            document.getElementById('hard-typewriter-text').innerHTML = hardContent; 
+            // 2. 修正：瞬間灌入正確的完整文字內文變數 hardText
+            document.getElementById('hard-typewriter-text').innerHTML = hardText; 
             
-            // 3. 直接呼叫結束渲染，把三個按鈕叫出來
+            // 3. 呼叫結束渲染，把三個按鈕叫出來
             completeHardTyping(); 
         }
 
@@ -778,7 +781,7 @@
             isHardTyping = false;
             const actionContainer = document.getElementById('hard-action-container');
             if (actionContainer) {
-                // 生成文獻一、文獻二、閱讀完畢三個按鈕，並徹底拔除 margin 衝突
+                // 生成文獻一、文獻二、閱讀完畢三個按鈕
                 actionContainer.innerHTML = `
                     <button id="doc1-btn" onclick="goToDoc1Page()" style="background-color: #2bc4b6; box-shadow: 0 5px 0 #209288; margin-top: 0; margin-bottom: 0;">文獻一</button>
                     <button id="doc2-btn" onclick="goToDoc2Page()" style="background-color: #2bc4b6; box-shadow: 0 5px 0 #209288; margin-top: 0; margin-bottom: 0;">文獻二</button>
