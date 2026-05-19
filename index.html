@@ -388,23 +388,23 @@
             
             <div class="grid-container">
                 <div class="creature-item" onclick="openAchievementModal('ach_tide.jpg')">
-                    <img id="ach-img-tide" src="ach_tide.jpg" class="silhouette" data-unlocked="false">
+                    <img id="ach-img-tide" src="ach_tide.jpg" class="creature-img silhouette" data-unlocked="false" style="width: 100px; height: 100px; object-fit: contain;">
                     <p id="ach-name-tide">？？？</p>
                 </div>
                 <div class="creature-item" onclick="openAchievementModal('ach_ebb.jpg')">
-                    <img id="ach-img-ebb" src="ach_ebb.jpg" class="silhouette" data-unlocked="false">
+                    <img id="ach-img-ebb" src="ach_ebb.jpg" class="creature-img silhouette" data-unlocked="false" style="width: 100px; height: 100px; object-fit: contain;">
                     <p id="ach-name-ebb">？？？</p>
                 </div>
                 <div class="creature-item" onclick="openAchievementModal('ach_hard.jpg')">
-                    <img id="ach-img-hard" src="ach_hard.jpg" class="silhouette" data-unlocked="false">
+                    <img id="ach-img-hard" src="ach_hard.jpg" class="creature-img silhouette" data-unlocked="false" style="width: 100px; height: 100px; object-fit: contain;">
                     <p id="ach-name-hard">？？？</p>
                 </div>
                 <div class="creature-item" onclick="openAchievementModal('ach_easy.jpg')">
-                    <img id="ach-img-easy" src="ach_easy.jpg" class="silhouette" data-unlocked="false">
+                    <img id="ach-img-easy" src="ach_easy.jpg" class="creature-img silhouette" data-unlocked="false" style="width: 100px; height: 100px; object-fit: contain;">
                     <p id="ach-name-easy">？？？</p>
                 </div>
                 <div class="creature-item" onclick="openAchievementModal('ach_all.jpg')">
-                    <img id="ach-img-all" src="ach_all.jpg" class="silhouette" data-unlocked="false">
+                    <img id="ach-img-all" src="ach_all.jpg" class="creature-img silhouette" data-unlocked="false" style="width: 100px; height: 100px; object-fit: contain;">
                     <p id="ach-name-all">？？？</p>
                 </div>
             </div>
@@ -1246,7 +1246,7 @@
             document.getElementById('creature-modal').classList.remove('active');
         }
 
-        // 2. 點擊成就格子彈出放大視窗 (高度同步您原本的 openModal 邏輯)
+        // 2. 點擊成就格子彈出放大視窗 (完美對齊純白剪影與彩色邏輯)
         function openAchievementModal(imgSrc) {
             const modalImg = document.getElementById('modal-img');
             const modalTextElement = document.getElementById('modal-text');
@@ -1262,14 +1262,15 @@
             const isUnlocked = targetImg && targetImg.dataset.unlocked === "true";
 
             modalImg.src = imgSrc;
+            modalImg.style.filter = ""; // 清除舊的行內樣式干擾
 
             if (isUnlocked) {
-                // 已解鎖：清除濾鏡效果，顯示成就名稱與恭喜文字
-                modalImg.style.filter = "none";
+                // 已解鎖：移除純白剪影效果，顯示正常彩色名稱與恭喜內容
+                modalImg.classList.remove('silhouette');
                 modalTextElement.innerHTML = `<strong>【成就解鎖】${data.name}</strong><br><br>${data.info}`;
             } else {
-                // 未解鎖：同步套用您原本的剪影濾鏡效果，並顯示提示
-                modalImg.style.filter = "brightness(0) invert(1)";
+                // 未解鎖：加上純白剪影效果（共用 CSS 的 brightness(0) invert(1)），並顯示提示
+                modalImg.classList.add('silhouette');
                 modalTextElement.innerHTML = `<strong>成就提示：</strong><br>${data.hint}`;
             }
 
@@ -1277,7 +1278,7 @@
             document.getElementById('creature-modal').classList.add('active');
         }
 
-        // 3. 全局解鎖功能：未來您在通關觸發時，直接呼叫此函式即可解鎖！
+        // 3. 全局解鎖功能：當通關呼叫此函式時，當場將純白剪影點亮為完整圖片！
         function unlockAchievement(fileName) {
             const data = achievementData[fileName];
             if (!data) return;
@@ -1287,7 +1288,8 @@
 
             if (targetImg && targetImg.dataset.unlocked === "false") {
                 targetImg.dataset.unlocked = "true";
-                targetImg.style.filter = "none"; // 拔除首頁格子的剪影效果
+                targetImg.style.filter = ""; // 清除潛在的行內樣式
+                targetImg.classList.remove('silhouette'); // ⚡ 當場拔除純白剪影，回復成原本完整的彩色圖片！
                 if (targetName) targetName.innerText = data.name; // 把「？？？」更換為正式的成就名稱
             }
 
