@@ -732,15 +732,21 @@
         
         function skipHardTypewriter() {
             if (!isHardTyping) return;
-            clearTimeout(hardTypewriterTimeout);
-            document.getElementById('hard-typewriter-text').innerHTML = hardText; // 確保 hardText 變數與你原本的名字一致
-            completeHardTyping();
+            // 1. 修正：使用正確的計時器變數名稱 hardTimeout
+            clearTimeout(hardTimeout); 
+            
+            // 2. 修正：使用正確的文字內容變數 hardContent
+            document.getElementById('hard-typewriter-text').innerHTML = hardContent; 
+            
+            // 3. 修正：直接呼叫結束函式，確保立刻渲染三個按鈕
+            completeHardTyping(); 
         }
         
         function completeHardTyping() {
             isHardTyping = false;
             const actionContainer = document.getElementById('hard-action-container');
             if (actionContainer) {
+                // 渲染文獻一、文獻二、閱讀完畢按鈕
                 actionContainer.innerHTML = `
                     <button id="doc1-btn" onclick="goToDoc1Page()" style="background-color: #2bc4b6; box-shadow: 0 5px 0 #209288; margin-top: 0;">文獻一</button>
                     <button id="doc2-btn" onclick="goToDoc2Page()" style="background-color: #2bc4b6; box-shadow: 0 5px 0 #209288; margin-top: 0;">文獻二</button>
