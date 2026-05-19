@@ -591,11 +591,11 @@
 
         // 1. 資料庫 Key 統一對齊 .jpg
         const achievementData = {
-            "ach_tide.jpg": { id: "tide", name: "完成漲潮路線", hint: "探尋漲潮時分的水筆仔祕密。", info: "恭喜！您已成功伴隨著浪潮，完成了漲潮路線的所有生態挑戰！" },
-            "ach_ebb.jpg": { id: "ebb", name: "完成退潮路線", hint: "漫步於退潮後的泥灘地，尋找生物足跡。", info: "恭喜！您已在退潮退去之際，深入潮間帶完成了退潮路線！" },
-            "ach_hard.jpg": { id: "hard", name: "完成困難模式", hint: "唯有智勇雙全的歷史生態學家才能解開的考驗。", info: "太強了！您克服了清代與現代文獻的重重謎題，完美破關困難模式！" },
-            "ach_easy.jpg": { id: "easy", name: "完成簡單模式", hint: "在悠閒的氛圍中輕鬆認識許厝港。", info: "恭喜！您在舒適漫步的節奏中，順利完成了簡單模式！" },
-            "ach_all.jpg": { id: "all", name: "開啟所有圖鑑", hint: "尋找隱藏在許厝港濕地各處的所有神祕生物。", info: "夢幻成就解鎖！您已經收集了這片濕地上所有的生物足跡，成為生態大師！" }
+            "ach_tide.jpg": { id: "tide", name: "完成漲潮路線", hint: "完成漲潮路線", info: "恭喜！成功完成了漲潮路線的挑戰！" },
+            "ach_ebb.jpg": { id: "ebb", name: "完成退潮路線", hint: "完成退潮路線", info: "恭喜！深入潮間帶完成了退潮路線！" },
+            "ach_hard.jpg": { id: "hard", name: "完成困難模式", hint: "完成漲潮與退潮路線", info: "太強了！克服了重重謎題，完成困難模式！" },
+            "ach_easy.jpg": { id: "easy", name: "完成簡單模式", hint: "(提示)", info: "(恭喜！您在舒適漫步的節奏中，順利完成了簡單模式！)" },
+            "ach_all.jpg": { id: "all", name: "開啟所有圖鑑", hint: "在涼亭附近應該有個看板", info: "成就解鎖！收集了這片濕地上所有的生物足跡，成為生態大師！" }
         };
 
         // ==========================================
@@ -1278,7 +1278,7 @@
                 // 未解鎖：加上 .silhouette，讓彈窗大圖也變成看不透細節的黑灰影子
                 modalImg.classList.add('silhouette');
                 modalImg.style.mixBlendMode = "multiply"; 
-                modalTextElement.innerHTML = `<strong>成就提示：</strong><br>${data.hint}`;
+                modalTextElement.innerHTML = `<strong>提示：</strong><br>${data.hint}`;
             }
 
             document.getElementById('creature-modal').classList.add('active');
