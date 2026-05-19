@@ -328,9 +328,11 @@
             border-radius: 12px !important;
         }
 
-        /* 確保彈窗內的大圖在未解鎖時，也能完美呈現純白剪影 */
+        /* 讓帶有白色底色的 JPG 圖片，在未解鎖時也能呈現完美的亮白剪影輪廓 */
+        .creature-img.silhouette,
         .modal-img.silhouette {
-            filter: brightness(0) invert(1) !important;
+            filter: grayscale(1) brightness(1.8) contrast(20) !important;
+            background-color: transparent;
         }
     </style>
 </head>
@@ -586,7 +588,7 @@
             "Anarhynchus_alexandrinus.jpg": { name: "東方環頸鴴", hint: "(提示)", info: "(內容)", ebird: "https://ebird.org/species/whimbr" }
         };
 
-        // 1. 定義 5 個成就的對應提示（hint）與解鎖內容（info）
+        // 1. 資料庫 Key 統一對齊 .jpg
         const achievementData = {
             "ach_tide.jpg": { id: "tide", name: "完成漲潮路線", hint: "探尋漲潮時分的水筆仔祕密。", info: "恭喜！您已成功伴隨著浪潮，完成了漲潮路線的所有生態挑戰！" },
             "ach_ebb.jpg": { id: "ebb", name: "完成退潮路線", hint: "漫步於退潮後的泥灘地，尋找生物足跡。", info: "恭喜！您已在退潮退去之際，深入潮間帶完成了退潮路線！" },
@@ -1251,38 +1253,35 @@
             document.getElementById('creature-modal').classList.remove('active');
         }
 
-        // 2. 點擊成就格子彈出放大視窗 (修正：連同彈窗內的大圖也同步純白剪影)
+        // 2. 點擊成就格子彈出放大視窗 (完美控制 JPG 剪影切換)
         function openAchievementModal(imgSrc) {
             const modalImg = document.getElementById('modal-img');
             const modalTextElement = document.getElementById('modal-text');
             if (!modalImg || !modalTextElement) return;
 
-            // 取得純檔名
             const fileName = imgSrc.split('/').pop(); 
             const data = achievementData[fileName];
             if (!data) return;
 
-            // 抓取該物件在 HTML 上的真實 img 標籤來檢查 data-unlocked 狀態
             const targetImg = document.getElementById(`ach-img-${data.id}`);
             const isUnlocked = targetImg && targetImg.dataset.unlocked === "true";
 
             modalImg.src = imgSrc;
 
             if (isUnlocked) {
-                // 已解鎖：移除大圖的純白剪影，回復彩色，顯示成就名稱與恭喜內容
+                // 已解鎖：移除大圖的 .silhouette，變回彩色的完整 JPG 圖片檔
                 modalImg.classList.remove('silhouette');
                 modalTextElement.innerHTML = `<strong>【成就解鎖】${data.name}</strong><br><br>${data.info}`;
             } else {
-                // 未解鎖：強制幫大圖加上純白剪影（吃剛剛新增的 CSS），並顯示提示
+                // 未解鎖：幫大圖加上 .silhouette，讓它在大視窗中也維持均勻的亮白剪影
                 modalImg.classList.add('silhouette');
                 modalTextElement.innerHTML = `<strong>成就提示：</strong><br>${data.hint}`;
             }
 
-            // 開啟與圖鑑共用的放大視窗
             document.getElementById('creature-modal').classList.add('active');
         }
 
-        // 3. 全局解鎖功能：當通關呼叫此函式時，當場將純白剪影點亮為完整圖片！
+        // 3. 全局解鎖功能：通關呼叫它，立刻解鎖 JPG 圖片
         function unlockAchievement(fileName) {
             const data = achievementData[fileName];
             if (!data) return;
@@ -1292,12 +1291,10 @@
 
             if (targetImg && targetImg.dataset.unlocked === "false") {
                 targetImg.dataset.unlocked = "true";
-                targetImg.style.filter = ""; // 清除潛在的行內樣式
-                targetImg.classList.remove('silhouette'); // ⚡ 當場拔除純白剪影，回復成原本完整的彩色圖片！
-                if (targetName) targetName.innerText = data.name; // 把「？？？」更換為正式的成就名稱
+                targetImg.classList.remove('silhouette'); // 移除濾鏡，JPG 直接秀出原圖
+                if (targetName) targetName.innerText = data.name; // 「？？？」變更為原本的成就名字
             }
 
-            // 💡 聯動規則：完成漲潮路線或退潮路線時，會同時自動解鎖困難模式
             if (fileName === 'ach_tide.jpg' || fileName === 'ach_ebb.jpg') {
                 unlockAchievement('ach_hard.jpg');
             }
