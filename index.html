@@ -729,32 +729,6 @@
             }
             type();
         }
-        
-        function skipHardTypewriter() {
-            if (!isHardTyping) return;
-            // 1. 修正：使用正確的計時器變數名稱 hardTimeout
-            clearTimeout(hardTimeout); 
-            
-            // 2. 修正：使用正確的文字內容變數 hardContent
-            document.getElementById('hard-typewriter-text').innerHTML = hardContent; 
-            
-            // 3. 修正：直接呼叫結束函式，確保立刻渲染三個按鈕
-            completeHardTyping(); 
-        }
-        
-        function completeHardTyping() {
-            isHardTyping = false;
-            const actionContainer = document.getElementById('hard-action-container');
-            if (actionContainer) {
-                // 渲染文獻一、文獻二、閱讀完畢按鈕
-                actionContainer.innerHTML = `
-                    <button id="doc1-btn" onclick="goToDoc1Page()" style="background-color: #2bc4b6; box-shadow: 0 5px 0 #209288; margin-top: 0;">文獻一</button>
-                    <button id="doc2-btn" onclick="goToDoc2Page()" style="background-color: #2bc4b6; box-shadow: 0 5px 0 #209288; margin-top: 0;">文獻二</button>
-                    <button id="hard-read-btn" onclick="showPage('game-real-hard-content')" style="background-color: #e74c3c; box-shadow: 0 5px 0 #c0392b; margin-top: 0;">閱讀完畢</button>
-                `;
-                actionContainer.classList.remove('hidden');
-            }
-        }
 
         // ================= 📝 文獻一控制邏輯 =================
         function goToDoc1Page() {
@@ -783,6 +757,35 @@
                 }
             }
             type();
+        }
+
+        // 點擊空白處：立刻跳過打字，顯示完整內容並跳出三個按鈕
+        function skipHardTypewriter() {
+            if (!isHardTyping) return;
+            
+            // 1. 成功清除計時器，防止字體繼續抖動生成
+            clearTimeout(hardTimeout); 
+            
+            // 2. 瞬間灌入完整的文字內文
+            document.getElementById('hard-typewriter-text').innerHTML = hardContent; 
+            
+            // 3. 直接呼叫結束渲染，把三個按鈕叫出來
+            completeHardTyping(); 
+        }
+
+        // 打字正常結束（或被跳過時）執行：動態生成三個並排按鈕
+        function completeHardTyping() {
+            isHardTyping = false;
+            const actionContainer = document.getElementById('hard-action-container');
+            if (actionContainer) {
+                // 生成文獻一、文獻二、閱讀完畢三個按鈕，並徹底拔除 margin 衝突
+                actionContainer.innerHTML = `
+                    <button id="doc1-btn" onclick="goToDoc1Page()" style="background-color: #2bc4b6; box-shadow: 0 5px 0 #209288; margin-top: 0; margin-bottom: 0;">文獻一</button>
+                    <button id="doc2-btn" onclick="goToDoc2Page()" style="background-color: #2bc4b6; box-shadow: 0 5px 0 #209288; margin-top: 0; margin-bottom: 0;">文獻二</button>
+                    <button id="hard-read-btn" onclick="showPage('game-real-hard-content')" style="background-color: #e74c3c; box-shadow: 0 5px 0 #c0392b; margin-top: 0; margin-bottom: 0;">閱讀完畢</button>
+                `;
+                actionContainer.classList.remove('hidden');
+            }
         }
 
         function skipDoc1Typewriter() {
