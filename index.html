@@ -385,22 +385,27 @@
     </div>
         <div id="achievement" class="tab-content hidden">
             <h2>成就清單</h2>
-            <div class="location-group">
-                <div class="location-title">新手任務</div> 
-                <div class="grid-container">
-                    <div class="creature-item" onclick="openModal('badge1.png', '恭喜你！在早餐挑戰賽中獲得最佳員工殊榮！')">
-                        <img src="badge1.png" class="silhouette">
-                        <p>最佳員工</p>
-                    </div>
+            
+            <div class="grid-container">
+                <div class="creature-item" onclick="openAchievementModal('ach_tide.png')">
+                    <img id="ach-img-tide" src="ach_tide.png" class="silhouette" data-unlocked="false">
+                    <p id="ach-name-tide">？？？</p>
                 </div>
-            </div>
-            <div class="location-group">
-                <div class="location-title">隱藏秘辛</div>
-                <div class="grid-container">
-                    <div class="creature-item" onclick="openModal('badge2.png', '你找到了隱藏的美味秘方！')">
-                        <img src="badge2.png" class="silhouette">
-                        <p>秘方收藏家</p>
-                    </div>
+                <div class="creature-item" onclick="openAchievementModal('ach_ebb.png')">
+                    <img id="ach-img-ebb" src="ach_ebb.png" class="silhouette" data-unlocked="false">
+                    <p id="ach-name-ebb">？？？</p>
+                </div>
+                <div class="creature-item" onclick="openAchievementModal('ach_hard.png')">
+                    <img id="ach-img-hard" src="ach_hard.png" class="silhouette" data-unlocked="false">
+                    <p id="ach-name-hard">？？？</p>
+                </div>
+                <div class="creature-item" onclick="openAchievementModal('ach_easy.png')">
+                    <img id="ach-img-easy" src="ach_easy.png" class="silhouette" data-unlocked="false">
+                    <p id="ach-name-easy">？？？</p>
+                </div>
+                <div class="creature-item" onclick="openAchievementModal('ach_all.png')">
+                    <img id="ach-img-all" src="ach_all.png" class="silhouette" data-unlocked="false">
+                    <p id="ach-name-all">？？？</p>
                 </div>
             </div>
         </div>
@@ -574,6 +579,15 @@
             "Gallinula_chloropus.jpg": { name: "紅冠水雞", hint: "(提示)", info: "(內容)", ebird: "https://ebird.org/species/whimbr" },
             "Sternula_albifrons.jpg": { name: "小燕鷗", hint: "(提示)", info: "(內容)", ebird: "https://ebird.org/species/whimbr" },
             "Anarhynchus_alexandrinus.jpg": { name: "東方環頸鴴", hint: "(提示)", info: "(內容)", ebird: "https://ebird.org/species/whimbr" }
+        };
+
+        // 1. 定義 5 個成就的對應提示（hint）與解鎖內容（info）
+        const achievementData = {
+            "ach_tide.png": { id: "tide", name: "完成漲潮路線", hint: "探尋漲潮時分的水筆仔祕密。", info: "恭喜！您已成功伴隨著浪潮，完成了漲潮路線的所有生態挑戰！" },
+            "ach_ebb.png": { id: "ebb", name: "完成退潮路線", hint: "漫步於退潮後的泥灘地，尋找生物足跡。", info: "恭喜！您已在退潮退去之際，深入潮間帶完成了退潮路線！" },
+            "ach_hard.png": { id: "hard", name: "完成困難模式", hint: "唯有智勇雙全的歷史生態學家才能解開的考驗。", info: "太強了！您克服了清代與現代文獻的重重謎題，完美破關困難模式！" },
+            "ach_easy.png": { id: "easy", name: "完成簡單模式", hint: "在悠閒的氛圍中輕鬆認識許厝港。", info: "恭喜！您在舒適漫步的節奏中，順利完成了簡單模式！" },
+            "ach_all.png": { id: "all", name: "開啟所有圖鑑", hint: "尋找隱藏在許厝港濕地各處的所有神祕生物。", info: "夢幻成就解鎖！您已經收集了這片濕地上所有的生物足跡，成為生態大師！" }
         };
 
         // ==========================================
@@ -1230,6 +1244,57 @@
 
         function closeModal() {
             document.getElementById('creature-modal').classList.remove('active');
+        }
+
+        // 2. 點擊成就格子彈出放大視窗 (高度同步您原本的 openModal 邏輯)
+        function openAchievementModal(imgSrc) {
+            const modalImg = document.getElementById('modal-img');
+            const modalTextElement = document.getElementById('modal-text');
+            if (!modalImg || !modalTextElement) return;
+
+            // 取得純檔名
+            const fileName = imgSrc.split('/').pop(); 
+            const data = achievementData[fileName];
+            if (!data) return;
+
+            // 抓取該物件在 HTML 上的真實 img 標籤來檢查 data-unlocked 狀態
+            const targetImg = document.getElementById(`ach-img-${data.id}`);
+            const isUnlocked = targetImg && targetImg.dataset.unlocked === "true";
+
+            modalImg.src = imgSrc;
+
+            if (isUnlocked) {
+                // 已解鎖：清除濾鏡效果，顯示成就名稱與恭喜文字
+                modalImg.style.filter = "none";
+                modalTextElement.innerHTML = `<strong>【成就解鎖】${data.name}</strong><br><br>${data.info}`;
+            } else {
+                // 未解鎖：同步套用您原本的剪影濾鏡效果，並顯示提示
+                modalImg.style.filter = "brightness(0) invert(1)";
+                modalTextElement.innerHTML = `<strong>成就提示：</strong><br>${data.hint}`;
+            }
+
+            // 開啟與圖鑑共用的放大視窗
+            document.getElementById('creature-modal').classList.add('active');
+        }
+
+        // 3. 全局解鎖功能：未來您在通關觸發時，直接呼叫此函式即可解鎖！
+        function unlockAchievement(fileName) {
+            const data = achievementData[fileName];
+            if (!data) return;
+
+            const targetImg = document.getElementById(`ach-img-${data.id}`);
+            const targetName = document.getElementById(`ach-name-${data.id}`);
+
+            if (targetImg && targetImg.dataset.unlocked === "false") {
+                targetImg.dataset.unlocked = "true";
+                targetImg.style.filter = "none"; // 拔除首頁格子的剪影效果
+                if (targetName) targetName.innerText = data.name; // 把「？？？」更換為正式的成就名稱
+            }
+
+            // 💡 聯動規則：完成漲潮路線或退潮路線時，會同時自動解鎖困難模式
+            if (fileName === 'ach_tide.png' || fileName === 'ach_ebb.png') {
+                unlockAchievement('ach_hard.png');
+            }
         }
     </script>
     <div id="creature-modal" class="modal" onclick="closeModal()">
