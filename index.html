@@ -328,11 +328,11 @@
             border-radius: 12px !important;
         }
 
-        /* ✨ JPG 專用終極純白剪影濾鏡（邊緣 100% 乾淨無瑕） */
+        /* 🕶️ JPG 專用神祕影子剪影（完全抹平內部細節，只留外框輪廓） */
         .creature-img.silhouette,
         .modal-img.silhouette {
-            mix-blend-mode: multiply; /* 1. 瞬間將 JPG 的方形白底變透明 */
-            filter: contrast(100) brightness(10) invert(1) !important; /* 2. 將中間圖案逼成純白剪影 */
+            mix-blend-mode: multiply; /* 1. 隱藏 JPG 的方形白底 */
+            filter: brightness(0) opacity(0.8) !important; /* 2. 亮度歸零變成純黑影子，並帶有 80% 的深灰透明高級感 */
             background-color: transparent !important;
         }
     </style>
@@ -1254,7 +1254,7 @@
             document.getElementById('creature-modal').classList.remove('active');
         }
 
-        // 2. 點擊成就格子彈出放大視窗 (修正：採用 JPG 終極乾淨剪影濾鏡)
+        // 2. 點擊成就格子彈出放大視窗 (同步神祕影子剪影)
         function openAchievementModal(imgSrc) {
             const modalImg = document.getElementById('modal-img');
             const modalTextElement = document.getElementById('modal-text');
@@ -1270,14 +1270,14 @@
             modalImg.src = imgSrc;
 
             if (isUnlocked) {
-                // 已解鎖：移除大圖的 .silhouette，關閉白底隱形效果，變回彩色原圖
+                // 已解鎖：移除神祕剪影，變回原本彩色完整的 JPG
                 modalImg.classList.remove('silhouette');
-                modalImg.style.mixBlendMode = "normal"; // 恢復一般混合模式
+                modalImg.style.mixBlendMode = "normal"; 
                 modalTextElement.innerHTML = `<strong>【成就解鎖】${data.name}</strong><br><br>${data.info}`;
             } else {
-                // 未解鎖：強制幫大圖加上 .silhouette，啟動終極純白去底剪影
+                // 未解鎖：加上 .silhouette，讓彈窗大圖也變成看不透細節的黑灰影子
                 modalImg.classList.add('silhouette');
-                modalImg.style.mixBlendMode = "multiply"; // 啟動白底隱形
+                modalImg.style.mixBlendMode = "multiply"; 
                 modalTextElement.innerHTML = `<strong>成就提示：</strong><br>${data.hint}`;
             }
 
