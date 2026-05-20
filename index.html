@@ -1149,6 +1149,20 @@
                 if (result.result === 'success') {
                     currentUser = user;
                     alert(isReg ? "帳號建立成功！" : "登入成功！");
+
+                    // ✨【新增邏輯】如果是「登入成功」(而非新帳號註冊)，就去讀取並還原他的雲端進度
+                    if (!isReg) {
+                        // 1. 將玩家帳號密碼存入進度系統專用的全域變數
+                        window.currentUsername = user; 
+                        // 註：這裏的 user 變數就是玩家輸入的帳號字串
+                        
+                        // 2. 呼叫進度還原函式，傳入從 GAS 資料庫撈回來的進度 JSON 字串
+                        loadGameProgress(result.progress); 
+                    } else {
+                        // 如果是新註冊帳號，也順便紀錄當前帳號，讓新玩家在玩的時候也能正常存檔
+                        window.currentUsername = user;
+                    }
+
                     showPage('game-page');
                 } else {
                     const errId = isReg ? 'reg-user-err' : 'login-pass-err';
@@ -1161,6 +1175,120 @@
                 btn.disabled = false;
             } finally {
                 btn.innerText = "開始遊戲";
+            }
+        }
+
+        // ==========================================
+        // 💾 雲端進度儲存與載入系統
+        // ==========================================
+
+        // 1. 打包目前畫面上的「圖鑑」與「成就」解鎖狀態，並同步至雲端
+        function saveGameProgress() {
+            // 檢查目前是否有登入帳號 (您可以將變頭綁定在您現有的登入全域變數，例如 `currentUsername`)
+            // 如果您原本登入成功有紀錄帳號，請確保變數名稱一致。此處假設變數名為 currentUsername
+            if (!window.currentUsername) {
+                console.log("當前為遊客模式或未登入，進度將不進行同步。");
+                return;
+            }
+
+            // A. 收集所有生物圖鑑狀態
+            const creatureProgress = {};
+            document.querySelectorAll('.creature-list .creature-img').forEach(img => {
+                const src = img.getAttribute('src').split('/').pop();
+                const isUnlocked = img.dataset.unlocked === "true";
+                if (src) creatureProgress[src] = isUnlocked;
+            });
+
+            // B. 收集所有成就狀態
+            const achievementProgress = {};
+            // 找出成就對應的所有資料庫 Key
+            Object.keys(achievementData).forEach(key => {
+                const id = achievementData[key].id;
+                const targetImg = document.getElementById(`ach-img-${id}`);
+                const isUnlocked = targetImg && targetImg.dataset.unlocked === "true";
+                achievementProgress[key] = isUnlocked;
+            });
+
+            // C. 結合成完整進度包
+            const progressPackage = {
+                creatures: creatureProgress,
+                achievements: achievementProgress
+            };
+
+            // D. 發送至 GAS 儲存
+            fetch(scriptUrl, {
+                method: "POST",
+                body: JSON.stringify({
+                    action: "saveProgress",
+                    username: window.currentUsername,
+                    password: window.currentUserPassword, // 若無驗證密碼需求可免，但在GAS中安全查核好用
+                    progress: JSON.stringify(progressPackage)
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.result === 'success') {
+                    console.log("雲端同步成功:", data.message);
+                } else {
+                    console.error("雲端同步失敗:", data.message);
+                }
+            })
+            .catch(err => console.error("同步連線異常:", err));
+        }
+
+        // 2. 當登入成功時，解析回傳的 JSON 進度字串，並復原至網頁畫面上
+        function loadGameProgress(progressStr) {
+            if (!progressStr || progressStr === "{}") {
+                console.log("此帳號無舊有進度，開啟全新冒險！");
+                return;
+            }
+
+            try {
+                const progress = JSON.parse(progressStr);
+
+                // A. 復原生物圖鑑解鎖狀態
+                if (progress.creatures) {
+                    Object.keys(progress.creatures).forEach(src => {
+                        const isUnlocked = progress.creatures[src];
+                        if (isUnlocked) {
+                            // 尋找網頁上對應 src 的圖鑑圖片
+                            const targetImg = Array.from(document.querySelectorAll('.creature-list .creature-img')).find(img => 
+                                img.getAttribute('src').includes(src)
+                            );
+                            if (targetImg) {
+                                targetImg.dataset.unlocked = "true";
+                                targetImg.style.filter = "none"; // 點亮圖鑑
+                                // 找尋名字元素換名 (假設您原本圖鑑名字結構)
+                                const nameTag = targetImg.nextElementSibling;
+                                const data = creatureData[src];
+                                if (nameTag && data) nameTag.innerText = data.name;
+                            }
+                        }
+                    });
+                }
+
+                // B. 復原成就解鎖狀態
+                if (progress.achievements) {
+                    Object.keys(progress.achievements).forEach(key => {
+                        const isUnlocked = progress.achievements[key];
+                        if (isUnlocked) {
+                            const data = achievementData[key];
+                            if (data) {
+                                const targetImg = document.getElementById(`ach-img-${data.id}`);
+                                const targetName = document.getElementById(`ach-name-${data.id}`);
+                                if (targetImg) {
+                                    targetImg.dataset.unlocked = "true";
+                                    targetImg.classList.remove('silhouette'); // 移除影子
+                                    targetImg.style.mixBlendMode = "normal";
+                                }
+                                if (targetName) targetName.innerText = data.name; // 還原成就名字
+                            }
+                        }
+                    });
+                }
+                console.log("帳號進度加載完成！");
+            } catch (err) {
+                console.error("解析進度資料發生異常:", err);
             }
         }
     
@@ -1223,6 +1351,7 @@
                     setTimeout(() => img.style.transform = "scale(1)", 500);
                 }
             });
+            saveGameProgress();
         }
         
         function openModal(imgSrc) {
@@ -1294,14 +1423,17 @@
 
             if (targetImg && targetImg.dataset.unlocked === "false") {
                 targetImg.dataset.unlocked = "true";
-                targetImg.classList.remove('silhouette'); // 移除純白剪影
-                targetImg.style.mixBlendMode = "normal";   // 恢復一般混合模式，秀出完美彩色 JPG
-                if (targetName) targetName.innerText = data.name; // 「？？？」更換為正式的成就名稱
+                targetImg.classList.remove('silhouette'); 
+                targetImg.style.mixBlendMode = "normal";   
+                if (targetName) targetName.innerText = data.name; 
             }
 
             if (fileName === 'ach_tide.jpg' || fileName === 'ach_ebb.jpg') {
                 unlockAchievement('ach_hard.jpg');
             }
+
+            // ✨ 每次成功觸發解鎖成就時，自動同步最新進度包到 Google 試算表
+            saveGameProgress();
         }
     </script>
     <div id="creature-modal" class="modal" onclick="closeModal()">
