@@ -1242,23 +1242,39 @@
 
             try {
                 const progress = JSON.parse(progressStr);
+                console.log("正在解析雲端進度資料...", progress);
 
                 // A. 復原生物圖鑑解鎖狀態
                 if (progress.creatures) {
                     Object.keys(progress.creatures).forEach(src => {
                         const isUnlocked = progress.creatures[src];
                         if (isUnlocked) {
-                            // 尋找網頁上對應 src 的圖鑑圖片
-                            const targetImg = Array.from(document.querySelectorAll('.creature-list .creature-img')).find(img => 
-                                img.getAttribute('src').includes(src)
-                            );
+                            const srcLower = src.toLowerCase().trim();
+                            
+                            // 💡 高相容性修正：擴大搜尋範圍，只要 class 包含 creature-img 且 src 吻合就抓取
+                            const targetImg = Array.from(document.querySelectorAll('.creature-img')).find(img => {
+                                const imgUrl = img.getAttribute('src') || "";
+                                return imgUrl.toLowerCase().includes(srcLower);
+                            });
+
                             if (targetImg) {
                                 targetImg.dataset.unlocked = "true";
-                                targetImg.style.filter = "none"; // 點亮圖鑑
-                                // 找尋名字元素換名 (假設您原本圖鑑名字結構)
-                                const nameTag = targetImg.nextElementSibling;
-                                const data = creatureData[src];
-                                if (nameTag && data) nameTag.innerText = data.name;
+                                targetImg.classList.remove('is-locked'); // 移除鎖定類名
+                                targetImg.style.filter = "none"; // 點亮圖鑑，移除黑影
+                                
+                                // 修正點：利用精準的父元素與鄰近選擇器換名
+                                const nameTag = targetImg.parentElement.querySelector('.creature-name') || targetImg.nextElementSibling;
+                                if (nameTag) {
+                                    // 如果你有設定 dataset.realname 就優先使用，否則嘗試對照 creatureData
+                                    if (nameTag.dataset.realname) {
+                                        nameTag.innerText = nameTag.dataset.realname;
+                                    } else if (typeof creatureData !== 'undefined' && creatureData[src]) {
+                                        nameTag.innerText = creatureData[src].name;
+                                    }
+                                }
+                                console.log(`[進度還原] 成功點亮生物: ${src}`);
+                            } else {
+                                console.warn(`[進度還原] 畫面上找不到對應的生物圖片元素: ${src}`);
                             }
                         }
                     });
@@ -1279,11 +1295,12 @@
                                     targetImg.style.mixBlendMode = "normal";
                                 }
                                 if (targetName) targetName.innerText = data.name; // 還原成就名字
+                                console.log(`[進度還原] 成功點亮成就: ${data.name}`);
                             }
                         }
                     });
                 }
-                console.log("帳號進度加載完成！");
+                console.log("🎉 帳號進度已全數完美加載並還原至網頁！");
             } catch (err) {
                 console.error("解析進度資料發生異常:", err);
             }
