@@ -591,7 +591,29 @@
                 <div id="spider-success-text" style="font-size: 20px; line-height: 1.8; color: white; margin-bottom: 20px; text-align: center; word-break: break-all; width: 100%;"></div>
                 
                 <div id="spider-success-btns" class="difficulty-container hidden" style="display: flex; justify-content: center; align-items: center; width: 100%;" onclick="event.stopPropagation();">
-                    <button onclick="showPage('game-page')" style="margin: 0 auto; display: inline-flex; justify-content: center; align-items: center; text-align: center; white-space: nowrap; padding: 15px 45px; font-size: 22px; width: auto; min-width: 180px; box-sizing: border-box;">回答問題</button>
+                    <button onclick="showPage('why-collapse-page'); startWhyCollapseTypewriter();" style="margin: 0 auto; display: inline-flex; justify-content: center; align-items: center; text-align: center; white-space: nowrap; padding: 15px 45px; font-size: 22px; width: auto; min-width: 180px; box-sizing: border-box;">回答問題</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <div id="why-collapse-page" class="page hidden" onclick="skipWhyCollapseTypewriter()">
+        <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%; width: 100%; padding: 20px; box-sizing: border-box;">
+            
+            <div style="background: rgba(0, 0, 0, 0.85); padding: 30px; border-radius: 20px; max-width: 500px; width: 90%; box-shadow: 0 10px 25px rgba(0,0,0,0.5); text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                
+                <div id="why-collapse-text" style="font-size: 20px; line-height: 1.8; color: white; margin-bottom: 20px; text-align: center; word-break: break-all; width: 100%;"></div>
+                
+                <div id="why-collapse-btns" class="difficulty-container hidden" style="display: flex; flex-direction: column; align-items: center; width: 100%;">
+                    
+                    <input type="text" id="why-collapse-answer" onclick="event.stopPropagation();" placeholder="請分享您的看法..." style="width: 80%; max-width: 320px; padding: 12px 15px; font-size: 18px; border: 1px solid rgba(255,255,255,0.4); border-radius: 4px; background: rgba(255,255,255,0.1); color: white; box-sizing: border-box; text-align: center; outline: none; margin-bottom: 5px;">
+                    
+                    <div id="why-collapse-err" style="color: #ff7675; font-size: 15px; font-weight: bold; margin-bottom: 15px; min-height: 20px; text-align: center; width: 100%;"></div>
+
+                    <div style="display: flex; justify-content: center; align-items: center; width: 100%; text-align: center;" onclick="event.stopPropagation();">
+                        <button onclick="checkWhyCollapseAnswer()" style="margin: 0 auto; display: inline-flex; justify-content: center; align-items: center; text-align: center; white-space: nowrap; padding: 15px 45px; font-size: 22px; width: auto; min-width: 180px; box-sizing: border-box;">提交答案</button>
+                    </div>
                 </div>
 
             </div>
@@ -724,6 +746,14 @@
         let spiderSuccessCharIndex = 0;
         let isSpiderSuccessTyping = false;
         let spiderSuccessTypeTimeout;
+
+        // ==========================================
+        // 📜 許厝港沒落原因（開放性問答，完全沿用 Q1 邏輯）
+        // ==========================================
+        const whyCollapseMainText = "想想看，為甚麼許厝港這個地方會沒落呢?";
+        let whyCollapseCharIndex = 0;
+        let isWhyCollapseTyping = false;
+        let whyCollapseTypeTimeout;
 
         // ==========================================
         // --- 1. 頁面導換與網頁初始化 ---
@@ -1305,6 +1335,66 @@
         function completeSpiderSuccessTyping() {
             isSpiderSuccessTyping = false;
             document.getElementById('spider-success-btns').classList.remove('hidden');
+        }
+
+        // 【開放性頁面問題打字機】
+        function startWhyCollapseTypewriter() {
+            const container = document.getElementById('why-collapse-text');
+            const btns = document.getElementById('why-collapse-btns');
+            if(!container) return;
+            
+            container.innerHTML = "";
+            whyCollapseCharIndex = 0;
+            isWhyCollapseTyping = true;
+            if(btns) btns.classList.add('hidden');
+            
+            function type() {
+                if (whyCollapseCharIndex < whyCollapseMainText.length) {
+                    let char = whyCollapseMainText.charAt(whyCollapseCharIndex);
+                    container.innerHTML += char === "\n" ? "<br>" : char;
+                    whyCollapseCharIndex++;
+                    whyCollapseTypeTimeout = setTimeout(type, 40); // 速度同步 Q1
+                } else {
+                    completeWhyCollapseTyping();
+                }
+            }
+            type();
+        }
+        
+        // 【點擊頁面跳過打字機】
+        function skipWhyCollapseTypewriter() {
+            if (!isSpiderSuccessTyping) return; // 防呆
+            clearTimeout(whyCollapseTypeTimeout);
+            document.getElementById('why-collapse-text').innerHTML = whyCollapseMainText.replace(/\n/g, "<br>");
+            completeWhyCollapseTyping();
+        }
+        
+        // 【打字完成，顯示輸入框與提交按鈕】
+        function completeWhyCollapseTyping() {
+            isWhyCollapseTyping = false;
+            document.getElementById('why-collapse-btns').classList.remove('hidden');
+        }
+
+        // 【驗證開放性問答：只要有寫東西就能過關】
+        function checkWhyCollapseAnswer() {
+            const answerInput = document.getElementById('why-collapse-answer').value.trim();
+            const errDiv = document.getElementById('why-collapse-err');
+            
+            // 🚀 核心改動：只要檢查他是不是空著沒寫而已
+            if (!answerInput) {
+                errDiv.innerText = "❌ 請分享您的想法後再提交！";
+                return;
+            }
+
+            // 只要有寫東西，100% 通關！
+            errDiv.innerText = ""; 
+            alert("🎉 感謝你的精彩想法！成功完成此階段調查！");
+            
+            // 順利通關，前往主遊戲畫面（你可以自行修改 'game-page' 為你接續的任務 ID）
+            showPage('game-page'); 
+            
+            // 自動清空輸入框方便下次遊玩
+            document.getElementById('why-collapse-answer').value = "";
         }
     
         // ==========================================
