@@ -568,7 +568,7 @@
     <div id="spider-quiz-page" class="page hidden" onclick="skipSpiderTypewriter()">
         <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%;">
             
-            <div id="spider-typewriter-text" style="font-size: 22px; line-height: 1.8; margin-bottom: 25px; width: 80%;"></div>
+            <div id="spider-typewriter-text" style="font-size: 22px; line-height: 1.8; margin-bottom: 25px; width: 80%; text-align: left;"></div>
             
             <div id="spider-btns" class="difficulty-container hidden" style="display: flex; flex-direction: column; align-items: center; width: 100%;">
                 
@@ -576,8 +576,8 @@
                 
                 <div id="spider-err" style="color: #ff7675; font-size: 15px; font-weight: bold; margin-bottom: 15px; min-height: 20px; text-align: center; width: 100%;"></div>
 
-                <div style="display: flex; justify-content: center; width: 100%;" onclick="event.stopPropagation();">
-                    <button onclick="checkSpiderAnswer()" style="margin: 0 auto; display: block; white-space: nowrap; padding: 15px 45px;">提交答案</button>
+                <div style="display: flex; justify-content: center; align-items: center; width: 100%; text-align: center;" onclick="event.stopPropagation();">
+                    <button onclick="checkSpiderAnswer()" style="margin: 0 auto; display: inline-flex; justify-content: center; align-items: center; text-align: center; white-space: nowrap; padding: 15px 45px; font-size: 22px; width: auto; min-width: 180px; box-sizing: border-box;">提交答案</button>
                 </div>
             </div>
         </div>
@@ -670,17 +670,13 @@
         let doc1Timeout, doc2Timeout;
 
         // ==========================================
-        // 🕸️ 蜘蛛穴傳說問答頁面（完全沿用 Q1 邏輯，修正動態提示）
+        // 🕸️ 蜘蛛穴傳說問答頁面（完全沿用 Q1 邏輯，完美整合）
         // ==========================================
         const spiderMainText = "尋找蜘蛛穴的傳說，傳說中是蜘蛛的哪裡塌陷下去了，造成許家失去過往的好運與機會？";
         
-        // 🚀 動態重寫點擊事件：先塞入專屬提示文字，再打開你原本的提示彈窗
+        // 🚀 簡化為直接呼叫更新後的 openHintModal()，文字替換工作交給核心分配器
         function openSpiderHint() {
-            const hintTextEl = document.querySelector('#hint-modal .hint-text p');
-            if (hintTextEl) {
-                hintTextEl.innerHTML = "<strong>提示：</strong><br>在橋另一邊，所有故事的解答都在那裡";
-            }
-            openHintModal(); // 打開你原本的彈窗
+            openHintModal(); 
         }
 
         const spiderHintHtml = '<br><span style="font-size: 16px; color: #bdc3c7; text-decoration: underline; cursor: pointer;" onclick="event.stopPropagation(); openSpiderHint();">提示</span>';
@@ -1135,8 +1131,32 @@
             startSpiderTypewriter();     // 啟動專屬打字機
         }
 
+        // 🚀 修改你原本舊有的 openHintModal 函式，讓它支援蜘蛛頁面的特殊提示
         function openHintModal() {
-            document.getElementById('hint-modal').classList.add('active');
+            // 抓取彈窗內的內容容器（通常你的通用彈窗裡會有一個放提示文字的元素，例如 .hint-text 或 #modal-hint 等）
+            // 這裡做一個全方位防呆，不管是 class 還是 p 都一起檢查
+            const modalEl = document.getElementById('hint-modal');
+            
+            if (modalEl) {
+                // 檢查目前玩家是不是正在「蜘蛛穴問答頁」
+                const spiderPage = document.getElementById('spider-quiz-page');
+                if (spiderPage && !spiderPage.classList.contains('hidden')) {
+                    
+                    // 🔍 找到彈窗內所有可能放文字的標籤 (段落 p、或含有文字的區塊)
+                    const pTag = modalEl.querySelector('p');
+                    const textContainer = modalEl.querySelector('.hint-text') || modalEl.querySelector('.modal-content');
+                    
+                    // 🚀 精准注入蜘蛛穴的專屬提示內容
+                    if (pTag) {
+                        pTag.innerHTML = "<strong>提示：</strong><br>在橋另一邊，所有故事的解答都在那裡";
+                    } else if (textContainer) {
+                        textContainer.innerHTML = "<strong>提示：</strong><br>在橋另一邊，所有故事的解答都在那裡";
+                    }
+                }
+                
+                // 執行原本的打開彈窗動作
+                modalEl.classList.add('active');
+            }
         }
         
         function closeHintModal() {
