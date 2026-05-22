@@ -568,16 +568,16 @@
     <div id="spider-quiz-page" class="page hidden" onclick="skipSpiderTypewriter()">
         <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%;">
             
-            <div id="spider-typewriter-text" style="font-size: 22px; line-height: 1.8; margin-bottom: 20px; width: 80%;"></div>
+            <div id="spider-typewriter-text" style="font-size: 22px; line-height: 1.8; margin-bottom: 25px; width: 80%;"></div>
             
-            <div id="spider-btns" class="difficulty-container hidden" style="display: flex; flex-direction: column; align-items: center; width: 80%;">
+            <div id="spider-btns" class="difficulty-container hidden" style="display: flex; flex-direction: column; align-items: center; width: 100%;">
                 
-                <input type="text" id="spider-answer" onclick="event.stopPropagation();" placeholder="請輸入您的答案..." style="width: 100%; padding: 12px 15px; font-size: 18px; border: 1px solid rgba(255,255,255,0.4); border-radius: 4px; background: rgba(255,255,255,0.1); color: white; box-sizing: border-box; text-align: left; outline: none; margin-bottom: 5px;">
+                <input type="text" id="spider-answer" onclick="event.stopPropagation();" placeholder="請輸入您的答案..." style="width: 80%; max-width: 320px; padding: 12px 15px; font-size: 18px; border: 1px solid rgba(255,255,255,0.4); border-radius: 4px; background: rgba(255,255,255,0.1); color: white; box-sizing: border-box; text-align: left; outline: none; margin-bottom: 5px;">
                 
                 <div id="spider-err" style="color: #ff7675; font-size: 15px; font-weight: bold; margin-bottom: 15px; min-height: 20px; text-align: center; width: 100%;"></div>
 
                 <div style="display: flex; justify-content: center; width: 100%;" onclick="event.stopPropagation();">
-                    <button onclick="checkSpiderAnswer()" style="margin-top: 0; white-space: nowrap;">提交答案</button>
+                    <button onclick="checkSpiderAnswer()" style="margin: 0 auto; display: block; white-space: nowrap; padding: 15px 45px;">提交答案</button>
                 </div>
             </div>
         </div>
@@ -670,11 +670,21 @@
         let doc1Timeout, doc2Timeout;
 
         // ==========================================
-        // 🕸️ 蜘蛛穴傳說問答頁面（完全沿用 Q1 邏輯）
+        // 🕸️ 蜘蛛穴傳說問答頁面（完全沿用 Q1 邏輯，修正動態提示）
         // ==========================================
         const spiderMainText = "尋找蜘蛛穴的傳說，傳說中是蜘蛛的哪裡塌陷下去了，造成許家失去過往的好運與機會？";
-        // 🚀 100% 複製 Q1 格式：字跑完後直接調用您原有的 openHintModal() 提示功能
-        const spiderHintHtml = '<br><span style="font-size: 16px; color: #bdc3c7; text-decoration: underline; cursor: pointer;" onclick="event.stopPropagation(); openHintModal();">提示</span>';
+        
+        // 🚀 動態重寫點擊事件：先塞入專屬提示文字，再打開你原本的提示彈窗
+        function openSpiderHint() {
+            const hintTextEl = document.querySelector('#hint-modal .hint-text p');
+            if (hintTextEl) {
+                hintTextEl.innerHTML = "<strong>提示：</strong><br>在橋另一邊，所有故事的解答都在那裡";
+            }
+            openHintModal(); // 打開你原本的彈窗
+        }
+
+        const spiderHintHtml = '<br><span style="font-size: 16px; color: #bdc3c7; text-decoration: underline; cursor: pointer;" onclick="event.stopPropagation(); openSpiderHint();">提示</span>';
+        
         let spiderCharIndex = 0;
         let isSpiderTyping = false;
         let spiderTypeTimeout;
@@ -1149,7 +1159,7 @@
                     let char = spiderMainText.charAt(spiderCharIndex);
                     container.innerHTML += char === "\n" ? "<br>" : char;
                     spiderCharIndex++;
-                    spiderTypeTimeout = setTimeout(type, 40); // 速度與 Q1 相同的 40ms
+                    spiderTypeTimeout = setTimeout(type, 40);
                 } else {
                     container.innerHTML += spiderHintHtml;
                     completeSpiderTyping();
@@ -1190,12 +1200,9 @@
                 // 順利通關，前往主遊戲畫面
                 showPage('game-page'); 
                 
-                // 清空輸入框方便下一次遊玩
                 document.getElementById('spider-answer').value = "";
             } else {
                 errDiv.innerText = "❌ 答案似乎不對，再仔細想想提示吧！";
-                
-                // 讓輸入框邊框短暫變紅作為回饋
                 const inputEl = document.getElementById('spider-answer');
                 inputEl.style.borderColor = "#ff7675";
                 setTimeout(() => { inputEl.style.borderColor = "rgba(255,255,255,0.4)"; }, 1000);
