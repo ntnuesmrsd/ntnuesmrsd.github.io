@@ -674,29 +674,28 @@
         // ==========================================
         const spiderMainText = "尋找蜘蛛穴的傳說，傳說中是蜘蛛的哪裡塌陷下去了，造成許家失去過往的好運與機會？";
         
-        // 🚀 動態重寫點擊事件：移除黃字冒號、拿掉白字「提示：」，並強制水平置中
+        // 🚀 最強效防呆版本：直接洗掉整個彈窗內容，確保 100% 更新文字
         function openSpiderHint() {
             const hintModal = document.getElementById('hint-modal');
             if (hintModal) {
-                // 🔍 抓取彈窗內的文字容器 (全方位防呆抓取 p 標籤或內容區)
-                const pTag = hintModal.querySelector('p');
-                const textContainer = hintModal.querySelector('.hint-text') || hintModal.querySelector('.modal-content');
+                // 🔍 直接抓取彈窗裡最核心的白色方塊容器 (.modal-content)
+                const contentBox = hintModal.querySelector('.modal-content');
                 
-                // 🚀 1. 注入乾淨的新文字：黃字去冒號、白字去除「提示：」與換行
-                if (pTag) {
-                    pTag.innerHTML = "<strong>提示</strong><br>在橋另一邊，所有故事的解答都在那裡";
-                } else if (textContainer) {
-                    textContainer.innerHTML = "<strong>提示</strong><br>在橋另一邊，所有故事的解答都在那裡";
+                if (contentBox) {
+                    // 直接用最簡單、置中的 HTML 覆蓋整個內容，移除所有冒號與多餘文字
+                    contentBox.innerHTML = `
+                        <div style="text-align: center; width: 100%;">
+                            <span style="font-size: 24px; font-weight: bold; color: #f1c40f; display: block; margin-bottom: 15px;">提示</span>
+                            <p style="font-size: 18px; color: white; line-height: 1.6; margin-bottom: 20px; text-align: center;">在橋另一邊，所有故事的解答都在那裡</p>
+                            <button onclick="closeHintModal()" style="padding: 10px 30px; font-size: 18px; margin-top: 10px;">確認</button>
+                        </div>
+                    `;
                 }
-                
-                // 2. 維持完美居中對齊
-                if (pTag) pTag.style.textAlign = "center";
-                if (textContainer) textContainer.style.textAlign = "center";
             }
             
-            openHintModal(); // 呼叫你原本的開啟彈窗功能
+            // 呼叫你原本打開彈窗的 class 控制器
+            hintModal.classList.add('active'); 
         }
-
         const spiderHintHtml = '<br><span style="font-size: 16px; color: #bdc3c7; text-decoration: underline; cursor: pointer;" onclick="event.stopPropagation(); openSpiderHint();">提示</span>';
         
         let spiderCharIndex = 0;
