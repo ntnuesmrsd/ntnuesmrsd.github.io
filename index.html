@@ -1375,26 +1375,53 @@
             document.getElementById('why-collapse-btns').classList.remove('hidden');
         }
 
-        // 【驗證開放性問答：只要有寫東西就能過關】
+        // 【驗證開放性問答：將想法上傳至試算表 D 欄】
         function checkWhyCollapseAnswer() {
             const answerInput = document.getElementById('why-collapse-answer').value.trim();
             const errDiv = document.getElementById('why-collapse-err');
             
-            // 🚀 核心改動：只要檢查他是不是空著沒寫而已
+            // 讀取當前登入的帳號名稱 (請確保你全域存放帳號的變數叫 currentUser 或改為你專案中的變數)
+            const pUsername = window.currentUser || localStorage.getItem("username") || ""; 
+
             if (!answerInput) {
                 errDiv.innerText = "❌ 請分享您的想法後再提交！";
                 return;
             }
 
-            // 只要有寫東西，100% 通關！
-            errDiv.innerText = ""; 
-            alert("🎉 感謝你的精彩想法！成功完成此階段調查！");
-            
-            // 順利通關，前往主遊戲畫面（你可以自行修改 'game-page' 為你接續的任務 ID）
-            showPage('game-page'); 
-            
-            // 自動清空輸入框方便下次遊玩
-            document.getElementById('why-collapse-answer').value = "";
+            errDiv.style.color = "#f1c40f";
+            errDiv.innerText = "⏳ 正在傳送想法至雲端，請稍候...";
+
+            // 🚀 發送 API 請求到你的 GAS 後端
+            // (注意：這裡的 GAS_WEB_APP_URL 請確保與你登入註冊共用同一個 GAS 網址)
+            fetch(GAS_WEB_APP_URL, {
+                method: "POST",
+                body: JSON.stringify({
+                    action: "saveWhyCollapse",
+                    username: pUsername,
+                    answer: answerInput
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.result === "success") {
+                    errDiv.innerText = ""; 
+                    alert("🎉 感謝你的精彩想法！資料已成功記錄！");
+                    
+                    // 順利通關，前往你設定的下一個頁面 (例如大結局或回主地圖)
+                    showPage('game-page'); 
+                    
+                    // 自動清空輸入框
+                    document.getElementById('why-collapse-answer').value = "";
+                } else {
+                    errDiv.style.color = "#ff7675";
+                    errDiv.innerText = "❌ 儲存失敗：" + data.message;
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                errDiv.style.color = "#ff7675";
+                errDiv.innerText = "❌ 網路連線異常，請重新再試一次";
+            });
         }
     
         // ==========================================
