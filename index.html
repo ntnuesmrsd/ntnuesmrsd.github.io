@@ -1380,20 +1380,29 @@
             const answerInput = document.getElementById('why-collapse-answer').value.trim();
             const errDiv = document.getElementById('why-collapse-err');
             
-            // 讀取當前登入的帳號名稱 (請確保你全域存放帳號的變數叫 currentUser 或改為你專案中的變數)
-            const pUsername = window.currentUser || localStorage.getItem("username") || ""; 
+            // 🚀 【核心修正】自動全方位相容：優先抓取全域變數，若無則抓取 LocalStorage 裡的登入帳號
+            const pUsername = window.currentUser || window.currentUsername || localStorage.getItem("username") || ""; 
+
+            // 🚀 【核心修正】全方位自動適應你的 GAS 網址變數名稱（相容 scriptURL / webAppUrl / GAS_URL 等）
+            const targetGASUrl = window.GAS_WEB_APP_URL || window.scriptURL || window.webAppUrl || window.GAS_URL || "";
 
             if (!answerInput) {
                 errDiv.innerText = "❌ 請分享您的想法後再提交！";
                 return;
             }
 
+            // 防呆機制：如果真的找不到網址變數，直接噴錯提示，不讓它無限轉圈圈
+            if (!targetGASUrl) {
+                errDiv.style.color = "#ff7675";
+                errDiv.innerText = "❌ 偵測不到後端 GAS 網址變數，請確認變數名稱是否正確！";
+                return;
+            }
+
             errDiv.style.color = "#f1c40f";
             errDiv.innerText = "⏳ 正在傳送想法至雲端，請稍候...";
 
-            // 🚀 發送 API 請求到你的 GAS 後端
-            // (注意：這裡的 GAS_WEB_APP_URL 請確保與你登入註冊共用同一個 GAS 網址)
-            fetch(GAS_WEB_APP_URL, {
+            // 發送 API 請求到後端 GAS
+            fetch(targetGASUrl, {
                 method: "POST",
                 body: JSON.stringify({
                     action: "saveWhyCollapse",
@@ -1407,7 +1416,7 @@
                     errDiv.innerText = ""; 
                     alert("🎉 感謝你的精彩想法！資料已成功記錄！");
                     
-                    // 順利通關，前往你設定的下一個頁面 (例如大結局或回主地圖)
+                    // 順利通關，前往你設定的下一個頁面
                     showPage('game-page'); 
                     
                     // 自動清空輸入框
@@ -1420,7 +1429,7 @@
             .catch(err => {
                 console.error(err);
                 errDiv.style.color = "#ff7675";
-                errDiv.innerText = "❌ 網路連線異常，請重新再試一次";
+                errDiv.innerText = "❌ 網路連線或後端部署版本異常";
             });
         }
     
