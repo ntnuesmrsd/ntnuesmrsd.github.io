@@ -584,12 +584,16 @@
     </div>
 
     <div id="spider-success-page" class="page hidden" onclick="skipSpiderSuccessTypewriter()">
-        <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%; width: 100%;">
+        <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%; width: 100%; padding: 20px; box-sizing: border-box;">
             
-            <div id="spider-success-text" style="font-size: 22px; line-height: 1.8; margin-bottom: 25px; width: 80%; max-width: 600px; text-align: center; word-break: break-all;"></div>
-            
-            <div id="spider-success-btns" class="difficulty-container hidden" style="display: flex; justify-content: center; align-items: center; width: 100%;" onclick="event.stopPropagation();">
-                <button onclick="showPage('game-page')" style="margin: 0 auto; display: inline-flex; justify-content: center; align-items: center; text-align: center; white-space: nowrap; padding: 15px 45px; font-size: 22px; width: auto; min-width: 180px; box-sizing: border-box;">回答問題</button>
+            <div style="background: rgba(0, 0, 0, 0.85); padding: 30px; border-radius: 20px; max-width: 500px; width: 90%; box-shadow: 0 10px 25px rgba(0,0,0,0.5); text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                
+                <div id="spider-success-text" style="font-size: 20px; line-height: 1.8; color: white; margin-bottom: 20px; text-align: center; word-break: break-all; width: 100%;"></div>
+                
+                <div id="spider-success-btns" class="difficulty-container hidden" style="display: flex; justify-content: center; align-items: center; width: 100%;" onclick="event.stopPropagation();">
+                    <button onclick="showPage('game-page')" style="margin: 0 auto; display: inline-flex; justify-content: center; align-items: center; text-align: center; white-space: nowrap; padding: 15px 45px; font-size: 22px; width: auto; min-width: 180px; box-sizing: border-box;">回答問題</button>
+                </div>
+
             </div>
         </div>
     </div>
@@ -716,6 +720,15 @@
         // 🎉 蜘蛛穴通關劇情頁 控制系統（完全沿用 Q1 邏輯）
         // ==========================================
         const spiderSuccessMainText = "這樣就可以了吧，一樣的地方特徵和傳說，我想答案就是這裡：許厝港了。真是神奇呢，一旦沒有人類的活動，這個地方彷彿有種神奇的力量漸漸被大自然收回，回歸最原始的狀態。最後的最後...";
+        let spiderSuccessCharIndex = 0;
+        let isSpiderSuccessTyping = false;
+        let spiderSuccessTypeTimeout;
+
+        // ==========================================
+        // 🎉 蜘蛛穴通關劇情頁 控制系統（完全沿用 Q1 邏輯）
+        // ==========================================
+        const spiderSuccessMainText = "這樣就可以了吧，一樣的地方特徵和傳說，我想答案就是這裡：許厝港了。真是神奇呢，一旦沒有人類的活動，這個地方彷彿有種神奇的力量漸漸被大自然收回，回歸最原始的狀態。最後的最後:";
+        
         let spiderSuccessCharIndex = 0;
         let isSpiderSuccessTyping = false;
         let spiderSuccessTypeTimeout;
