@@ -674,7 +674,7 @@
         // ==========================================
         const spiderMainText = "尋找蜘蛛穴的傳說，傳說中是蜘蛛的哪裡塌陷下去了，造成許家失去過往的好運與機會？";
         
-        // 🚀 動態重寫點擊事件：塞入專屬提示文字，並強制將該彈窗內容水平置中
+        // 🚀 動態重寫點擊事件：移除黃字冒號、拿掉白字「提示：」，並強制水平置中
         function openSpiderHint() {
             const hintModal = document.getElementById('hint-modal');
             if (hintModal) {
@@ -682,14 +682,14 @@
                 const pTag = hintModal.querySelector('p');
                 const textContainer = hintModal.querySelector('.hint-text') || hintModal.querySelector('.modal-content');
                 
-                // 1. 注入蜘蛛穴專屬提示文字
+                // 🚀 1. 注入乾淨的新文字：黃字去冒號、白字去除「提示：」與換行
                 if (pTag) {
-                    pTag.innerHTML = "在橋另一邊，所有故事的解答都在那裡";
+                    pTag.innerHTML = "<strong>提示</strong><br>在橋另一邊，所有故事的解答都在那裡";
                 } else if (textContainer) {
-                    textContainer.innerHTML = "在橋另一邊，所有故事的解答都在那裡";
+                    textContainer.innerHTML = "<strong>提示</strong><br>在橋另一邊，所有故事的解答都在那裡";
                 }
                 
-                // 2. 🚀 強制將提示文字與標題設為「居中對齊」
+                // 2. 維持完美居中對齊
                 if (pTag) pTag.style.textAlign = "center";
                 if (textContainer) textContainer.style.textAlign = "center";
             }
