@@ -565,25 +565,26 @@
         <div id="q3-success-action" class="hidden" style="margin-top: 25px;"></div>
     </div>
 
-    <div id="spider-quiz-page" class="page hidden" style="padding: 20px; box-sizing: border-box; background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d); height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; overflow-y: auto;">
+    <div id="spider-quiz-page" class="page hidden" onclick="skipSpiderTypewriter()" style="padding: 20px; box-sizing: border-box; background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d); height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; overflow-y: auto;">
         <div style="background: rgba(0,0,0,0.85); padding: 25px; border-radius: 20px; max-width: 500px; width: 90%; box-shadow: 0 10px 25px rgba(0,0,0,0.5); text-align: center;">
             <h2 style="color: #fdbb2d; margin-top: 0; font-size: 24px;">📜 尋找蜘蛛穴的傳說</h2>
-            <p style="font-size: 18px; line-height: 1.6; color: #fff; margin-bottom: 20px; text-align: left;">
-                傳說中是蜘蛛的哪裡塌陷下去了，造成許家失去過往的好運與機會？
-            </p>
             
-            <div style="background: rgba(255,255,255,0.1); border-left: 5px solid #e74c3c; padding: 10px 15px; margin-bottom: 25px; border-radius: 4px; text-align: left;">
-                <span style="color: #ff7675; font-weight: bold; font-size: 14px;">💡 提示：</span>
-                <p style="margin: 5px 0 0 0; font-size: 15px; color: #dfe6e9;">在橋另一邊，所有故事的解答都在那裡</p>
-            </div>
-
-            <input type="text" id="spider-answer" placeholder="請輸入您的答案..." style="width: 100%; padding: 12px 20px; font-size: 18px; border: 2px solid #fdbb2d; border-radius: 50px; background: rgba(255,255,255,0.95); color: #2c3e50; box-sizing: border-box; text-align: center; outline: none; margin-bottom: 20px;">
+            <div id="spider-typewriter-text" style="font-size: 18px; line-height: 1.6; color: #fff; margin-bottom: 20px; text-align: left; min-height: 60px;"></div>
             
-            <div id="spider-err" style="color: #ff7675; font-size: 15px; font-weight: bold; margin-bottom: 15px; min-height: 20px;"></div>
+            <div id="spider-content-block" class="hidden">
+                <div style="background: rgba(255,255,255,0.1); border-left: 5px solid #e74c3c; padding: 10px 15px; margin-bottom: 25px; border-radius: 4px; text-align: left;">
+                    <span style="color: #ff7675; font-weight: bold; font-size: 14px;">💡 提示：</span>
+                    <p style="margin: 5px 0 0 0; font-size: 15px; color: #dfe6e9;">在橋另一邊，所有故事的解答都在那裡</p>
+                </div>
 
-            <div style="display: flex; gap: 15px; width: 100%;">
-                <button onclick="showPage('q3-success-page')" style="flex: 1; padding: 12px; font-size: 18px; border-radius: 50px; background: #636e72; color: white; border: none; box-shadow: 0 4px 0 #2d3436; margin-top:0;">返回</button>
-                <button onclick="checkSpiderAnswer()" style="flex: 2; padding: 12px; font-size: 18px; border-radius: 50px; background: #2ecc71; color: white; border: none; box-shadow: 0 4px 0 #27ae60; margin-top:0;">提交答案</button>
+                <input type="text" id="spider-answer" onclick="event.stopPropagation();" placeholder="請輸入您的答案..." style="width: 100%; padding: 12px 20px; font-size: 18px; border: 2px solid #fdbb2d; border-radius: 50px; background: rgba(255,255,255,0.95); color: #2c3e50; box-sizing: border-box; text-align: center; outline: none; margin-bottom: 20px;">
+                
+                <div id="spider-err" style="color: #ff7675; font-size: 15px; font-weight: bold; margin-bottom: 15px; min-height: 20px;"></div>
+
+                <div style="display: flex; gap: 15px; width: 100%;" onclick="event.stopPropagation();">
+                    <button onclick="showPage('q3-success-page')" style="flex: 1; padding: 12px; font-size: 18px; border-radius: 50px; background: #636e72; color: white; border: none; box-shadow: 0 4px 0 #2d3436; margin-top:0;">返回</button>
+                    <button onclick="checkSpiderAnswer()" style="flex: 2; padding: 12px; font-size: 18px; border-radius: 50px; background: #2ecc71; color: white; border: none; box-shadow: 0 4px 0 #27ae60; margin-top:0;">提交答案</button>
+                </div>
             </div>
         </div>
     </div>
@@ -673,6 +674,14 @@
         let doc1CharIndex = 0, doc2CharIndex = 0;
         let isDoc1Typing = false, isDoc2Typing = false;
         let doc1Timeout, doc2Timeout;
+
+        // ==========================================
+        // 🕸️ 蜘蛛穴傳說問答頁面 控制系統
+        // ==========================================
+        const spiderMainText = "傳說中是蜘蛛的哪裡塌陷下去了，造成許家失去過往的好運與機會？";
+        let spiderCharIndex = 0;
+        let isSpiderTyping = false;
+        let spiderTypeTimeout;
 
         // ==========================================
         // --- 1. 頁面導換與網頁初始化 ---
@@ -1114,9 +1123,10 @@
             }
         }
 
-        // 點擊「回答問題」後的動作：切換至蜘蛛穴謎題頁面
+        // 點擊「回答問題」後的動作
         function goToNextMission() {
-            showPage('spider-quiz-page'); // 🚀 進入新製作的問答頁面
+            showPage('spider-quiz-page'); // 切換至問答頁面
+            startSpiderTypewriter();     // 🚀 同步啟動打字機效果
         }
 
         function openHintModal() {
@@ -1127,7 +1137,50 @@
             document.getElementById('hint-modal').classList.remove('active');
         }
 
-        // 🕸️ 新增：檢查蜘蛛穴傳說的答案（包含「腹部」或「肚子」的模糊比對）
+        // 【1. 啟動蜘蛛頁打字機】
+        function startSpiderTypewriter() {
+            const container = document.getElementById('spider-typewriter-text');
+            const contentBlock = document.getElementById('spider-content-block');
+            if(!container) return;
+            
+            container.innerHTML = "";
+            spiderCharIndex = 0;
+            isSpiderTyping = true;
+            
+            // 開始時先把下方的輸入框和按鈕藏起來
+            if(contentBlock) contentBlock.classList.add('hidden');
+            
+            function type() {
+                if (spiderCharIndex < spiderMainText.length) {
+                    let char = spiderMainText.charAt(spiderCharIndex);
+                    container.innerHTML += char === "\n" ? "<br>" : char;
+                    spiderCharIndex++;
+                    spiderTypeTimeout = setTimeout(type, 50); // 每字間隔 50ms
+                } else {
+                    completeSpiderTyping();
+                }
+            }
+            type();
+        }
+        
+        // 【2. 點擊頁面跳過打字機】
+        function skipSpiderTypewriter() {
+            if (!isSpiderTyping) return;
+            clearTimeout(spiderTypeTimeout);
+            document.getElementById('spider-typewriter-text').innerHTML = spiderMainText.replace(/\n/g, "<br>");
+            completeSpiderTyping();
+        }
+        
+        // 【3. 打字完成，秀出互動內容】
+        function completeSpiderTyping() {
+            isSpiderTyping = false;
+            const contentBlock = document.getElementById('spider-content-block');
+            if (contentBlock) {
+                contentBlock.classList.remove('hidden'); // 秀出提示、輸入框與按鈕
+            }
+        }
+
+        // 【4. 檢查問答題答案】
         function checkSpiderAnswer() {
             const answerInput = document.getElementById('spider-answer').value.trim();
             const errDiv = document.getElementById('spider-err');
@@ -1137,22 +1190,17 @@
                 return;
             }
 
-            // 模糊比對：只要答案文字裡包含 "腹部" 或 "肚子" 即可過關
+            // 模糊比對
             if (answerInput.includes("腹部") || answerInput.includes("肚子")) {
-                errDiv.innerText = ""; // 清空錯誤訊息
+                errDiv.innerText = ""; 
                 alert("🎉 答對了！你成功解開了傳說的謎題！");
                 
-                // 🚀 【請在此填入答對後的下一頁 ID】
-                // 目前預設先回到主選單/遊戲頁，之後你可以改成下一個故事分頁的 ID
+                // 順利過關後，導向下一頁 (此處維持回到 game-page，可依需求自行替換 ID)
                 showPage('game-page'); 
                 
-                // 自動清空輸入框，方便下次遊玩
                 document.getElementById('spider-answer').value = "";
             } else {
-                // 答錯時的處置
                 errDiv.innerText = "❌ 答案似乎不對，再仔細想想提示吧！";
-                
-                // 讓輸入框閃爍紅色邊框提示
                 const inputEl = document.getElementById('spider-answer');
                 inputEl.style.borderColor = "#ff7675";
                 setTimeout(() => { inputEl.style.borderColor = "#fdbb2d"; }, 1000);
