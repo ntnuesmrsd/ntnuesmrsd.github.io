@@ -582,6 +582,17 @@
             </div>
         </div>
     </div>
+
+    <div id="spider-success-page" class="page hidden" onclick="skipSpiderSuccessTypewriter()">
+        <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%; width: 100%;">
+            
+            <div id="spider-success-text" style="font-size: 22px; line-height: 1.8; margin-bottom: 25px; width: 80%; max-width: 600px; text-align: center; word-break: break-all;"></div>
+            
+            <div id="spider-success-btns" class="difficulty-container hidden" style="display: flex; justify-content: center; align-items: center; width: 100%;" onclick="event.stopPropagation();">
+                <button onclick="showPage('game-page')" style="margin: 0 auto; display: inline-flex; justify-content: center; align-items: center; text-align: center; white-space: nowrap; padding: 15px 45px; font-size: 22px; width: auto; min-width: 180px; box-sizing: border-box;">回答問題</button>
+            </div>
+        </div>
+    </div>
     
     <div id="low-tide-page" class="page hidden">
         <h1>現在是退潮</h1>
@@ -700,6 +711,14 @@
         let spiderCharIndex = 0;
         let isSpiderTyping = false;
         let spiderTypeTimeout;
+
+        // ==========================================
+        // 🎉 蜘蛛穴通關劇情頁 控制系統（完全沿用 Q1 邏輯）
+        // ==========================================
+        const spiderSuccessMainText = "這樣就可以了吧，一樣的地方特徵和傳說，我想答案就是這裡：許厝港了。真是神奇呢，一旦沒有人類的活動，這個地方彷彿有種神奇的力量漸漸被大自然收回，回歸最原始的狀態。最後的最後...";
+        let spiderSuccessCharIndex = 0;
+        let isSpiderSuccessTyping = false;
+        let spiderSuccessTypeTimeout;
 
         // ==========================================
         // --- 1. 頁面導換與網頁初始化 ---
@@ -1231,10 +1250,10 @@
             // 模糊比對：答案包含「腹部」或「肚子」
             if (answerInput.includes("腹部") || answerInput.includes("肚子")) {
                 errDiv.innerText = ""; 
-                alert("🎉 答對了！你成功解開了傳說的謎題！");
                 
-                // 順利通關，前往主遊戲畫面
-                showPage('game-page'); 
+                // 🚀 移除 alert，直接流暢切換到下一個劇情打字頁面！
+                showPage('spider-success-page'); 
+                startSpiderSuccessTypewriter(); // 啟動下一頁的打字機
                 
                 document.getElementById('spider-answer').value = "";
             } else {
@@ -1243,6 +1262,44 @@
                 inputEl.style.borderColor = "#ff7675";
                 setTimeout(() => { inputEl.style.borderColor = "rgba(255,255,255,0.4)"; }, 1000);
             }
+        }
+
+        // 【新劇情頁打字機】
+        function startSpiderSuccessTypewriter() {
+            const container = document.getElementById('spider-success-text');
+            const btns = document.getElementById('spider-success-btns');
+            if(!container) return;
+            
+            container.innerHTML = "";
+            spiderSuccessCharIndex = 0;
+            isSpiderSuccessTyping = true;
+            if(btns) btns.classList.add('hidden');
+            
+            function type() {
+                if (spiderSuccessCharIndex < spiderSuccessMainText.length) {
+                    let char = spiderSuccessMainText.charAt(spiderSuccessCharIndex);
+                    container.innerHTML += char === "\n" ? "<br>" : char;
+                    spiderSuccessCharIndex++;
+                    spiderSuccessTypeTimeout = setTimeout(type, 40); // 40ms 速度同步 Q1
+                } else {
+                    completeSpiderSuccessTyping();
+                }
+            }
+            type();
+        }
+        
+        // 【點擊頁面跳過打字機】
+        function skipSpiderSuccessTypewriter() {
+            if (!isSpiderSuccessTyping) return;
+            clearTimeout(spiderSuccessTypeTimeout);
+            document.getElementById('spider-success-text').innerHTML = spiderSuccessMainText.replace(/\n/g, "<br>");
+            completeSpiderSuccessTyping();
+        }
+        
+        // 【打字完成，顯示大結局回答問題按鈕】
+        function completeSpiderSuccessTyping() {
+            isSpiderSuccessTyping = false;
+            document.getElementById('spider-success-btns').classList.remove('hidden');
         }
     
         // ==========================================
