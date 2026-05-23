@@ -351,11 +351,6 @@
             <button class="tab-btn" onclick="switchTab('inventory')">圖鑑列表</button>
             <button class="tab-btn" onclick="switchTab('achievement')">成就清單</button>
         </div>
-        <div style="margin-top: 30px; padding: 0 15px;">
-            <button class="tab-btn" onclick="resetAndGoHome()" style="background-color: #c0392b; color: white; width: 100%; border-radius: 8px; font-size: 16px; padding: 10px 0; box-shadow: none; border: none; cursor: pointer;">
-                回首頁/登出
-            </button>
-        </div>
             <div id="inventory" class="tab-content">
                 <div style="display: flex; justify-content: center; align-items: center; gap: 15px; margin-bottom: 20px;">
                     <h2 style="margin: 0;">圖鑑列表</h2>
@@ -2051,41 +2046,6 @@
                 }
             }
         });
-
-        // 🚀【全新新增】：重置狀態、清空暫存記憶並退回首頁
-        function resetAndGoHome() {
-            // 1. 安全確認，避免學生誤觸導致辛苦玩的進度要重來
-            if (!confirm("確定要登出並返回遊戲首頁嗎？\n未送出的問答草稿將會遺失。")) {
-                return;
-            }
-        
-            // 2. 徹底銷毀本機 LocalStorage 暫存（清除登入狀態與防刷新機制）
-            localStorage.removeItem("saved_username");
-            localStorage.removeItem("current_page_state");
-            localStorage.removeItem("spider_draft");
-            localStorage.removeItem("comment_draft");
-        
-            // 3. 將程式內的記憶變數一併回歸初始狀態
-            window.currentUser = "";
-            window.currentUsername = "";
-            window.gameProgress = { creatures: {}, achievements: {} };
-        
-            // 4. 清空可能輸入到一半的輸入框
-            const spiderInput = document.getElementById('spider-answer');
-            const collapseInput = document.getElementById('why-collapse-answer');
-            if (spiderInput) spiderInput.value = "";
-            if (collapseInput) collapseInput.value = "";
-        
-            // 5. 關閉打開的側邊欄選單
-            if (typeof toggleMenu === 'function') {
-                toggleMenu(); 
-            }
-        
-            // 6. 🚀 精準定向切換回你的第一頁 'home-page'
-            showPage('home-page');
-        
-            alert("已成功登出。");
-        }
     </script>
     <div id="creature-modal" class="modal" onclick="closeModal()">
         <div class="modal-content" onclick="event.stopPropagation()">
