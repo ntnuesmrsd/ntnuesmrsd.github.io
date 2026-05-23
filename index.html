@@ -339,7 +339,7 @@
 </head>
 <body>
     
-    <button class="menu-button" onclick="toggleMenu()">
+    <button class="menu-button hidden" id="global-menu-btn" onclick="toggleMenu()">
         <div class="line"></div>
         <div class="line"></div>
         <div class="line"></div>
@@ -1604,6 +1604,12 @@
                     } else {
                         // 如果是新註冊帳號，也順便紀錄當前帳號，讓新玩家在玩的時候也能正常存檔
                         window.currentUsername = user;
+                    }
+
+                    // 🚀【成功進入遊戲：立刻顯示右上角選單按鈕】
+                    const menuBtn = document.getElementById('global-menu-btn');
+                    if (menuBtn) {
+                        menuBtn.classList.remove('hidden');
                     }
 
                     showPage('game-page');
