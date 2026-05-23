@@ -1586,50 +1586,56 @@
             const pass = document.getElementById(isReg ? 'reg-password' : 'login-password').value;
             const btn = document.getElementById(isReg ? 'reg-btn' : 'login-btn');
             
+            if (!user || !pass) {
+                alert("帳號密碼不能為空！");
+                btn.innerText = "開始遊戲";
+                btn.disabled = false;
+                return;
+            }
+
             document.querySelectorAll('.error-msg').forEach(el => el.innerText = "");
             btn.innerText = "驗證中...";
             btn.disabled = true;
         
-            // 🚀【防斷線新增】：如果是註冊，異步線上撈取玩家真實外部 IP
+            // 🚀【安全防卡死優化】：撈取真實 IP，但加上 1.5 秒超時機制
             let clientIp = "未知IP";
             if (isReg) {
                 try {
-                    const ipRes = await fetch('https://api.ipify.org?format=json');
-                    const ipData = await ipRes.json();
-                    clientIp = ipData.ip;
+                    // 使用 Promise.race 確保如果 api.ipify.org 沒回應，1.5 秒後自動放行
+                    clientIp = await Promise.race([
+                        fetch('https://api.ipify.org?format=json')
+                            .then(res => res.json())
+                            .then(data => data.ip),
+                        new Promise((_, reject) => setTimeout(() => reject(new Error('IP請求超時')), 1500))
+                    ]);
                 } catch(ipErr) { 
-                    console.error("無法取得IP:", ipErr); 
+                    console.warn("無法取得真實IP (已寬容處理):", ipErr.message); 
+                    clientIp = "未知IP(請求超時)";
                 }
             }
 
             try {
                 const response = await fetch(GLOBAL_SCRIPT_URL, {
                     method: "POST",
-                    // 🚀【修正發送內容】：將 clientIp 封裝進 body 傳送給 GAS 後端
                     body: JSON.stringify({ action, username: user, password: pass, ip: clientIp })
                 });
                 const result = await response.json();
+                
                 if (result.result === 'success') {
                     currentUser = user;
                     alert(isReg ? "帳號建立成功！" : "登入成功！");
 
-                    // ✨【新增邏輯】如果是「登入成功」(而非新帳號註冊)，就去讀取並還原他的雲端進度
                     if (!isReg) {
-                        // 1. 將玩家帳號密碼存入進度系統專用的全域變數
                         window.currentUsername = user; 
-                        // 註：這裏的 user 變數就是玩家輸入的帳號字串
-                        
-                        // 2. 呼叫進度還原函式，傳入從 GAS 資料庫撈回來的進度 JSON 字串
-                        loadGameProgress(result.progress); 
+                        if (typeof loadGameProgress === 'function') {
+                            loadGameProgress(result.progress); 
+                        }
                     } else {
-                        // 如果是新註冊帳號，也順便紀錄當前帳號，讓新玩家在玩的時候也能正常存檔
                         window.currentUsername = user;
                     }
 
-                    // 🚀【防刷新記憶】：只要成功登入或註冊，就立刻在瀏覽器記錄此帳號，刷新後免重登
                     localStorage.setItem("saved_username", user);
 
-                    // 🚀【成功進入遊戲：立刻顯示右上角選單按鈕】
                     const menuBtn = document.getElementById('global-menu-btn');
                     if (menuBtn) {
                         menuBtn.classList.remove('hidden');
@@ -1638,12 +1644,14 @@
                     showPage('game-page');
                 } else {
                     const errId = isReg ? 'reg-user-err' : 'login-pass-err';
-                    document.getElementById(errId).innerText = "*" + result.message;
+                    const errEl = document.getElementById(errId);
+                    if (errEl) errEl.innerText = "*" + result.message;
+                    else alert(result.message);
                     btn.disabled = false;
                 }
             } catch (e) {
                 console.error("Auth Error:", e);
-                alert("系統回傳錯誤，請確認 GAS 權限設定");
+                alert("系統連線失敗，請確認網路或 GAS 部署權限");
                 btn.disabled = false;
             } finally {
                 btn.innerText = "開始遊戲";
