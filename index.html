@@ -2058,16 +2058,13 @@
                     const resData = await response.json();
                     
                     if (resData.result === 'success' && resData.progress) {
-                        // 將撈回來的資料寫入網頁全域變數
+                        // 1. 將撈回來的資料寫入網頁全域變數
                         window.gameProgress = resData.progress; 
                         console.log("✅ 雲端進度還原成功！當前存檔：", window.gameProgress);
                         
-                        // 🚀 C. 觸發你網頁原本的「渲染/更新畫面」函式
-                        // 💡 請依據你程式碼內實際「更新圖鑑UI」與「更新成就UI」的函式名稱做對齊：
-                        if (typeof updateInventoryUI === 'function') updateInventoryUI();
-                        if (typeof updateAchievementUI === 'function') updateAchievementUI();
-                        if (typeof renderBook === 'function') renderBook(); // 或者是叫渲染圖鑑
-                        
+                        // 🚀 2. 【核心修復】：將物件轉回字串，直接餵給你原本寫好的完美還原函式！
+                        const progressString = JSON.stringify(resData.progress);
+                        loadGameProgress(progressString); 
                     }
                 } catch (err) {
                     console.error("❌ 雲端進度同步失敗，改用單機模式續玩:", err);
