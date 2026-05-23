@@ -351,6 +351,11 @@
             <button class="tab-btn" onclick="switchTab('inventory')">圖鑑列表</button>
             <button class="tab-btn" onclick="switchTab('achievement')">成就清單</button>
         </div>
+        <div style="margin-top: 30px; padding: 0 15px;">
+            <button class="tab-btn" onclick="resetAndGoHome()" style="background-color: #c0392b; color: white; width: 100%; border-radius: 8px; font-size: 16px; padding: 10px 0; box-shadow: none; border: none; cursor: pointer;">
+                回首頁/登出
+            </button>
+        </div>
             <div id="inventory" class="tab-content">
                 <div style="display: flex; justify-content: center; align-items: center; gap: 15px; margin-bottom: 20px;">
                     <h2 style="margin: 0;">圖鑑列表</h2>
@@ -838,13 +843,17 @@
                 if (typeof loadRandomComments === 'function') loadRandomComments();
             }
 
-            // 🚀 漢堡選單按鈕的顯示邏輯判定 (首頁、登入、挑戰前隱藏，進入遊戲後一律顯示)
+            // 🚀【選單控管核心】：過濾掉前導 4 頁（首頁、安全、註冊、登入），其餘遊戲頁面且「已登入」才允許顯示選單按鈕
             const menuBtn = document.getElementById('global-menu-btn');
             if (menuBtn) {
-                if (pageId !== 'start-page' && pageId !== 'login-page') {
-                    menuBtn.classList.remove('hidden');
-                } else {
+                const hideMenuPages = ['home-page', 'safety-page', 'register-page', 'login-page', 'start-page'];
+                const savedUser = localStorage.getItem("saved_username");
+                
+                // 如果目前在隱藏名單的頁面中，或者根本還沒有登入成功（沒有 saved_username），就強制隱藏
+                if (hideMenuPages.includes(pageId) || !savedUser) {
                     menuBtn.classList.add('hidden');
+                } else {
+                    menuBtn.classList.remove('hidden');
                 }
             }
 
@@ -2046,6 +2055,40 @@
                 }
             }
         });
+
+        // 🚀【全新新增】：重置狀態、清空暫存記憶並退回首頁
+        function resetAndGoHome() {
+            if (!confirm("確定要登出並返回遊戲首頁嗎？\n未送出的問答草稿將會遺失。")) {
+                return;
+            }
+        
+            // 1. 徹底銷毀本機 LocalStorage 暫存
+            localStorage.removeItem("saved_username");
+            localStorage.removeItem("current_page_state");
+            localStorage.removeItem("spider_draft");
+            localStorage.removeItem("comment_draft");
+        
+            // 2. 將程式內的變數回歸初始狀態
+            window.currentUser = "";
+            window.currentUsername = "";
+            window.gameProgress = { creatures: {}, achievements: {} };
+        
+            // 3. 關閉打開的側邊欄選單
+            if (typeof toggleMenu === 'function') {
+                toggleMenu(); 
+            }
+        
+            // 🚀【同步防呆】：登出的當下，立刻讓右上角選單按鈕隱藏
+            const menuBtn = document.getElementById('global-menu-btn');
+            if (menuBtn) {
+                menuBtn.classList.add('hidden');
+            }
+        
+            // 4. 精準定向切換回你的第一頁 'home-page'
+            showPage('home-page');
+        
+            alert("已成功登出。");
+        }
     </script>
     <div id="creature-modal" class="modal" onclick="closeModal()">
         <div class="modal-content" onclick="event.stopPropagation()">
