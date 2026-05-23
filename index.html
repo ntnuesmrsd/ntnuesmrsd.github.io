@@ -2017,28 +2017,23 @@
         }
 
         // 🚀【防刷新新增】：當網頁加載完畢，自動檢查是否需要還原登入帳號、頁面或回答草稿
-        document.addEventListener("DOMContentLoaded", function() {
-            // 1️⃣ 恢復「蜘蛛謎題」寫到一半的草稿
+        document.addEventListener("DOMContentLoaded", async function() {
+            // 1️⃣ 恢復「蜘蛛謎題」與「環境崩塌」寫到一半的本地草稿
             const spiderInput = document.getElementById('spider-answer');
             if (spiderInput) {
                 const savedSpiderDraft = localStorage.getItem("spider_draft");
                 if (savedSpiderDraft) spiderInput.value = savedSpiderDraft;
-                spiderInput.addEventListener("input", function() {
-                    localStorage.setItem("spider_draft", this.value);
-                });
+                spiderInput.addEventListener("input", function() { localStorage.setItem("spider_draft", this.value); });
             }
         
-            // 2️⃣ 恢復「環境崩塌問答」寫到一半的草稿
             const whyCollapseInput = document.getElementById('why-collapse-answer');
             if (whyCollapseInput) {
                 const savedCollapseDraft = localStorage.getItem("comment_draft");
                 if (savedCollapseDraft) whyCollapseInput.value = savedCollapseDraft;
-                whyCollapseInput.addEventListener("input", function() {
-                    localStorage.setItem("comment_draft", this.value);
-                });
+                whyCollapseInput.addEventListener("input", function() { localStorage.setItem("comment_draft", this.value); });
             }
         
-            // 3️⃣ 自動偵測歷史登入狀態並秒還原現場
+            // 2️⃣ 偵測歷史登入狀態，並從 Google 試算表即時還原「圖鑑」與「成就」
             const savedUser = localStorage.getItem("saved_username");
             const savedPage = localStorage.getItem("current_page_state");
         
@@ -2046,12 +2041,36 @@
                 window.currentUser = savedUser;
                 window.currentUsername = savedUser;
                 
-                const menuBtn = document.getElementById('global-menu-btn');
-                if (menuBtn) menuBtn.classList.remove('hidden');
-        
-                // 如果有歷史停留頁面，且不是起始登入頁，直接導向該頁面，並自動補觸發其打字機
+                // 🚀 A. 先把頁面切過去歷史停留頁，讓學生免重新點擊
                 if (savedPage && savedPage !== 'start-page' && savedPage !== 'login-page') {
                     showPage(savedPage);
+                } else {
+                    showPage('game-page'); // 若原本在前導頁，則預設送進大地图
+                }
+        
+                // 🚀 B. 核心連線：發送 POST 去後端撈回 C 欄最新的圖鑑與成就進度 JSON
+                console.log("🔄 正在從雲端試算表還原進度...", savedUser);
+                try {
+                    const response = await fetch(GLOBAL_SCRIPT_URL, {
+                        method: "POST",
+                        body: JSON.stringify({ action: 'loadProgress', username: savedUser })
+                    });
+                    const resData = await response.json();
+                    
+                    if (resData.result === 'success' && resData.progress) {
+                        // 將撈回來的資料寫入網頁全域變數
+                        window.gameProgress = resData.progress; 
+                        console.log("✅ 雲端進度還原成功！當前存檔：", window.gameProgress);
+                        
+                        // 🚀 C. 觸發你網頁原本的「渲染/更新畫面」函式
+                        // 💡 請依據你程式碼內實際「更新圖鑑UI」與「更新成就UI」的函式名稱做對齊：
+                        if (typeof updateInventoryUI === 'function') updateInventoryUI();
+                        if (typeof updateAchievementUI === 'function') updateAchievementUI();
+                        if (typeof renderBook === 'function') renderBook(); // 或者是叫渲染圖鑑
+                        
+                    }
+                } catch (err) {
+                    console.error("❌ 雲端進度同步失敗，改用單機模式續玩:", err);
                 }
             }
         });
