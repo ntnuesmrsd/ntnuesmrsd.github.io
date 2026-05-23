@@ -1792,31 +1792,55 @@
             };
         }
         
-        // 🚀 修正後的生物解鎖核心邏輯
+        // 🚀 寬容度 Max 的生物解鎖核心邏輯（解決正確檔名不解鎖問題）
         function unlockCreature(target) {
             ensureGameProgressObject();
+            
+            // 1. 將後端傳回的目標（例如 Numenius_phaeopus.jpg）轉成純小寫
             const targetLower = target.toLowerCase().trim();
             
-            // 1. 先將記憶體變數轉為 true
+            // 💡 關鍵微調：提取出最核心的生物關鍵字（去掉 .jpg 或 .png）
+            // 例如把 "Numenius_phaeopus.jpg" 變成 "numenius_phaeopus"
+            const coreKeyword = targetLower.split('.')[0]; 
+
+            // 2. 先將記憶體變數轉為 true
             window.gameProgress.creatures[target] = true;
 
-            // 2. 點亮網頁上的圖片
+            // 3. 點亮網頁上的圖片
+            let foundMatch = false;
             const allImages = document.querySelectorAll('.creature-img');
+            
             allImages.forEach(img => {
-                const imgSrc = img.getAttribute('src').toLowerCase();
-                if (imgSrc.indexOf(targetLower) !== -1) {
+                const imgSrc = img.getAttribute('src') || "";
+                const imgSrcLower = imgSrc.toLowerCase().trim();
+                
+                // 🚀 【多重防呆比對】：
+                // 只要網頁圖片的 src 包含後端傳回的完整檔名，或者包含核心關鍵字，就直接算對！
+                if (imgSrcLower.indexOf(targetLower) !== -1 || imgSrcLower.indexOf(coreKeyword) !== -1) {
+                    
                     img.classList.remove('is-locked');
                     img.dataset.unlocked = "true";
+                    img.style.filter = "none"; // 強制點亮，防範樣式沒被移除
+                    
                     const nameTag = img.parentElement.querySelector('.creature-name');
                     if (nameTag) {
-                        nameTag.innerText = nameTag.dataset.realname;
+                        nameTag.innerText = nameTag.dataset.realname || nameTag.innerText;
                     }
+                    
+                    // 特效
                     img.style.transform = "scale(1.3)";
                     setTimeout(() => img.style.transform = "scale(1)", 500);
+                    
+                    foundMatch = true;
+                    console.log(`[前端解鎖成功] 成功比對並點亮圖鑑：${imgSrc}`);
                 }
             });
 
-            // 3. 穩妥儲存至雲端
+            if (!foundMatch) {
+                console.warn(`[解鎖警告] 記憶體已解鎖 ${target}，但畫面的 HTML 元素 src 中似乎找不到包含 "${coreKeyword}" 的圖片。`);
+            }
+
+            // 4. 穩妥儲存至雲端
             saveGameProgress();
         }
         
