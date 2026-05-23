@@ -805,18 +805,44 @@
                 targetPage.classList.remove('hidden');
             }
             
-            // 根據切換到的頁面，確實啟動各自獨立的打字機效果
+            // 🚀【全頁面打字機與初始化對接：防止切換與刷新卡死】
             if (pageId === 'home-page') {
-                startTypewriter();
+                if (typeof startTypewriter === 'function') startTypewriter();
             } else if (pageId === 'hard-page') {
-                startHardTypewriter();
+                if (typeof startHardTypewriter === 'function') startHardTypewriter();
             } else if (pageId === 'game-real-hard-content') {
-                startQ1Typewriter();
+                if (typeof startQ1Typewriter === 'function') startQ1Typewriter();
             } else if (pageId === 'high-tide-page') {
-                initHighTidePage(); 
+                if (typeof initHighTidePage === 'function') initHighTidePage(); 
+            } else if (pageId === 'doc1-page') {
+                if (typeof startDoc1Typewriter === 'function') startDoc1Typewriter();
+            } else if (pageId === 'doc2-page') {
+                if (typeof startDoc2Typewriter === 'function') startDoc2Typewriter();
+            } else if (pageId === 'q2-success-page') {
+                if (typeof initQ2SuccessPage === 'function') initQ2SuccessPage();
+            } else if (pageId === 'q3-success-page') {
+                if (typeof startQ3SuccessTypewriter === 'function') startQ3SuccessTypewriter();
+            } else if (pageId === 'spider-quiz-page') {
+                if (typeof startSpiderTypewriter === 'function') startSpiderTypewriter();
+            } else if (pageId === 'spider-success-page') {
+                if (typeof startSpiderSuccessTypewriter === 'function') startSpiderSuccessTypewriter();
+            } else if (pageId === 'why-collapse-page') {
+                if (typeof startWhyCollapseTypewriter === 'function') startWhyCollapseTypewriter();
+            } else if (pageId === 'comment-board-page') {
+                if (typeof loadRandomComments === 'function') loadRandomComments();
             }
 
-            // 🚀【防刷新新增】：每當切換頁面，就自動把目前的頁面代號記在瀏覽器裡
+            // 🚀 漢堡選單按鈕的顯示邏輯判定 (首頁、登入、挑戰前隱藏，進入遊戲後一律顯示)
+            const menuBtn = document.getElementById('global-menu-btn');
+            if (menuBtn) {
+                if (pageId !== 'start-page' && pageId !== 'login-page') {
+                    menuBtn.classList.remove('hidden');
+                } else {
+                    menuBtn.classList.add('hidden');
+                }
+            }
+
+            // 💾 記憶當前頁面狀態，F5刷新網頁不迷路
             localStorage.setItem("current_page_state", pageId);
         }
 
@@ -1332,16 +1358,29 @@
             if (answerInput.includes("腹部") || answerInput.includes("肚子")) {
                 errDiv.innerText = ""; 
                 
+                // 🚀【防刷新配套新增】：既然已經答對，安全銷毀未送出的蜘蛛題打字草稿
+                localStorage.removeItem("spider_draft");
+                
                 // 🚀 移除 alert，直接流暢切換到下一個劇情打字頁面！
                 showPage('spider-success-page'); 
-                startSpiderSuccessTypewriter(); // 啟動下一頁的打字機
                 
+                // 🚀【提示備忘】：因為我們已經在核心 showPage 補上對 spider-success-page 的自動對接，
+                // 這行 startSpiderSuccessTypewriter() 可以保留也可以不留，showPage 會幫你自動雙重把關觸發！
+                if (typeof startSpiderSuccessTypewriter === 'function') {
+                    startSpiderSuccessTypewriter(); 
+                }
+                
+                // 清空輸入框
                 document.getElementById('spider-answer').value = "";
             } else {
                 errDiv.innerText = "❌ 答案似乎不對，再仔細想想提示吧！";
                 const inputEl = document.getElementById('spider-answer');
-                inputEl.style.borderColor = "#ff7675";
-                setTimeout(() => { inputEl.style.borderColor = "rgba(255,255,255,0.4)"; }, 1000);
+                if (inputEl) {
+                    inputEl.style.borderColor = "#ff7675";
+                    setTimeout(() => { 
+                        inputEl.style.borderColor = "rgba(255,255,255,0.4)"; 
+                    }, 1000);
+                }
             }
         }
 
@@ -1965,35 +2004,38 @@
 
         // 🚀【防刷新新增】：當網頁加載完畢，自動檢查是否需要還原登入帳號、頁面或回答草稿
         document.addEventListener("DOMContentLoaded", function() {
-            // 1️⃣ 還原「開放性問答」寫到一半的草稿（防止不小心按到 F5 導致打的字不見）
-            const answerTextArea = document.getElementById('why-collapse-answer');
-            if (answerTextArea) {
-                const savedDraft = localStorage.getItem("comment_draft");
-                if (savedDraft) { 
-                    answerTextArea.value = savedDraft; 
-                }
-                // 邊打字邊即時記錄
-                answerTextArea.addEventListener("input", function() {
+            // 1️⃣ 恢復「蜘蛛謎題」寫到一半的草稿
+            const spiderInput = document.getElementById('spider-answer');
+            if (spiderInput) {
+                const savedSpiderDraft = localStorage.getItem("spider_draft");
+                if (savedSpiderDraft) spiderInput.value = savedSpiderDraft;
+                spiderInput.addEventListener("input", function() {
+                    localStorage.setItem("spider_draft", this.value);
+                });
+            }
+        
+            // 2️⃣ 恢復「環境崩塌問答」寫到一半的草稿
+            const whyCollapseInput = document.getElementById('why-collapse-answer');
+            if (whyCollapseInput) {
+                const savedCollapseDraft = localStorage.getItem("comment_draft");
+                if (savedCollapseDraft) whyCollapseInput.value = savedCollapseDraft;
+                whyCollapseInput.addEventListener("input", function() {
                     localStorage.setItem("comment_draft", this.value);
                 });
             }
         
-            // 2️⃣ 自動偵測已登入的帳號與上次停留的頁面
+            // 3️⃣ 自動偵測歷史登入狀態並秒還原現場
             const savedUser = localStorage.getItem("saved_username");
             const savedPage = localStorage.getItem("current_page_state");
         
             if (savedUser) {
-                // 幫全域變數重新填入帳號，確保存檔功能不失效
                 window.currentUser = savedUser;
                 window.currentUsername = savedUser;
                 
-                // 點亮右上角的選單按鈕（漢堡按鈕）
                 const menuBtn = document.getElementById('global-menu-btn');
-                if (menuBtn) {
-                    menuBtn.classList.remove('hidden');
-                }
+                if (menuBtn) menuBtn.classList.remove('hidden');
         
-                // 如果上次停留的頁面存在，且不是最初的登入/首頁，就直接強制跳轉過去！
+                // 如果有歷史停留頁面，且不是起始登入頁，直接導向該頁面，並自動補觸發其打字機
                 if (savedPage && savedPage !== 'start-page' && savedPage !== 'login-page') {
                     showPage(savedPage);
                 }
