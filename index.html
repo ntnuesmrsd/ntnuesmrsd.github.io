@@ -619,6 +619,21 @@
             </div>
         </div>
     </div>
+
+    <div id="comment-board-page" class="page hidden">
+        <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%; width: 100%; padding: 20px; box-sizing: border-box;">
+            
+            <div style="background: rgba(0, 0, 0, 0.85); padding: 30px; border-radius: 20px; max-width: 500px; width: 90%; box-shadow: 0 10px 25px rgba(0,0,0,0.5); text-align: center; display: flex; flex-direction: column; align-items: center;">
+                
+                <span style="font-size: 24px; font-weight: bold; color: #f1c40f; display: block; margin-bottom: 20px;">大眾的觀點</span>
+                
+                <div id="comments-container" style="width: 100%; margin-bottom: 25px; text-align: left;">
+                    </div>
+
+                <button onclick="showPage('game-page')" style="margin: 0 auto; display: inline-flex; justify-content: center; align-items: center; text-align: center; white-space: nowrap; padding: 12px 40px; font-size: 20px; width: auto; box-sizing: border-box;">返回主地圖</button>
+            </div>
+        </div>
+    </div>
     
     <div id="low-tide-page" class="page hidden">
         <h1>現在是退潮</h1>
@@ -1375,12 +1390,10 @@
             document.getElementById('why-collapse-btns').classList.remove('hidden');
         }
 
-        // 【驗證開放性問答：將想法上傳至試算表 D 欄 (comment)】
+        // 【驗證開放性問答：成功後導向社群留言板】
         function checkWhyCollapseAnswer() {
             const answerInput = document.getElementById('why-collapse-answer').value.trim();
             const errDiv = document.getElementById('why-collapse-err');
-            
-            // 自動抓取當前登入帳號
             const pUsername = window.currentUser || window.currentUsername || localStorage.getItem("username") || ""; 
 
             if (!answerInput) {
@@ -1391,49 +1404,83 @@
             errDiv.style.color = "#f1c40f";
             errDiv.innerText = "⏳ 正在傳送想法至雲端，請稍候...";
 
-            // ⏱️ 【新增防卡死機制】：如果網路塞車，3秒後直接讓玩家強制過關！
+            // 超時防卡死機制（3秒）
             let forcePassTimeout = setTimeout(() => {
-                console.log("觸發超時強制過關機制");
                 executePassEffects();
             }, 3000);
 
-            // 統一封裝通關與清空欄位的動作
             function executePassEffects() {
-                clearTimeout(forcePassTimeout); // 取消定時器
+                clearTimeout(forcePassTimeout);
                 errDiv.innerText = ""; 
                 alert("🎉 感謝你的精彩想法！資料已成功記錄！");
                 
-                // 順利通關，前往主遊戲畫面（或你設定的下一個頁面）
-                showPage('game-page'); 
+                // 🚀 【修改】：不回 game-page，而是前往留言板並載入隨機評論
+                showPage('comment-board-page'); 
+                loadRandomComments(); 
                 
-                // 自動清空輸入框
                 document.getElementById('why-collapse-answer').value = "";
             }
 
-            // 發送 API 請求到後端 GAS
             fetch(GLOBAL_SCRIPT_URL, {
                 method: "POST",
-                body: JSON.stringify({
-                    action: "saveWhyCollapse",
-                    username: pUsername,
-                    answer: answerInput
-                })
+                body: JSON.stringify({ action: "saveWhyCollapse", username: pUsername, answer: answerInput })
             })
             .then(res => res.json())
             .then(data => {
-                // 只要後端回傳 success，立刻執行通關
-                if (data.result === "success") {
-                    executePassEffects();
-                } else {
+                if (data.result === "success") executePassEffects();
+                else {
                     clearTimeout(forcePassTimeout);
                     errDiv.style.color = "#ff7675";
                     errDiv.innerText = "❌ 儲存失敗：" + data.message;
                 }
             })
             .catch(err => {
-                // 就算網路斷線報錯，但因為資料極可能已經進試算表了，我們依然寬容給過！
-                console.log("網路雖然微幅延遲，但放行玩家：", err);
-                executePassEffects();
+                executePassEffects(); // 斷線也寬容放行
+            });
+        }
+
+        // ==========================================
+        // 🚀 【全新功能】：隨機讀取後台 3 則過審答案並展示
+        // ==========================================
+        function loadRandomComments() {
+            const container = document.getElementById('comments-container');
+            if (!container) return;
+
+            // 預設載入狀態
+            container.innerHTML = "<p style='color:#bdc3c7; text-align:center;'>⏳ 正在翻閱其他學者的觀點...</p>";
+
+            fetch(GLOBAL_SCRIPT_URL, {
+                method: "POST",
+                body: JSON.stringify({ action: "getComments" })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.result === "success" && data.comments && data.comments.length > 0) {
+                    let allComments = data.comments;
+
+                    // 🎯 將後端傳回的過審陣列進行「隨機洗牌」
+                    allComments.sort(() => Math.random() - 0.5);
+
+                    // 🎯 抽取前三則（如果總數小於3則有多少顯示多少）
+                    let selectedComments = allComments.slice(0, 3);
+
+                    // 動態渲染成漂亮的清單
+                    container.innerHTML = "";
+                    selectedComments.forEach((cmt, index) => {
+                        container.innerHTML += `
+                            <div style="background: rgba(255,255,255,0.08); padding: 12px 15px; border-left: 4px solid #f1c40f; border-radius: 4px; margin-bottom: 12px; color: white; font-size: 16px; line-height: 1.5; word-break: break-all;">
+                                ${cmt}
+                            </div>
+                        `;
+                    });
+                } else {
+                    // 防呆：如果後台一筆過審的資料都還沒有打 pass
+                    container.innerHTML = "<p style='color:#bdc3c7; text-align:center; font-style:italic;'>目前調查報告尚在編纂中，期待未來的觀點交織。</p>";
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                container.innerHTML = "<p style='color:#ff7675; text-align:center;'>❌ 無法連線至中央資料庫讀取觀點。</p>";
             });
         }
     
