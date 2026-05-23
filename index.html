@@ -820,8 +820,14 @@
                 if (typeof startDoc2Typewriter === 'function') startDoc2Typewriter();
             } else if (pageId === 'q2-success-page') {
                 if (typeof initQ2SuccessPage === 'function') initQ2SuccessPage();
+            // 🚀【精準對接：修復 Q3 成功頁面卡死】
             } else if (pageId === 'q3-success-page') {
-                if (typeof startQ3SuccessTypewriter === 'function') startQ3SuccessTypewriter();
+                // 💡 請注意：如果你的打字機啟動函式是叫 initQ3SuccessPage，請把下面這行改掉
+                if (typeof startQ3SuccessTypewriter === 'function') {
+                    startQ3SuccessTypewriter();
+                } else if (typeof initQ3SuccessPage === 'function') {
+                    initQ3SuccessPage();
+                }
             } else if (pageId === 'spider-quiz-page') {
                 if (typeof startSpiderTypewriter === 'function') startSpiderTypewriter();
             } else if (pageId === 'spider-success-page') {
