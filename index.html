@@ -558,6 +558,28 @@
         </div>
     </div>
 
+    <div id="q3-info-page" class="page hidden">
+        <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%; width: 100%; padding: 20px; box-sizing: border-box;">
+            
+            <div style="background: rgba(0, 0, 0, 0.85); padding: 30px; border-radius: 20px; max-width: 520px; width: 95%; box-shadow: 0 10px 25px rgba(0,0,0,0.5); text-align: center; display: flex; flex-direction: column; align-items: center;">
+                
+                <div style="font-size: 20px; line-height: 1.8; color: white; margin-bottom: 20px; text-align: center; word-break: break-all; width: 100%;">
+                    <strong>【地理小觀念】</strong><br>
+                    當河流挾帶泥沙來到大海交界處時，因為流速減緩，加上波浪與潮汐的交互作用，泥沙便會在此大量堆積，逐漸形成我們所看見的沙洲景觀。
+                </div>
+                
+                <div style="width: 100%; max-width: 400px; margin-bottom: 25px;">
+                    <img src="sandbar_info.jpg" alt="沙洲成因示意圖" style="width: 100%; height: auto; border-radius: 8px; display: block; box-shadow: 0 4px 10px rgba(0,0,0,0.3);">
+                </div>
+
+                <div style="display: flex; justify-content: center; align-items: center; width: 100%;" onclick="event.stopPropagation();">
+                    <button onclick="goToQ3SuccessStory()" style="margin: 0 auto; display: inline-flex; justify-content: center; align-items: center; text-align: center; white-space: nowrap; padding: 12px 45px; font-size: 20px; width: auto; min-width: 160px; box-sizing: border-box;">閱讀完畢</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
     <div id="q3-success-page" class="page hidden" onclick="skipQ3SuccessTypewriter()">
         <div class="scroll-content">
             <div id="q3-success-text" style="min-height: 120px; font-size: 19px; line-height: 1.8; text-align: left; letter-spacing: 1px; color: white;"></div>
@@ -1148,17 +1170,23 @@
             showPage('q3-page');
         }
 
-        // 判斷問題三的答案（更新版）
+        // 🚀 1. 修改問題三驗證：答對後改為前往「靜態圖文知識頁」
         function checkQ3Answer(isCorrect) {
             if (isCorrect) {
-                alert("🎉 答對了！當河流流速減緩與海水交會時，泥沙就會在這裡慢慢沉積形成沙洲。");
-                // 答對了！跳轉到清醒劇情頁面
-                showPage('q3-success-page');
-                // 啟動專用打字機
-                initQ3SuccessPage();
+                // 🎉 答對了！直接切換到新插入的圖文知識頁 (不彈出重複的 alert 造成干擾)
+                showPage('q3-info-page');
             } else {
                 alert("❌ 答案好像不太對喔...再仔細想想看河流與海洋的關係吧！");
             }
+        }
+
+        // 🚀 2. 全新新增：點擊圖文頁「閱讀完畢」後觸發的轉場函式
+        function goToQ3SuccessStory() {
+            // 前往原本的成功劇情頁面
+            showPage('q3-success-page');
+            
+            // 順暢啟動你原本就寫好的打字機初始化功能！
+            initQ3SuccessPage();
         }
 
         // 初始化並啟動清醒劇情打字機
