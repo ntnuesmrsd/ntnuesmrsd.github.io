@@ -1625,51 +1625,48 @@
         // 💾 雲端進度儲存與載入系統
         // ==========================================
 
-        // 1. 打包目前畫面上的「圖鑑」與「成就」解鎖狀態，並同步至雲端
+        // 初始化全域進度包防呆機制
+        function ensureGameProgressObject() {
+            if (!window.gameProgress) window.gameProgress = { creatures: {}, achievements: {} };
+            if (!window.gameProgress.creatures) window.gameProgress.creatures = {};
+            if (!window.gameProgress.achievements) window.gameProgress.achievements = {};
+        }
+
+        // 1. 統一儲存變數進度至雲端
         function saveGameProgress() {
             if (!window.currentUsername) {
                 console.log("當前為遊客模式或未登入，進度將不進行同步。");
                 return;
             }
 
-            // A. 收集所有生物圖鑑狀態
-            const creatureProgress = {};
-            // 🚀 修正點：從你提供的 creatureData 字典的 Key 進行遍歷，保證絕對不會漏掉任何一隻
+            ensureGameProgressObject();
+
+            // 🚀 修正點：改為「雙重保障儲存」，同時讀取畫面最新狀態與變數，確保不漏勾
             Object.keys(creatureData).forEach(filename => {
-                // 尋找網頁上 src 包含該生物檔名的圖片
                 const targetImg = Array.from(document.querySelectorAll('.creature-img')).find(img => {
                     const imgUrl = img.getAttribute('src') || "";
                     return imgUrl.toLowerCase().includes(filename.toLowerCase());
                 });
-                
-                // 如果找到了，且它的 dataset.unlocked 是字串 "true"，就記錄為 true，否則為 false
                 if (targetImg && targetImg.dataset.unlocked === "true") {
-                    creatureProgress[filename] = true;
+                    window.gameProgress.creatures[filename] = true;
                 }
             });
 
-            // B. 收集所有成就狀態
-            const achievementProgress = {};
             Object.keys(achievementData).forEach(key => {
                 const id = achievementData[key].id;
                 const targetImg = document.getElementById(`ach-img-${id}`);
-                const isUnlocked = targetImg && targetImg.dataset.unlocked === "true";
-                achievementProgress[key] = isUnlocked;
+                if (targetImg && targetImg.dataset.unlocked === "true") {
+                    window.gameProgress.achievements[key] = true;
+                }
             });
 
-            // C. 結合成完整進度包
-            const progressPackage = {
-                creatures: creatureProgress,
-                achievements: achievementProgress
-            };
-
-            // D. 發送至 GAS 儲存
+            // 發送至 GAS 儲存
             fetch(GLOBAL_SCRIPT_URL, {
                 method: "POST",
                 body: JSON.stringify({
                     action: "saveProgress",
                     username: window.currentUsername,
-                    progress: JSON.stringify(progressPackage)
+                    progress: JSON.stringify(window.gameProgress) // 🚀 發送絕對準確的記憶體物件
                 })
             })
             .then(res => res.json())
@@ -1687,11 +1684,13 @@
         function loadGameProgress(progressStr) {
             if (!progressStr || progressStr === "{}") {
                 console.log("此帳號無舊有進度，開啟全新冒險！");
+                window.gameProgress = { creatures: {}, achievements: {} };
                 return;
             }
 
             try {
                 const progress = JSON.parse(progressStr);
+                window.gameProgress = progress; // 🚀 將雲端進度永久同步到全域變數中
                 console.log("正在解析雲端進度資料...", progress);
 
                 // A. 復原生物圖鑑解鎖狀態
@@ -1700,8 +1699,6 @@
                         const isUnlocked = progress.creatures[src];
                         if (isUnlocked) {
                             const srcLower = src.toLowerCase().trim();
-                            
-                            // 💡 高相容性修正：擴大搜尋範圍，只要 class 包含 creature-img 且 src 吻合就抓取
                             const targetImg = Array.from(document.querySelectorAll('.creature-img')).find(img => {
                                 const imgUrl = img.getAttribute('src') || "";
                                 return imgUrl.toLowerCase().includes(srcLower);
@@ -1709,13 +1706,11 @@
 
                             if (targetImg) {
                                 targetImg.dataset.unlocked = "true";
-                                targetImg.classList.remove('is-locked'); // 移除鎖定類名
-                                targetImg.style.filter = "none"; // 點亮圖鑑，移除黑影
+                                targetImg.classList.remove('is-locked');
+                                targetImg.style.filter = "none";
                                 
-                                // 修正點：利用精準的父元素與鄰近選擇器換名
                                 const nameTag = targetImg.parentElement.querySelector('.creature-name') || targetImg.nextElementSibling;
                                 if (nameTag) {
-                                    // 如果你有設定 dataset.realname 就優先使用，否則嘗試對照 creatureData
                                     if (nameTag.dataset.realname) {
                                         nameTag.innerText = nameTag.dataset.realname;
                                     } else if (typeof creatureData !== 'undefined' && creatureData[src]) {
@@ -1723,8 +1718,6 @@
                                     }
                                 }
                                 console.log(`[進度還原] 成功點亮生物: ${src}`);
-                            } else {
-                                console.warn(`[進度還原] 畫面上找不到對應的生物圖片元素: ${src}`);
                             }
                         }
                     });
@@ -1741,10 +1734,10 @@
                                 const targetName = document.getElementById(`ach-name-${data.id}`);
                                 if (targetImg) {
                                     targetImg.dataset.unlocked = "true";
-                                    targetImg.classList.remove('silhouette'); // 移除影子
+                                    targetImg.classList.remove('silhouette');
                                     targetImg.style.mixBlendMode = "normal";
                                 }
-                                if (targetName) targetName.innerText = data.name; // 還原成就名字
+                                if (targetName) targetName.innerText = data.name;
                                 console.log(`[進度還原] 成功點亮成就: ${data.name}`);
                             }
                         }
@@ -1799,9 +1792,16 @@
             };
         }
         
+        // 🚀 修正後的生物解鎖核心邏輯
         function unlockCreature(target) {
-            const allImages = document.querySelectorAll('.creature-img');
+            ensureGameProgressObject();
             const targetLower = target.toLowerCase().trim();
+            
+            // 1. 先將記憶體變數轉為 true
+            window.gameProgress.creatures[target] = true;
+
+            // 2. 點亮網頁上的圖片
+            const allImages = document.querySelectorAll('.creature-img');
             allImages.forEach(img => {
                 const imgSrc = img.getAttribute('src').toLowerCase();
                 if (imgSrc.indexOf(targetLower) !== -1) {
@@ -1815,6 +1815,8 @@
                     setTimeout(() => img.style.transform = "scale(1)", 500);
                 }
             });
+
+            // 3. 穩妥儲存至雲端
             saveGameProgress();
         }
         
