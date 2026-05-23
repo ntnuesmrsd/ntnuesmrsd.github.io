@@ -815,6 +815,9 @@
             } else if (pageId === 'high-tide-page') {
                 initHighTidePage(); 
             }
+
+            // 🚀【防刷新新增】：每當切換頁面，就自動把目前的頁面代號記在瀏覽器裡
+            localStorage.setItem("current_page_state", pageId);
         }
 
         // 網頁首次加載時，自動呼叫首頁打字機
@@ -1472,6 +1475,9 @@
                 // 3. 🎉 彈出專屬的通關賀詞
                 alert("🏆【調查完成】\n\n恭喜你成功完成了困難模式——「漲潮路線」的考驗！右上角的選單按鈕可以查看已解鎖的圖鑑列表與成就清單\n你的精彩想法已被記錄至歷史文獻中。");
                 
+                // 🚀【防刷新配套功能】：答案已順利完成提交，安全銷毀未送出的草稿紀錄
+                localStorage.removeItem("comment_draft");
+
                 // 4. 🚀 前往留言板並載入隨機評論
                 showPage('comment-board-page'); 
                 if (typeof loadRandomComments === 'function') {
@@ -1503,6 +1509,7 @@
                 executePassEffects(); 
             });
         }
+        
         // ==========================================
         // 🚀 【全新功能】：隨機讀取後台 3 則過審答案並展示
         // ==========================================
@@ -1583,10 +1590,23 @@
             btn.innerText = "驗證中...";
             btn.disabled = true;
         
+            // 🚀【防斷線新增】：如果是註冊，異步線上撈取玩家真實外部 IP
+            let clientIp = "未知IP";
+            if (isReg) {
+                try {
+                    const ipRes = await fetch('https://api.ipify.org?format=json');
+                    const ipData = await ipRes.json();
+                    clientIp = ipData.ip;
+                } catch(ipErr) { 
+                    console.error("無法取得IP:", ipErr); 
+                }
+            }
+
             try {
                 const response = await fetch(GLOBAL_SCRIPT_URL, {
                     method: "POST",
-                    body: JSON.stringify({ action, username: user, password: pass })
+                    // 🚀【修正發送內容】：將 clientIp 封裝進 body 傳送給 GAS 後端
+                    body: JSON.stringify({ action, username: user, password: pass, ip: clientIp })
                 });
                 const result = await response.json();
                 if (result.result === 'success') {
@@ -1605,6 +1625,9 @@
                         // 如果是新註冊帳號，也順便紀錄當前帳號，讓新玩家在玩的時候也能正常存檔
                         window.currentUsername = user;
                     }
+
+                    // 🚀【防刷新記憶】：只要成功登入或註冊，就立刻在瀏覽器記錄此帳號，刷新後免重登
+                    localStorage.setItem("saved_username", user);
 
                     // 🚀【成功進入遊戲：立刻顯示右上角選單按鈕】
                     const menuBtn = document.getElementById('global-menu-btn');
@@ -1931,6 +1954,43 @@
             // ✨ 每次成功觸發解鎖成就時，自動同步最新進度包到 Google 試算表
             saveGameProgress();
         }
+
+        // 🚀【防刷新新增】：當網頁加載完畢，自動檢查是否需要還原登入帳號、頁面或回答草稿
+        document.addEventListener("DOMContentLoaded", function() {
+            // 1️⃣ 還原「開放性問答」寫到一半的草稿（防止不小心按到 F5 導致打的字不見）
+            const answerTextArea = document.getElementById('why-collapse-answer');
+            if (answerTextArea) {
+                const savedDraft = localStorage.getItem("comment_draft");
+                if (savedDraft) { 
+                    answerTextArea.value = savedDraft; 
+                }
+                // 邊打字邊即時記錄
+                answerTextArea.addEventListener("input", function() {
+                    localStorage.setItem("comment_draft", this.value);
+                });
+            }
+        
+            // 2️⃣ 自動偵測已登入的帳號與上次停留的頁面
+            const savedUser = localStorage.getItem("saved_username");
+            const savedPage = localStorage.getItem("current_page_state");
+        
+            if (savedUser) {
+                // 幫全域變數重新填入帳號，確保存檔功能不失效
+                window.currentUser = savedUser;
+                window.currentUsername = savedUser;
+                
+                // 點亮右上角的選單按鈕（漢堡按鈕）
+                const menuBtn = document.getElementById('global-menu-btn');
+                if (menuBtn) {
+                    menuBtn.classList.remove('hidden');
+                }
+        
+                // 如果上次停留的頁面存在，且不是最初的登入/首頁，就直接強制跳轉過去！
+                if (savedPage && savedPage !== 'start-page' && savedPage !== 'login-page') {
+                    showPage(savedPage);
+                }
+            }
+        });
     </script>
     <div id="creature-modal" class="modal" onclick="closeModal()">
         <div class="modal-content" onclick="event.stopPropagation()">
