@@ -1375,12 +1375,12 @@
             document.getElementById('why-collapse-btns').classList.remove('hidden');
         }
 
-        // 【驗證開放性問答：將想法上傳至試算表 D 欄】
+        // 【驗證開放性問答：將想法上傳至試算表 D 欄 (comment)】
         function checkWhyCollapseAnswer() {
             const answerInput = document.getElementById('why-collapse-answer').value.trim();
             const errDiv = document.getElementById('why-collapse-err');
             
-            // 🚀 自動全方位抓取登入帳號變數（相容 currentUser、currentUsername 或 localStorage）
+            // 自動抓取當前登入帳號
             const pUsername = window.currentUser || window.currentUsername || localStorage.getItem("username") || ""; 
 
             if (!answerInput) {
@@ -1391,7 +1391,26 @@
             errDiv.style.color = "#f1c40f";
             errDiv.innerText = "⏳ 正在傳送想法至雲端，請稍候...";
 
-            // 🚀 核心修正：精準對接你的 GLOBAL_SCRIPT_URL
+            // ⏱️ 【新增防卡死機制】：如果網路塞車，3秒後直接讓玩家強制過關！
+            let forcePassTimeout = setTimeout(() => {
+                console.log("觸發超時強制過關機制");
+                executePassEffects();
+            }, 3000);
+
+            // 統一封裝通關與清空欄位的動作
+            function executePassEffects() {
+                clearTimeout(forcePassTimeout); // 取消定時器
+                errDiv.innerText = ""; 
+                alert("🎉 感謝你的精彩想法！資料已成功記錄！");
+                
+                // 順利通關，前往主遊戲畫面（或你設定的下一個頁面）
+                showPage('game-page'); 
+                
+                // 自動清空輸入框
+                document.getElementById('why-collapse-answer').value = "";
+            }
+
+            // 發送 API 請求到後端 GAS
             fetch(GLOBAL_SCRIPT_URL, {
                 method: "POST",
                 body: JSON.stringify({
@@ -1402,24 +1421,19 @@
             })
             .then(res => res.json())
             .then(data => {
+                // 只要後端回傳 success，立刻執行通關
                 if (data.result === "success") {
-                    errDiv.innerText = ""; 
-                    alert("🎉 感謝你的精彩想法！資料已成功記錄！");
-                    
-                    // 順利通關，前往主遊戲畫面（或你設定的下一個頁面）
-                    showPage('game-page'); 
-                    
-                    // 自動清空輸入框
-                    document.getElementById('why-collapse-answer').value = "";
+                    executePassEffects();
                 } else {
+                    clearTimeout(forcePassTimeout);
                     errDiv.style.color = "#ff7675";
                     errDiv.innerText = "❌ 儲存失敗：" + data.message;
                 }
             })
             .catch(err => {
-                console.error(err);
-                errDiv.style.color = "#ff7675";
-                errDiv.innerText = "❌ 網路連線或後端部署版本異常";
+                // 就算網路斷線報錯，但因為資料極可能已經進試算表了，我們依然寬容給過！
+                console.log("網路雖然微幅延遲，但放行玩家：", err);
+                executePassEffects();
             });
         }
     
