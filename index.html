@@ -466,10 +466,10 @@
         <button id="login-btn" onclick="handleAuth('login')" disabled style="opacity: 0.5;">開始遊戲</button>
     </div>
     <div id="game-page" class="page hidden">
-        <h1>請選擇難度</h1>
+        <h1>請選擇路線</h1>
         <div class="difficulty-container">
-            <button onclick="showPage('easy-page')">簡單</button>
-            <button onclick="showPage('hard-page')">困難</button>
+            <button onclick="showPage('hard-page')">路線一</button>
+            <button onclick="showPage('easy-page')">路線二</button>
         </div>
         </div>
     <div id="easy-page" class="page hidden">
@@ -689,8 +689,8 @@
         const achievementData = {
             "ach_tide.jpg": { id: "tide", name: "完成漲潮路線", hint: "完成漲潮路線", info: "恭喜！成功完成了漲潮路線的挑戰！" },
             "ach_ebb.jpg": { id: "ebb", name: "完成退潮路線", hint: "完成退潮路線", info: "恭喜！深入潮間帶完成了退潮路線！" },
-            "ach_hard.jpg": { id: "hard", name: "完成困難模式", hint: "完成漲潮與退潮路線", info: "太強了！克服了重重謎題，完成困難模式！" },
-            "ach_easy.jpg": { id: "easy", name: "完成簡單模式", hint: "(提示)", info: "(恭喜！您在舒適漫步的節奏中，順利完成了簡單模式！)" },
+            "ach_hard.jpg": { id: "hard", name: "完成路線一", hint: "完成漲潮與退潮路線", info: "太強了！克服了重重謎題，完成路線一！" },
+            "ach_easy.jpg": { id: "easy", name: "完成路線二", hint: "(提示)", info: "(恭喜！您在舒適漫步的節奏中，順利完成了路線二！)" },
             "ach_all.jpg": { id: "all", name: "開啟所有圖鑑", hint: "在涼亭附近應該有個看板", info: "成就解鎖！收集了這片濕地上所有的生物足跡，成為生態大師！" }
         };
 
@@ -1525,7 +1525,7 @@
                 .catch(err => console.error("同步成就時網路微幅延遲:", err));
 
                 // 3. 🎉 彈出專屬的通關賀詞
-                alert("🏆【調查完成】\n\n一旦沒了人類的活動，其實大自然很快就有辦法回復到原本沒有人類打擾的狀態。然而這不代表我們可以恣意破壞自然，而是應該思考，如何在各種人類活動中，無論是國家級的建設或是個人的生活或旅行，讓大自然可以不用花時間修復人類的破壞，盡量在不留下痕跡的方式進行。大家也可以想想看，完成這個活動後，你在這個地方有沒有，或者留下了多少痕跡呢?\n\n恭喜你成功完成了困難模式——「漲潮路線」的考驗！右上角的選單按鈕可以查看已解鎖的圖鑑列表與成就清單\n你的精彩想法已被記錄至歷史文獻中。");
+                alert("🏆【調查完成】\n\n一旦沒了人類的活動，其實大自然很快就有辦法回復到原本沒有人類打擾的狀態。然而這不代表我們可以恣意破壞自然，而是應該思考，如何在各種人類活動中，無論是國家級的建設或是個人的生活或旅行，讓大自然可以不用花時間修復人類的破壞，盡量在不留下痕跡的方式進行。大家也可以想想看，完成這個活動後，你在這個地方有沒有，或者留下了多少痕跡呢?\n\n恭喜你成功完成了路線一「漲潮路線」的考驗！右上角的選單按鈕可以查看已解鎖的圖鑑列表與成就清單\n你的精彩想法已被記錄至歷史文獻中。");
                 
                 // 🚀【防刷新配套功能】：答案已順利完成提交，安全銷毀未送出的草稿紀錄
                 localStorage.removeItem("comment_draft");
